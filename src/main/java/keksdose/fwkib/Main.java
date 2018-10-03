@@ -1,11 +1,10 @@
-
-import java.util.Scanner;
+package keksdose.fwkib;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.jibble.pircbot.*;
+import org.jibble.pircbot.PircBot;
 
-import keksdose.fwkib.BotStart;
+import keksdose.fwkib.quiz.BotStart;
 
 
 public class Main extends PircBot {

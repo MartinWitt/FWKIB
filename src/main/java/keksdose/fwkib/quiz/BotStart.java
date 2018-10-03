@@ -1,4 +1,4 @@
-package keksdose.fwkib;
+package keksdose.fwkib.quiz;
 
 import java.io.IOException;
 
@@ -10,6 +10,7 @@ public class BotStart implements Runnable {
     public BotStart(String channel) {
         super();
         this.channel = channel.isEmpty() ? "#kitinfo" : channel;
+        
 
     }
 
