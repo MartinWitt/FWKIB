@@ -15,6 +15,8 @@ import org.jibble.pircbot.PircBot;
 
 public class FWKIB extends PircBot {
 
+    private             ExecutorService exService = Executors.newSingleThreadExecutor();
+
     private Multimap<String, String> answers = ArrayListMultimap.create();
 
     public void onMessage(String channel, String sender, String login, String hostname, String message) {
@@ -23,13 +25,15 @@ public class FWKIB extends PircBot {
 
             DBObject o = new MongoDB().getQuestion("test");
             sendMessage(channel, (String) o.get("question"));
-            ExecutorService exService = Executors.newSingleThreadExecutor();
             exService.submit(new Runnable() {
-
                 @Override
                 public void run() {
                     try {
                         TimeUnit.SECONDS.wait((long) o.get("time"));
+                            sendMessage(channel, (String) o.get("answerLetter"));
+                            new MongoDB().updateStats(new ArrayList<>(answers.get((String) o.get("answerLetter"))));
+                            answers.clear();
+                                                    
                     } catch (InterruptedException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -37,14 +41,7 @@ public class FWKIB extends PircBot {
                 }
             });
             exService.shutdown();
-            while (!exService.isTerminated())
-                ; // einfach abwarten. CPU is egal
-            if (exService.isTerminated()) {
-                sendMessage(channel, (String) o.get("answerLetter"));
-                new MongoDB().updateStats(new ArrayList<>(answers.get((String) o.get("answerLetter"))));
-                answers.clear();
-                break;
-            }
+            break;
 
         }
         case ("#stats"): {
