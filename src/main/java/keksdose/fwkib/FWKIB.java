@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
 
 import com.google.common.collect.Multimap;
@@ -41,22 +42,27 @@ public class FWKIB extends PircBot {
             if (exService.isTerminated()) {
                 sendMessage(channel, (String) o.get("answerLetter"));
                 new MongoDB().updateStats(new ArrayList<>(answers.get((String) o.get("answerLetter"))));
-
+                answers.clear();
+                break;
             }
 
         }
         case ("#stats"): {
             sendMessage(channel, new MongoDB().getStats());
+            break;
 
         }
         default: {
             if (message.equalsIgnoreCase("a") || message.equalsIgnoreCase("b") || message.equalsIgnoreCase("c")
                     || message.equalsIgnoreCase("d")) {
-                answers.put(sender, message.toLowerCase());
+
+                if (!answers.get(message).contains(sender)) {
+                    answers.put(sender, message.toLowerCase());
+                }
             }
-        }
 
         }
+        }
+
     }
-
 }
