@@ -11,12 +11,11 @@ public class Main extends PircBot {
     public static void main(String[] args){
         ExecutorService service = Executors.newCachedThreadPool();
         
-        for(;;){
-        System.out.print("Enter channel:");
-        String input = System.console().readLine();
-        service.execute(new BotStart(input));
+        //System.out.print("Enter channel:");
+        //String input = System.console().readLine();
+        service.execute(new BotStart("#kitinfo-botnet"));
         
-        }
+        
             
     }
     

@@ -1,6 +1,7 @@
 package keksdose.fwkib.quiz;
 
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -15,7 +16,7 @@ import org.jibble.pircbot.PircBot;
 
 public class FWKIB extends PircBot {
     public FWKIB() {
-        this.setName("FWKIB");
+        this.setName("fwkib" + UUID.randomUUID());
     }
 
     private AtomicBoolean bool = new AtomicBoolean(false);
@@ -29,22 +30,23 @@ public class FWKIB extends PircBot {
                 break;
             }
             ExecutorService exService = Executors.newSingleThreadExecutor();
-
-            DBObject o = new MongoDB().getQuestion("math");
-            sendMessage(channel, (String) o.get("question") + "    zeit: " + o.get("time").toString() );
+            String topic = message.split("#quiz")[1].trim();
+            DBObject o = new MongoDB().getQuestion(topic);
+            sendMessage(channel,
+                    o.get("question").toString() + getOptions(o) + "    zeit: " + o.get("time").toString());
             exService.submit(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         bool.set(true);
-                        
+
                         System.out.println("mache quiz");
                         System.out.println(Integer.parseInt(o.get("time").toString()));
                         TimeUnit.SECONDS.sleep(Integer.parseInt(o.get("time").toString()));
                         bool.set(false);
                         System.out.println("gebe frei");
-                        sendMessage(channel,"richtig ist: " + (String) o.get("answerLetter"));
-                        new MongoDB().updateStats(new ArrayList<>(answers.get((String) o.get("answerLetter"))));
+                        sendMessage(channel, "richtig ist: " + o.get("answer").toString());
+                        new MongoDB().updateStats(new ArrayList<>(answers.get(o.get("answer").toString())));
                         answers.clear();
 
                     } catch (InterruptedException e) {
@@ -58,22 +60,31 @@ public class FWKIB extends PircBot {
             break;
 
         }
+
         case ("#stats"): {
             sendMessage(channel, new MongoDB().getStats());
             break;
 
         }
         default: {
-            if (message.equalsIgnoreCase("a") || message.equalsIgnoreCase("b") || message.equalsIgnoreCase("c")
-                    || message.equalsIgnoreCase("d")) {
+            if (bool.get() && !answers.containsValue(sender)) {
+                answers.put(message.toLowerCase(), sender);
 
-                if (!answers.containsEntry(message.toLowerCase(), sender)) {
-                    answers.put(message.toLowerCase(), sender);
-                }
             }
-
-        }
         }
 
+        }
+    }
+
+    private String getOptions(DBObject o) {
+        String var = "";
+        String[] split = o.get("options").toString().split(",");
+        char letter = 'a';
+        for (String option : split) {
+            var.concat(letter + ")" + option + " ");
+            letter++;
+        }
+
+        return var;
     }
 }
