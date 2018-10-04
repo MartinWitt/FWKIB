@@ -12,27 +12,28 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.mongodb.DBObject;
 
-import org.jibble.pircbot.PircBot;
+import org.pircbotx.hooks.ListenerAdapter;
+import org.pircbotx.hooks.events.MessageEvent;
 
-public class FWKIB extends PircBot {
-    public FWKIB() {
-        this.setName("fwkib" + UUID.randomUUID());
-    }
+
+public class FWKIB extends ListenerAdapter {
+    
 
     private AtomicBoolean bool = new AtomicBoolean(false);
     private Multimap<String, String> answers = ArrayListMultimap.create();
-
-    public void onMessage(String channel, String sender, String login, String hostname, String message) {
-        switch (message) {
+   
+    @Override
+	public void onMessage(MessageEvent event) throws Exception {
+        switch (event.getMessage()) {
         case ("#quiz"): {
             if (bool.get()) {
-                sendMessage(channel, "quiz running");
+                event.getChannel().send().message("quiz running");
                 break;
             }
             ExecutorService exService = Executors.newSingleThreadExecutor();
-            String topic = message.split("#quiz")[1].trim();
+            String topic = event.getMessage().split("#quiz")[1].trim();
             DBObject o = new MongoDB().getQuestion(topic);
-            sendMessage(channel,
+            event.getChannel().send().message(
                     o.get("question").toString() + getOptions(o) + "    zeit: " + o.get("time").toString());
             exService.submit(new Runnable() {
                 @Override
@@ -45,7 +46,7 @@ public class FWKIB extends PircBot {
                         TimeUnit.SECONDS.sleep(Integer.parseInt(o.get("time").toString()));
                         bool.set(false);
                         System.out.println("gebe frei");
-                        sendMessage(channel, "richtig ist: " + o.get("answer").toString());
+                        event.getChannel().send().message( "richtig ist: " + o.get("answer").toString());
                         new MongoDB().updateStats(new ArrayList<>(answers.get(o.get("answer").toString())));
                         answers.clear();
 
@@ -62,13 +63,13 @@ public class FWKIB extends PircBot {
         }
 
         case ("#stats"): {
-            sendMessage(channel, new MongoDB().getStats());
+            event.getChannel().send().message( new MongoDB().getStats());
             break;
 
         }
         default: {
-            if (bool.get() && !answers.containsValue(sender)) {
-                answers.put(message.toLowerCase(), sender);
+            if (bool.get() && !answers.containsValue(event.getUser())) {
+                answers.put(event.getMessage().toLowerCase(), event.getUser().toString());
 
             }
         }
@@ -87,4 +88,5 @@ public class FWKIB extends PircBot {
 
         return var;
     }
+
 }

@@ -88,14 +88,14 @@ public class MongoDB {
 
             @Override
             public int compare(User o1, User o2) {
-                if(o1.getNumber()>o2.getNumber()) return 1;
-                if(o2.getNumber()>o1.getNumber()) return -1;
+                if(o1.getNumber()>o2.getNumber()) return -1;
+                if(o2.getNumber()>o1.getNumber()) return 1;
                 return 0;
             }
 
         });
         for(int i =0;i<10 && i<=list.size()-1;i++){
-            value += list.get(i).getName() + ":" + list.get(i).getNumber() + ".";
+            value += list.get(i).getName() + ":" + list.get(i).getNumber() + ". ";
         }
         return value;
 
