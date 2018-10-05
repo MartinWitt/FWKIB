@@ -15,6 +15,7 @@ import com.mongodb.MongoClient;
 
 public class MongoDB {
 
+    private static final char NBSP =  '\u00a0';
     private String dbName = "test";
     private static MongoClient mongoClient;
 
@@ -35,8 +36,9 @@ public class MongoDB {
             System.out.println("nö ich behalt die DB");
             return null;
         }
-        DBCollection questions = database.getCollection(collection);
+        DBCollection questions = database.getCollection("test");
         Random random = new Random();
+        
 
         return questions.find().limit(-1).skip(random.nextInt((int) questions.count())).next();
     }
@@ -47,7 +49,6 @@ public class MongoDB {
             DBCursor cursor = stats.find();
             while (cursor.hasNext()) {
                 cursor.next();
-                System.out.println(cursor.curr().toString());
                 if (cursor.curr().get("name").equals(var)) {
                     System.out.println("update");
 
@@ -61,7 +62,6 @@ public class MongoDB {
                     stats.update(cursor.curr(), user);
                     
 
-                    System.out.println(user.toString());
                     return;
 
                 }
@@ -95,7 +95,7 @@ public class MongoDB {
 
         });
         for(int i =0;i<10 && i<=list.size()-1;i++){
-            value += list.get(i).getName() + ":" + list.get(i).getNumber() + ". ";
+            value += list.get(i).getName() +NBSP+ ":" + list.get(i).getNumber() + ". ";
         }
         return value;
 
