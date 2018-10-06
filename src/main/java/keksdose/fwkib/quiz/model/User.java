@@ -1,4 +1,4 @@
-package keksdose.fwkib.quiz;
+package keksdose.fwkib.quiz.model;
 
 
 public class User{

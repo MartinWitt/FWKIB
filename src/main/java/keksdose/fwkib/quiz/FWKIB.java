@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
@@ -18,6 +19,10 @@ import com.mongodb.DBObject;
 
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
+
+import keksdose.fwkib.quiz.DB.MongoDB;
+import keksdose.fwkib.quiz.model.Question;
+import keksdose.fwkib.quiz.model.QuestionWithAnswer;
 
 public class FWKIB extends ListenerAdapter {
 
@@ -33,10 +38,13 @@ public class FWKIB extends ListenerAdapter {
                 return;
             }
             ExecutorService exService = Executors.newSingleThreadExecutor();
-            String topic = event.getMessage().split("#quiz")[0].trim();
+            //TODO topic sinnvoll parsen
+            String topic = String.valueOf(event.getMessage().split("#quiz")[0]).trim();
+            
             DBObject o = new MongoDB().getQuestion(topic);
-            event.getChannel().send()
-                    .message(o.get("question").toString() + getOptions(o) + "    zeit: " + o.get("time").toString());
+            Question question = new QuestionWithAnswer(o);
+            answers.clear();
+            event.getChannel().send().message( question.getQuestion());
             exService.submit(new Runnable() {
                 @Override
                 public void run() {
@@ -44,15 +52,17 @@ public class FWKIB extends ListenerAdapter {
                         bool.set(true);
 
                         System.out.println("mache quiz");
-                        System.out.println(Integer.parseInt(o.get("time").toString()));
-                        TimeUnit.SECONDS.sleep(Integer.parseInt(o.get("time").toString()));
+                        TimeUnit.SECONDS.sleep(question.getTime());
                         bool.set(false);
-                        System.out.println("gebe frei");
-                        event.getChannel().send().message("richtig ist: " + o.get("answers").toString());
-                        BasicDBList list = (BasicDBList) o.get("answers");
-                        List<String> qq = new ArrayList<>(); 
-                        list.stream().forEach(element->qq.addAll(answers.get(element.toString())));
-                        new MongoDB().updateStats(qq);
+                        String answersString = "";
+                        for(String var:question.getAnswerList()){
+                            answersString += var + " ";
+                        }
+                        System.out.println(answersString);
+                        event.getChannel().send().message("richtig ist: " + answersString);
+                        List<String> correctPersons = new ArrayList<>(); 
+                        question.getAnswerList().stream().forEach(element->correctPersons.addAll(answers.get(element.toString())));
+                        new MongoDB().updateStats(correctPersons);
                         answers.clear();
 
                     } catch (InterruptedException e) {
@@ -73,50 +83,14 @@ public class FWKIB extends ListenerAdapter {
 
         }
 
-        if (bool.get() && !answers.containsValue(event.getUser())) {
+        if (bool.get() && !answers.containsValue(event.getUser()) && !event.getUser().equals(event.getBot().getUserBot())) {
+            
             answers.put(event.getMessage().toLowerCase(), event.getUser().toString());
 
         }
 
     }
 
-    private String getOptions(DBObject o) {
-        String var = "";
-        if(o == null|| o.get("options") == null){
-            return var;
-        }
-        String list = o.get("options").toString();
-        System.out.println(String.valueOf(list));
-        
-        if(list == null){
-            return "";
-        }
-        
-        
-        
-        char letter = 'a';
-        for (String option : list.split("\" , \"")) {
-            option.trim();
-            System.out.println(String.valueOf(option));
-            if(option.startsWith("[")){
-                option = option.substring(1).trim();
-            }
-            if(option.startsWith("\"")){
-                option = option.substring(1).trim();
-            }
-            if(option.endsWith("]")){
-                option = option.substring(0,option.length()-1).trim();
-            }
-            if(option.endsWith("\"")){
-                option = option.substring(0,option.length()-1).trim();
-            }
-            System.out.println(String.valueOf(option));
-            var +=letter + ")" + String.valueOf(option) + " ";
-            letter++;
-            //TODO Map für Options
-        }
-        System.out.println(String.valueOf(var));
-        return var;
-    }
-
+    
 }
+

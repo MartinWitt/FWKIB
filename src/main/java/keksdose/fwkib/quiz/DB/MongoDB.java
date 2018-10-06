@@ -1,4 +1,4 @@
-package keksdose.fwkib.quiz;
+package keksdose.fwkib.quiz.DB;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -13,9 +13,11 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
+import keksdose.fwkib.quiz.model.User;
+
 public class MongoDB {
 
-    private static final char NBSP =  '\u00a0';
+    private static final char NBSP =  '\u200B';
     private String dbName = "test";
     private static MongoClient mongoClient;
 
@@ -95,7 +97,9 @@ public class MongoDB {
 
         });
         for(int i =0;i<10 && i<=list.size()-1;i++){
-            value += list.get(i).getName() +NBSP+ ":" + list.get(i).getNumber() + ". ";
+            StringBuilder str = new StringBuilder(list.get(i).getName());
+            str.insert(1,NBSP);
+            value += str.toString() + ":" + list.get(i).getNumber() + ". ";
         }
         return value;
 
