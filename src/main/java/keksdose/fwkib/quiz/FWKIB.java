@@ -37,7 +37,7 @@ public class FWKIB extends ListenerAdapter {
                 return;
             }
             ExecutorService exService = Executors.newSingleThreadExecutor();
-            
+
             List<String> splitter = Splitter.on("#quiz").trimResults().splitToList(event.getMessage());
             String topic = splitter.size() == 1? splitter.get(0):"#test"; 
             
@@ -53,7 +53,6 @@ public class FWKIB extends ListenerAdapter {
 
                         //System.out.println("mache quiz");
                         TimeUnit.SECONDS.sleep(question.getTime());
-                        bool.set(false);
                         String answersString = "";
                         for(String var:question.getAnswerList()){
                             answersString += var + " ";
@@ -61,12 +60,25 @@ public class FWKIB extends ListenerAdapter {
                         //System.out.println(answersString);
                         event.getChannel().send().message("richtig ist: " + answersString);
                         List<String> correctPersons = new ArrayList<>(); 
-                        question.getAnswerList().forEach((element)->correctPersons.addAll(answers.get(element)));
+                        question.getAnswerList().forEach((element)->correctPersons.addAll(answers.get(element.toLowerCase())));
                         //System.out.println(String.valueOf(correctPersons.size()));
                         correctPersons.forEach(v-> System.out.println(v));
                         new MongoDB().updateStats(correctPersons);
-                        event.getChannel().send().message(correctPersons.size() + "were correct of " + answers.size() );
+                        event.getChannel().send().message(correctPersons.size() + " were correct of " + answers.size() );
                         answers.clear();
+                        bool.set(false);
+                        if(correctPersons.size()>0){
+                            try {
+                                TimeUnit.SECONDS.sleep(10);
+                                if(!bool.get()){
+                                onMessage(event);
+                                }
+                            } catch (Exception e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                                //da ist rekursiv wohl kaputt
+                            }
+                        }
 
                     } catch (InterruptedException e) {
                         // TODO Auto-generated catch block
@@ -86,7 +98,7 @@ public class FWKIB extends ListenerAdapter {
 
         }
 
-        if (bool.get() && !answers.containsValue(event.getUser()) && !event.getUser().equals(event.getBot().getUserBot())) {
+        if (bool.get() && !answers.containsValue(event.getUser().getNick()) && !event.getUser().equals(event.getBot().getUserBot())) {
             
             answers.put(event.getMessage().toLowerCase(), event.getUser().getNick());
 

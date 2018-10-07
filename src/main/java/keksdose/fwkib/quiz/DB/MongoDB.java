@@ -17,7 +17,7 @@ import keksdose.fwkib.quiz.model.User;
 
 public class MongoDB {
 
-    private static final char NBSP =  '\u200B';
+    private static final char NBSP = '\u200B';
     private String dbName = "test";
     private static MongoClient mongoClient;
 
@@ -40,7 +40,6 @@ public class MongoDB {
         }
         DBCollection questions = database.getCollection("test");
         Random random = new Random();
-        
 
         return questions.find().limit(-1).skip(random.nextInt((int) questions.count())).next();
     }
@@ -48,30 +47,26 @@ public class MongoDB {
     public void updateStats(List<String> username) {
         DBCollection stats = mongoClient.getDB(dbName).getCollection("stat");
         for (String var : username) {
-            if(var.length()>40){
+            if (var.length() > 40) {
                 continue;
             }
-            DBCursor cursor = stats.find();
-        
-            while (cursor.hasNext()) {
-                cursor.next();
-                if (cursor.curr().get("name").equals(var)) {
-                    System.out.println("update " + var);
-                    // update wäre änderbar
-                    BasicDBObject user = new BasicDBObject();
-                    Integer number = Integer.parseInt(cursor.curr().get("number").toString());
-                    number++;
-                    user.append("$set", new BasicDBObject().append("number", number.toString()));
-                    stats.update(cursor.curr(), user);
-                    continue;
-
-                }
-            }
-            if(var.length()<40){
-            DBObject user = new BasicDBObject("name", var).append("number", "1");
-            stats.insert(user);
+            BasicDBObject user = new BasicDBObject();
+            user.put("name", var);
+            DBObject search = stats.find(user).one();
+            if (search == null) {
+                DBObject toInsert = new BasicDBObject("name", var).append("number", "1");
+                stats.insert(toInsert);
+            } else {
+                System.out.println("update " + var);
+                // update wäre änderbar
+                Integer number = Integer.parseInt(search.get("number").toString());
+                number++;
+                BasicDBObject update = new BasicDBObject();
+                update.append("$set", new BasicDBObject().append("number", number.toString()));
+                stats.update(search, update);
             }
         }
+
     }
 
     public String getStats() {
@@ -82,23 +77,25 @@ public class MongoDB {
         List<User> list = new ArrayList<>();
         while (cursor.hasNext()) {
             cursor.next();
-            
-            list.add(new User(cursor.curr().get("name").toString() ,cursor.curr().get("number").toString()));
+
+            list.add(new User(cursor.curr().get("name").toString(), cursor.curr().get("number").toString()));
 
         }
-        list.sort(new Comparator<User>(){
+        list.sort(new Comparator<User>() {
 
             @Override
             public int compare(User o1, User o2) {
-                if(o1.getNumber()>o2.getNumber()) return -1;
-                if(o2.getNumber()>o1.getNumber()) return 1;
+                if (o1.getNumber() > o2.getNumber())
+                    return -1;
+                if (o2.getNumber() > o1.getNumber())
+                    return 1;
                 return 0;
             }
 
         });
-        for(int i =0;i<10 && i<=list.size()-1;i++){
+        for (int i = 0; i < 10 && i <= list.size() - 1; i++) {
             StringBuilder str = new StringBuilder(list.get(i).getName());
-            str.insert(1,NBSP);
+            str.insert(1, NBSP);
             value += str.toString() + ":" + list.get(i).getNumber() + ". ";
         }
         return value;
