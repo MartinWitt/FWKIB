@@ -9,12 +9,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 
 import com.google.common.collect.Multimap;
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 import org.pircbotx.hooks.ListenerAdapter;
@@ -38,8 +37,9 @@ public class FWKIB extends ListenerAdapter {
                 return;
             }
             ExecutorService exService = Executors.newSingleThreadExecutor();
-            //TODO topic sinnvoll parsen
-            String topic = String.valueOf(event.getMessage().split("#quiz")[0]).trim();
+            
+            List<String> splitter = Splitter.on("#quiz").trimResults().splitToList(event.getMessage());
+            String topic = splitter.size() == 1? splitter.get(0):"#test"; 
             
             DBObject o = new MongoDB().getQuestion(topic);
             Question question = new QuestionWithAnswer(o);
@@ -51,18 +51,21 @@ public class FWKIB extends ListenerAdapter {
                     try {
                         bool.set(true);
 
-                        System.out.println("mache quiz");
+                        //System.out.println("mache quiz");
                         TimeUnit.SECONDS.sleep(question.getTime());
                         bool.set(false);
                         String answersString = "";
                         for(String var:question.getAnswerList()){
                             answersString += var + " ";
                         }
-                        System.out.println(answersString);
+                        //System.out.println(answersString);
                         event.getChannel().send().message("richtig ist: " + answersString);
                         List<String> correctPersons = new ArrayList<>(); 
-                        question.getAnswerList().stream().forEach(element->correctPersons.addAll(answers.get(element.toString())));
+                        question.getAnswerList().forEach((element)->correctPersons.addAll(answers.get(element)));
+                        //System.out.println(String.valueOf(correctPersons.size()));
+                        correctPersons.forEach(v-> System.out.println(v));
                         new MongoDB().updateStats(correctPersons);
+                        event.getChannel().send().message(correctPersons.size() + "were correct of " + answers.size() );
                         answers.clear();
 
                     } catch (InterruptedException e) {
@@ -85,7 +88,7 @@ public class FWKIB extends ListenerAdapter {
 
         if (bool.get() && !answers.containsValue(event.getUser()) && !event.getUser().equals(event.getBot().getUserBot())) {
             
-            answers.put(event.getMessage().toLowerCase(), event.getUser().toString());
+            answers.put(event.getMessage().toLowerCase(), event.getUser().getNick());
 
         }
 

@@ -48,29 +48,29 @@ public class MongoDB {
     public void updateStats(List<String> username) {
         DBCollection stats = mongoClient.getDB(dbName).getCollection("stat");
         for (String var : username) {
+            if(var.length()>40){
+                continue;
+            }
             DBCursor cursor = stats.find();
+        
             while (cursor.hasNext()) {
                 cursor.next();
                 if (cursor.curr().get("name").equals(var)) {
-                    System.out.println("update");
-
-
+                    System.out.println("update " + var);
                     // update wäre änderbar
-
                     BasicDBObject user = new BasicDBObject();
                     Integer number = Integer.parseInt(cursor.curr().get("number").toString());
                     number++;
                     user.append("$set", new BasicDBObject().append("number", number.toString()));
                     stats.update(cursor.curr(), user);
-                    
-
-                    return;
+                    continue;
 
                 }
             }
-
+            if(var.length()<40){
             DBObject user = new BasicDBObject("name", var).append("number", "1");
             stats.insert(user);
+            }
         }
     }
 
