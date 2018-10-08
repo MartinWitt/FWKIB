@@ -53,7 +53,6 @@ public class QuestionWithAnswer implements Question {
             return var;
         }
         String list = o.get("options").toString();
-        System.out.println(String.valueOf(list));
 
         if (list == null) {
             return "";
@@ -74,12 +73,10 @@ public class QuestionWithAnswer implements Question {
             if (option.endsWith("\"")) {
                 option = option.substring(0, option.length() - 1).trim();
             }
-            System.out.println(String.valueOf(option));
             optionLetterMap.put(option, String.valueOf(letter));
             var += letter + ")" + String.valueOf(option) + " ";
             letter++;
         }
-        System.out.println(String.valueOf(var));
         return var;
     }
 

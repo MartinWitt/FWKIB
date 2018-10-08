@@ -20,9 +20,10 @@ public class BotStart implements Runnable {
     public void run() {
 
         Configuration<PircBotX> config = new Configuration.Builder().setName("fwkib" + UUID.randomUUID())
-        .addListener(new FWKIB()).setServer("irc.freenode.net", 6667).setAutoNickChange(true).addAutoJoinChannel(channel).buildConfiguration();
+        .addListener(new FWKIB()).setServer("irc.freenode.net", 6667).setAutoNickChange(true).addAutoJoinChannel(channel).setAutoReconnect(true).buildConfiguration();
 
         PircBotX bot = new PircBotX(config);
+    
         
         try {
             bot.startBot();
