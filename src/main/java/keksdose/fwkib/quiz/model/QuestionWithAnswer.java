@@ -48,15 +48,17 @@ public class QuestionWithAnswer implements Question {
     }
 
     private String formatOptions(DBObject o) {
-        String var = "";
         if (o == null || o.get("options") == null) {
-            return var;
+            return "";
         }
+        
         String list = o.get("options").toString();
 
         if (list == null) {
             return "";
         }
+        
+        String var = "";
         char letter = 'a';
         for (String option : list.split("\" , \"")) {
             option.trim();
