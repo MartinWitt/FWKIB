@@ -17,7 +17,7 @@ public class QuestionWithAnswer implements Question {
     private List<String> solutionList = new ArrayList<>();
 
     public QuestionWithAnswer(DBObject o) {
-        questionString = (o.get("question").toString() + formatOptions(o) + "    zeit: " + o.get("time").toString());
+        questionString = (o.get("question").toString() + formatOptions(o) + "  zeit: " + o.get("time").toString());
         formatSolution(o);
         formatTime(o);
     }
@@ -58,10 +58,13 @@ public class QuestionWithAnswer implements Question {
             return "";
         }
         
-        String var = "";
+        String var = "  ";
         char letter = 'a';
         for (String option : list.split("\" , \"")) {
             option.trim();
+            if(option.isEmpty()){
+                continue;
+            }
             System.out.println(String.valueOf(option));
             if (option.startsWith("[")) {
                 option = option.substring(1).trim();
@@ -76,7 +79,7 @@ public class QuestionWithAnswer implements Question {
                 option = option.substring(0, option.length() - 1).trim();
             }
             optionLetterMap.put(option, String.valueOf(letter));
-            var += letter + ")" + String.valueOf(option) + " ";
+            var += letter + ") " + String.valueOf(option) + " ";
             letter++;
         }
         return var;

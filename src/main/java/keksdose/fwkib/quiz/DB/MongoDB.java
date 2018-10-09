@@ -38,8 +38,11 @@ public class MongoDB {
             System.out.println("nö ich behalt die DB");
             return null;
         }
-        DBCollection questions = database.getCollection("test");
+        DBCollection questions = database.getCollection(collection);
         Random random = new Random();
+        if(questions == null){
+            return null;
+        }
 
         return questions.find().limit(-1).skip(random.nextInt((int) questions.count())).next();
     }

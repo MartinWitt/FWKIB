@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
+import org.pircbotx.UtilSSLSocketFactory;
 import org.pircbotx.exception.IrcException;
 
 public class BotStart implements Runnable {
@@ -20,7 +21,8 @@ public class BotStart implements Runnable {
     public void run() {
 
         Configuration<PircBotX> config = new Configuration.Builder().setName("fwkib" + UUID.randomUUID())
-        .addListener(new FWKIB()).setServer("irc.freenode.net", 6667).setAutoNickChange(true).addAutoJoinChannel(channel).setAutoReconnect(true).buildConfiguration();
+        .addListener(new FWKIB()).setServer("irc.freenode.net", 7000).setAutoNickChange(true).setSocketFactory(new UtilSSLSocketFactory().trustAllCertificates())
+        .addAutoJoinChannel(channel).setAutoReconnect(true).buildConfiguration();
 
         PircBotX bot = new PircBotX(config);
     

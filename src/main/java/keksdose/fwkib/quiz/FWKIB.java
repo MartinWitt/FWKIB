@@ -27,7 +27,6 @@ public class FWKIB extends ListenerAdapter {
     //TODO Quiz etc. In Klassen machen und in ne Map putten. CleanUp das hier nur noch einzelne Methoden mit if stehen und nicht mehr der Code.
     @Override
     public void onMessage(MessageEvent event) throws Exception {
-
         if (event.getMessage().startsWith("#quiz")) {
             if (bool.get()) {
                 event.getChannel().send().message("quiz running");
@@ -35,10 +34,17 @@ public class FWKIB extends ListenerAdapter {
             }
             ExecutorService exService = Executors.newSingleThreadExecutor();
 
-            List<String> splitter = Splitter.on("#quiz").trimResults().splitToList(event.getMessage());
-            String topic = splitter.size() == 1 ? splitter.get(0) : "#test";
+            List<String> splitter = Splitter.on("#quiz").splitToList(event.getMessage());
+            String topic = splitter.size() == 2 ? splitter.get(1).trim() : "info";
+            System.out.println(topic);
+            System.out.println(splitter.size());
 
             DBObject o = new MongoDB().getQuestion(topic);
+            System.out.println(String.valueOf(o));
+            if(o == null){
+                return;
+            }
+            
             Question question = new QuestionWithAnswer(o);
             answers.clear();
             event.getChannel().send().message(question.getQuestion());
@@ -100,11 +106,16 @@ public class FWKIB extends ListenerAdapter {
             return;
 
         }
+        if(event.getMessage().equals("#mongo")){
+            event.getChannel().send().message("https://cloud.mongodb.com/freemonitoring/cluster/Q24YNZRNFJX5ZOHC7VAIMGNMHTA2WKSG");
+            return;
+        }
         if (event.getMessage().startsWith("#") && !event.getUser().getNick().equals("Keksbot")) {
             event.getChannel().send().message("-" + event.getMessage().substring(1));
             return;
 
         }
+
         if (bool.get() && !answers.containsValue(event.getUser().getNick())
                 && !event.getUser().equals(event.getBot().getUserBot())) {
 
