@@ -105,4 +105,22 @@ public class MongoDB {
 
     }
 
+	public String getStats(String username) {
+        DBCollection stats = mongoClient.getDB(dbName).getCollection("stat");
+            BasicDBObject user = new BasicDBObject();
+            user.put("name", username);
+            DBObject search = stats.find(user).one();
+            if(search == null){
+                return "user not found";
+            }
+           Integer number = Integer.parseInt(search.get("number").toString());
+           if(number == null){
+            return "user not found";
+           }
+           User userObject =new User(search.get("name").toString(), search.get("number").toString());
+           StringBuilder str = new StringBuilder(userObject.getName());
+           str.insert(1, NBSP);
+          return str.toString() + ":" + number + ". ";
+	}
+
 }

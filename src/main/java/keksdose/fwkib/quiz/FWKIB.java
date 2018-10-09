@@ -94,9 +94,19 @@ public class FWKIB extends ListenerAdapter {
 
         }
 
-        if (event.getMessage().equals("#stats")) {
-            event.getChannel().send().message(new MongoDB().getStats());
-            return;
+        if (event.getMessage().startsWith("#stats")) {
+            List<String> splitter = Splitter.on("#stats").splitToList(event.getMessage());
+            String username = splitter.size() == 2 ? splitter.get(1).trim() : "";
+            System.out.println(username);
+            if(username.isEmpty()){
+                event.getChannel().send().message(new MongoDB().getStats());
+                return;
+            }
+            else {
+                event.getChannel().send().message(new MongoDB().getStats(username));
+
+                return;
+            }
 
         }
         if (event.getMessage().startsWith("#mensa")) {
