@@ -3,6 +3,7 @@ package keksdose.fwkib.quiz;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -110,16 +111,22 @@ public class FWKIB extends ListenerAdapter {
             }
 
         }
-        if (event.getMessage().startsWith("#mensa")) {
+/*        if (event.getMessage().startsWith("#mensa")) {
             List<String> splitter = Splitter.on("#mensa").splitToList(event.getMessage());
             String date = splitter.size() == 2 ? splitter.get(1) : "";
             event.getChannel().send().message("-mensa " + date);
             return;
         }
+  */
         if(event.getMessage().equals("#mongo")){
             event.getChannel().send().message("https://cloud.mongodb.com/freemonitoring/cluster/Q24YNZRNFJX5ZOHC7VAIMGNMHTA2WKSG");
             return;
         }
+        if(event.getMessage().equals("#uuid")){
+            event.getChannel().send().message(UUID.randomUUID().toString());
+            return;
+        }
+
         if (event.getMessage().contains("secs") && event.getUser().getNick().contains("broti")) {
 
             ExecutorService service = Executors.newSingleThreadExecutor();

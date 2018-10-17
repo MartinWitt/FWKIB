@@ -20,7 +20,7 @@ public class BotStart implements Runnable {
     @Override
     public void run() {
 
-        Configuration<PircBotX> config = new Configuration.Builder().setName("fwkib" + UUID.randomUUID())
+        Configuration<PircBotX> config = new Configuration.Builder().setName("fwkib")
         .addListener(new FWKIB()).setServer("irc.freenode.net", 7000).setAutoNickChange(true).setSocketFactory(new UtilSSLSocketFactory().trustAllCertificates())
         .addAutoJoinChannel(channel).setAutoReconnect(true).buildConfiguration();
 
