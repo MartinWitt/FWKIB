@@ -1,8 +1,13 @@
 package keksdose.fwkib.quiz;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -12,8 +17,12 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
 
 import com.google.common.collect.Multimap;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 import com.mongodb.DBObject;
 
+import org.apache.commons.codec.Charsets;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 
@@ -25,7 +34,9 @@ public class FWKIB extends ListenerAdapter {
 
     private AtomicBoolean bool = new AtomicBoolean(false);
     private Multimap<String, String> answers = ArrayListMultimap.create();
-    //TODO Quiz etc. In Klassen machen und in ne Map putten. CleanUp das hier nur noch einzelne Methoden mit if stehen und nicht mehr der Code.
+
+    // TODO Quiz etc. In Klassen machen und in ne Map putten. CleanUp das hier nur
+    // noch einzelne Methoden mit if stehen und nicht mehr der Code.
     @Override
     public void onMessage(MessageEvent event) throws Exception {
         if (event.getMessage().startsWith("#quiz")) {
@@ -42,10 +53,10 @@ public class FWKIB extends ListenerAdapter {
 
             DBObject o = new MongoDB().getQuestion(topic);
             System.out.println(String.valueOf(o));
-            if(o == null){
+            if (o == null) {
                 return;
             }
-            
+
             Question question = new QuestionWithAnswer(o);
             answers.clear();
             event.getChannel().send().message(question.getQuestion());
@@ -99,60 +110,101 @@ public class FWKIB extends ListenerAdapter {
             List<String> splitter = Splitter.on("#stats").splitToList(event.getMessage());
             String username = splitter.size() == 2 ? splitter.get(1).trim() : "";
             System.out.println(username);
-            if(username.isEmpty()){
+            if (username.isEmpty()) {
                 event.getChannel().send().message(new MongoDB().getStats());
                 return;
-            }
-            else {
+            } else {
                 event.getChannel().send().message(new MongoDB().getStats(username));
 
                 return;
             }
 
         }
-        if (event.getMessage().startsWith("#mensa")) {
-            List<String> splitter = Splitter.on("#mensa").splitToList(event.getMessage());
-            String date = splitter.size() == 2 ? splitter.get(1) : "";
-            event.getChannel().send().message("-mensa " + date);
+        /*
+         * if (event.getMessage().startsWith("#mensa")) { List<String> splitter =
+         * Splitter.on("#mensa").splitToList(event.getMessage()); String date =
+         * splitter.size() == 2 ? splitter.get(1) : "";
+         * event.getChannel().send().message("-mensa " + date); return; }
+         */
+        if (event.getMessage().equals("#mongo")) {
+            event.getChannel().send()
+                    .message("https://cloud.mongodb.com/freemonitoring/cluster/Q24YNZRNFJX5ZOHC7VAIMGNMHTA2WKSG");
             return;
         }
-        if(event.getMessage().equals("#mongo")){
-            event.getChannel().send().message("https://cloud.mongodb.com/freemonitoring/cluster/Q24YNZRNFJX5ZOHC7VAIMGNMHTA2WKSG");
+        if (event.getMessage().equals("#security")) {
+            event.getChannel().send().message("use:uuid rsagen-pub rsagen-pri pwgen and hash");
             return;
         }
-        if (event.getMessage().contains("secs") && event.getUser().getNick().contains("broti")) {
+        if (event.getMessage().equals("#uuid")) {
+            event.getChannel().send().message(UUID.randomUUID().toString());
+            return;
+        }
+        if (event.getMessage().equals("#rsagen-pub")) {
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+            kpg.initialize(2048); KeyPair kp = kpg.generateKeyPair();
+            event.getChannel().send().message(Base64.getMimeEncoder().encodeToString( kp.getPublic().getEncoded()));
+
+            return;
+        }
+        if (event.getMessage().equals("#rsagen-pri")) {
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+            kpg.initialize(2048); KeyPair kp = kpg.generateKeyPair();
+            event.getChannel().send().message(Base64.getMimeEncoder().encodeToString( kp.getPrivate().getEncoded()));
+            return;
+        }
+        if (event.getMessage().equals("#pwgen")) {
+            char[] possibleCharacters = (new String(
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?"))
+                            .toCharArray();
+            String randomStr = RandomStringUtils.random(50, 20, possibleCharacters.length - 1, false, false,
+                    possibleCharacters, new SecureRandom());
+
+            event.getChannel().send().message("Here is your secure pw: " + randomStr);
+            return;
+        }
+
+        
+        if (event.getMessage().startsWith("#hash")) {
+            HashFunction hf = Hashing.murmur3_128();
+            event.getChannel().send()
+                    .message(hf.newHasher().putString(event.getMessage(), Charsets.UTF_8).hash().toString());
+        }
+
+        if (event.getMessage().contains("secs") && event.getUser().getNick().equals("broti")) {
 
             ExecutorService service = Executors.newSingleThreadExecutor();
             String message = event.getMessage();
 
-
-            service.submit(new Runnable(){
+            service.submit(new Runnable() {
 
                 @Override
                 public void run() {
                     try {
                         int index = message.indexOf("secs");
-                        int wait =Integer.parseInt((message.subSequence(index-3, index).toString()).trim());
-                        TimeUnit.SECONDS.sleep(new Random().nextInt(wait/2)+wait/2);
+                        int wait = Integer.parseInt((message.subSequence(index - 3, index).toString()).trim());
+                        TimeUnit.SECONDS.sleep(new Random().nextInt(wait / 2) + wait / 2);
                     } catch (InterruptedException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                     char letter = 'a';
-                    int num =0;
-                    if(message.contains("b) ")) num++;
-                    if(message.contains("c) ")) num++;
-                    if(message.contains("d) ")) num++;
-                    if(num == 0) return;
-                    num=new Random().nextInt(num);
-                    letter=(char) (letter+num);
+                    int num = 0;
+                    if (message.contains("b) "))
+                        num++;
+                    if (message.contains("c) "))
+                        num++;
+                    if (message.contains("d) "))
+                        num++;
+                    if (num == 0)
+                        return;
+                    num = new Random().nextInt(num);
+                    letter = (char) (letter + num);
                     event.getChannel().send().message(String.valueOf(letter));
                 }
 
             });
             return;
         }
-        
 
         if (bool.get() && !answers.containsValue(event.getUser().getNick())
                 && !event.getUser().equals(event.getBot().getUserBot())) {
