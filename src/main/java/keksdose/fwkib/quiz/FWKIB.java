@@ -1,8 +1,13 @@
 package keksdose.fwkib.quiz;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.OutputStream;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -120,13 +125,7 @@ public class FWKIB extends ListenerAdapter {
             }
 
         }
-        /*
-         * if (event.getMessage().startsWith("#mensa")) { List<String> splitter =
-         * Splitter.on("#mensa").splitToList(event.getMessage()); String date =
-         * splitter.size() == 2 ? splitter.get(1) : "";
-         * event.getChannel().send().message("-mensa " + date); return; }
-         */
-        if (event.getMessage().equals("#mongo")) {
+     if (event.getMessage().equals("#mongo")) {
             event.getChannel().send()
                     .message("https://cloud.mongodb.com/freemonitoring/cluster/Q24YNZRNFJX5ZOHC7VAIMGNMHTA2WKSG");
             return;
@@ -141,15 +140,38 @@ public class FWKIB extends ListenerAdapter {
         }
         if (event.getMessage().equals("#rsagen-pub")) {
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-            kpg.initialize(2048); KeyPair kp = kpg.generateKeyPair();
-            event.getChannel().send().message(Base64.getMimeEncoder().encodeToString( kp.getPublic().getEncoded()));
-
+            kpg.initialize(2048);
+            KeyPair kp = kpg.generateKeyPair();
+            RSAPublicKey rsaPublicKey = (RSAPublicKey) kp.getPublic();
+            ByteArrayOutputStream byteOs = new ByteArrayOutputStream();
+            DataOutputStream dos = new DataOutputStream(byteOs);
+            dos.writeInt("ssh-rsa".getBytes().length);
+            dos.write("ssh-rsa".getBytes());
+            dos.writeInt(rsaPublicKey.getPublicExponent().toByteArray().length);
+            dos.write(rsaPublicKey.getPublicExponent().toByteArray());
+            dos.writeInt(rsaPublicKey.getModulus().toByteArray().length);
+            dos.write(rsaPublicKey.getModulus().toByteArray());
+            String enc = Base64.getEncoder().encodeToString(byteOs.toByteArray());
+            event.getChannel().send().message( "ssh-rsa " + enc + " " +"made by fwkib");
             return;
         }
         if (event.getMessage().equals("#rsagen-pri")) {
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-            kpg.initialize(2048); KeyPair kp = kpg.generateKeyPair();
-            event.getChannel().send().message(Base64.getMimeEncoder().encodeToString( kp.getPrivate().getEncoded()));
+            kpg.initialize(2048);
+            KeyPair kp = kpg.generateKeyPair();
+            RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) kp.getPrivate();
+            ByteArrayOutputStream byteOs = new ByteArrayOutputStream();
+            DataOutputStream dos = new DataOutputStream(byteOs);
+            dos.writeInt("ssh-rsa".getBytes().length);
+            dos.write("ssh-rsa".getBytes());
+            dos.writeInt(rsaPrivateKey.getPrivateExponent().toByteArray().length);
+            dos.write(rsaPrivateKey.getPrivateExponent().toByteArray());
+            dos.writeInt(rsaPrivateKey.getModulus().toByteArray().length);
+            dos.write(rsaPrivateKey.getModulus().toByteArray());
+            String enc = Base64.getEncoder().encodeToString(byteOs.toByteArray());
+            event.getChannel().send().message("-----BEGIN RSA PRIVATE KEY-----");
+            event.getChannel().send().message(enc);
+            event.getChannel().send().message("-----END RSA PRIVATE KEY-----");
             return;
         }
         if (event.getMessage().equals("#pwgen")) {
@@ -162,12 +184,32 @@ public class FWKIB extends ListenerAdapter {
             event.getChannel().send().message("Here is your secure pw: " + randomStr);
             return;
         }
+        if(event.getMessage().startsWith("#haskell") ){
+            String haskellString = event.getMessage().length()>8?event.getMessage().substring(8):"";
+            if(haskellString.isBlank()){
+                return;
+            }
+            //java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec("mueval --expression " + haskellString ).getInputStream()).useDelimiter("\\A");
+            java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec("mueval -E -e" +haskellString ).getInputStream()).useDelimiter("\\A");
+            String output=s.hasNext() ? s.next() : "";
+            System.out.println("mueval " +haskellString);  
+            System.out.println(output);  
+
+            event.getChannel().send().message(output);
+            return;
+
+
+        }
 
         
         if (event.getMessage().startsWith("#hash")) {
-            HashFunction hf = Hashing.murmur3_128();
+            HashFunction hf = Hashing.sha512();
+            String toHash = event.getMessage().length()>4?event.getMessage().substring(5):"";
             event.getChannel().send()
-                    .message(hf.newHasher().putString(event.getMessage(), Charsets.UTF_8).hash().toString());
+                    .message(hf.newHasher().putString(toHash, Charsets.UTF_8).hash().toString());
+        }
+        if (event.getMessage().toLowerCase().startsWith("keksbot,")||event.getMessage().toLowerCase().startsWith("keksbot:")) {
+            event.getChannel().send().message("^Keksdose");
         }
 
         if (event.getMessage().contains("secs") && event.getUser().getNick().equals("broti")) {

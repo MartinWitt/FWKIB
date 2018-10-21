@@ -28,6 +28,7 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
 
 
+
     compile 'org.mongodb:mongo-java-driver:2.12.3'
 
 }
