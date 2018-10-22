@@ -1,4 +1,6 @@
 package keksdose.fwkib;
+
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -13,6 +15,8 @@ public class Main {
         //System.out.print("Enter channel:");
         //String input = System.console().readLine();
         service.execute(new BotStart("#kitinfo")); 
+
+
             
     }
     

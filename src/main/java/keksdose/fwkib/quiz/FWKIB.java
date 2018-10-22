@@ -3,17 +3,16 @@ package keksdose.fwkib.quiz;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
 import java.security.SecureRandom;
-import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -31,6 +30,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
+import com.google.common.net.InternetDomainName;
 import com.mongodb.DBObject;
 
 import org.apache.commons.codec.Charsets;
@@ -41,6 +41,11 @@ import org.pircbotx.hooks.events.MessageEvent;
 import keksdose.fwkib.quiz.DB.MongoDB;
 import keksdose.fwkib.quiz.model.Question;
 import keksdose.fwkib.quiz.model.QuestionWithAnswer;
+
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+
 
 public class FWKIB extends ListenerAdapter {
 
@@ -166,18 +171,14 @@ public class FWKIB extends ListenerAdapter {
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
             kpg.initialize(2048);
             KeyPair kp = kpg.generateKeyPair();
-            RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) kp.getPrivate();
-            ByteArrayOutputStream byteOs = new ByteArrayOutputStream();
-            DataOutputStream dos = new DataOutputStream(byteOs);
-            dos.writeInt("ssh-rsa".getBytes().length);
-            dos.write("ssh-rsa".getBytes());
-            dos.writeInt(rsaPrivateKey.getPrivateExponent().toByteArray().length);
-            dos.write(rsaPrivateKey.getPrivateExponent().toByteArray());
-            dos.writeInt(rsaPrivateKey.getModulus().toByteArray().length);
-            dos.write(rsaPrivateKey.getModulus().toByteArray());
-            String enc = Base64.getEncoder().encodeToString(byteOs.toByteArray());
+            PrivateKey priv = kp.getPrivate();
+            byte[] privBytes = priv.getEncoded();            
+            PrivateKeyInfo pkInfo = PrivateKeyInfo.getInstance(privBytes);
+            ASN1Encodable encodable = pkInfo.parsePrivateKey();
+            ASN1Primitive primitive = encodable.toASN1Primitive();
+            byte[] privateKeyPKCS1 = primitive.getEncoded();
             event.getChannel().send().message("-----BEGIN RSA PRIVATE KEY-----");
-            event.getChannel().send().message(enc);
+            event.getChannel().send().message(Base64.getEncoder().encodeToString(privateKeyPKCS1));
             event.getChannel().send().message("-----END RSA PRIVATE KEY-----");
             return;
         }
@@ -197,8 +198,6 @@ public class FWKIB extends ListenerAdapter {
                 return;
             }
             String haskellString = getContent(url);
-            haskellString.replace("-t", "");
-            haskellString.replace("-e", "");
             String[] args = { "mueval", "-E", "-e", haskellString };
             java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec(args).getInputStream())
                     .useDelimiter("\\A");
@@ -213,11 +212,9 @@ public class FWKIB extends ListenerAdapter {
             if (haskellString.isEmpty()) {
                 return;
             }
-            haskellString.replace("-t", "");
-            haskellString.replace("-e", "");
+
             String[] args = { "mueval", "-E", "-e", haskellString };
-            java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec(args).getInputStream())
-                    .useDelimiter("\\A");
+            java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec(args).getInputStream()).useDelimiter("\\A");
             String output = s.hasNext() ? s.next() : "";
 
             event.getChannel().send().message(output);
@@ -282,7 +279,7 @@ public class FWKIB extends ListenerAdapter {
 
     private String getContent(String adress) {
         URL url;
-        if (!adress.trim().startsWith("https://pastebin.com")) {
+        if (!InternetDomainName.from(adress).topPrivateDomain().toString().equals("pastebin.com")) {
             return "";
         }
         try {
