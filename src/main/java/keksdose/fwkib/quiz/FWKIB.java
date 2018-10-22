@@ -1,8 +1,15 @@
 package keksdose.fwkib.quiz;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
@@ -125,7 +132,7 @@ public class FWKIB extends ListenerAdapter {
             }
 
         }
-     if (event.getMessage().equals("#mongo")) {
+        if (event.getMessage().equals("#mongo")) {
             event.getChannel().send()
                     .message("https://cloud.mongodb.com/freemonitoring/cluster/Q24YNZRNFJX5ZOHC7VAIMGNMHTA2WKSG");
             return;
@@ -152,7 +159,7 @@ public class FWKIB extends ListenerAdapter {
             dos.writeInt(rsaPublicKey.getModulus().toByteArray().length);
             dos.write(rsaPublicKey.getModulus().toByteArray());
             String enc = Base64.getEncoder().encodeToString(byteOs.toByteArray());
-            event.getChannel().send().message( "ssh-rsa " + enc + " " +"made by fwkib");
+            event.getChannel().send().message("ssh-rsa " + enc + " " + "made by fwkib");
             return;
         }
         if (event.getMessage().equals("#rsagen-pri")) {
@@ -184,31 +191,47 @@ public class FWKIB extends ListenerAdapter {
             event.getChannel().send().message("Here is your secure pw: " + randomStr);
             return;
         }
-        if(event.getMessage().startsWith("#haskell") ){
-            String haskellString = event.getMessage().length()>8?event.getMessage().substring(8):"";
-            if(haskellString.isBlank()){
+        if (event.getMessage().startsWith("#haskell-url")) {
+            String url = event.getMessage().length() > 12 ? event.getMessage().substring(12) : "";
+            if (url.isEmpty()) {
                 return;
             }
-            //java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec("mueval --expression " + haskellString ).getInputStream()).useDelimiter("\\A");
-            java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec("mueval -E -e" +haskellString ).getInputStream()).useDelimiter("\\A");
-            String output=s.hasNext() ? s.next() : "";
-            System.out.println("mueval " +haskellString);  
-            System.out.println(output);  
+            String haskellString = getContent(url);
+            haskellString.replace("-t", "");
+            haskellString.replace("-e", "");
+            String[] args = { "mueval", "-E", "-e", haskellString };
+            java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec(args).getInputStream())
+                    .useDelimiter("\\A");
+            String output = s.hasNext() ? s.next() : "";
 
             event.getChannel().send().message(output);
+            s.close();
             return;
+        }
+        if (event.getMessage().startsWith("#haskell")) {
+            String haskellString = event.getMessage().length() > 8 ? event.getMessage().substring(8) : "";
+            if (haskellString.isEmpty()) {
+                return;
+            }
+            haskellString.replace("-t", "");
+            haskellString.replace("-e", "");
+            String[] args = { "mueval", "-E", "-e", haskellString };
+            java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec(args).getInputStream())
+                    .useDelimiter("\\A");
+            String output = s.hasNext() ? s.next() : "";
 
-
+            event.getChannel().send().message(output);
+            s.close();
+            return;
         }
 
-        
         if (event.getMessage().startsWith("#hash")) {
             HashFunction hf = Hashing.sha512();
-            String toHash = event.getMessage().length()>4?event.getMessage().substring(5):"";
-            event.getChannel().send()
-                    .message(hf.newHasher().putString(toHash, Charsets.UTF_8).hash().toString());
+            String toHash = event.getMessage().length() > 4 ? event.getMessage().substring(5) : "";
+            event.getChannel().send().message(hf.newHasher().putString(toHash, Charsets.UTF_8).hash().toString());
         }
-        if (event.getMessage().toLowerCase().startsWith("keksbot,")||event.getMessage().toLowerCase().startsWith("keksbot:")) {
+        if (event.getMessage().toLowerCase().startsWith("keksbot,")
+                || event.getMessage().toLowerCase().startsWith("keksbot:")) {
             event.getChannel().send().message("^Keksdose");
         }
 
@@ -257,4 +280,37 @@ public class FWKIB extends ListenerAdapter {
 
     }
 
+    private String getContent(String adress) {
+        URL url;
+        if (!adress.trim().startsWith("https://pastebin.com")) {
+            return "";
+        }
+        try {
+            // get URL content
+
+            url = new URL(adress);
+            System.out.println(String.valueOf(url));
+            URLConnection conn = url.openConnection();
+            conn.setReadTimeout(5000);
+
+            // open the stream and put it into BufferedReader
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            String inputLine;
+            String haskell = "";
+            while ((inputLine = br.readLine()) != null) {
+                haskell += inputLine + "\n";
+            }
+            br.close();
+            System.out.println(haskell);
+            return haskell;
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
 }
