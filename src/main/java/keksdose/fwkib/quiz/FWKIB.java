@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.SequenceInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -18,11 +20,13 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
@@ -51,6 +55,8 @@ public class FWKIB extends ListenerAdapter {
 
     private AtomicBoolean bool = new AtomicBoolean(false);
     private Multimap<String, String> answers = ArrayListMultimap.create();
+    private static String gitHubhome = "https://github.com/MartinWitt/FWKIB";
+    private static String quote = "Any fool can write code that a computer can understand:  ";
 
     // TODO Quiz etc. In Klassen machen und in ne Map putten. CleanUp das hier nur
     // noch einzelne Methoden mit if stehen und nicht mehr der Code.
@@ -171,14 +177,15 @@ public class FWKIB extends ListenerAdapter {
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
             kpg.initialize(2048);
             KeyPair kp = kpg.generateKeyPair();
+            
             PrivateKey priv = kp.getPrivate();
-            byte[] privBytes = priv.getEncoded();            
-            PrivateKeyInfo pkInfo = PrivateKeyInfo.getInstance(privBytes);
+            byte[] privBytes = priv.getEncoded();    
+     /*       PrivateKeyInfo pkInfo = PrivateKeyInfo.getInstance(privBytes);
             ASN1Encodable encodable = pkInfo.parsePrivateKey();
             ASN1Primitive primitive = encodable.toASN1Primitive();
             byte[] privateKeyPKCS1 = primitive.getEncoded();
-            event.getChannel().send().message("-----BEGIN RSA PRIVATE KEY-----");
-            event.getChannel().send().message(Base64.getEncoder().encodeToString(privateKeyPKCS1));
+       */     event.getChannel().send().message("-----BEGIN RSA PRIVATE KEY-----");
+            event.getChannel().send().message(Base64.getEncoder().encodeToString(privBytes));
             event.getChannel().send().message("-----END RSA PRIVATE KEY-----");
             return;
         }
@@ -214,11 +221,23 @@ public class FWKIB extends ListenerAdapter {
             }
 
             String[] args = { "mueval", "-E", "-e", haskellString };
-            java.util.Scanner s = new java.util.Scanner(Runtime.getRuntime().exec(args).getInputStream()).useDelimiter("\\A");
+            Process p = Runtime.getRuntime().exec(args);
+            SequenceInputStream test = new SequenceInputStream(p.getErrorStream(), p.getInputStream());
+            p.waitFor();
+            Scanner s = new Scanner(test);
             String output = s.hasNext() ? s.next() : "";
 
             event.getChannel().send().message(output);
             s.close();
+            return;
+        }
+        if (event.getMessage().startsWith("#brati")) {
+            String.valueOf(new MongoDB().getBrati());
+            event.getChannel().send().message(String.valueOf(new MongoDB().getBrati()));
+            return;
+        }
+        if (event.getMessage().startsWith("#home")) {
+            event.getChannel().send().message(quote+gitHubhome);
             return;
         }
 
@@ -226,10 +245,12 @@ public class FWKIB extends ListenerAdapter {
             HashFunction hf = Hashing.sha512();
             String toHash = event.getMessage().length() > 4 ? event.getMessage().substring(5) : "";
             event.getChannel().send().message(hf.newHasher().putString(toHash, Charsets.UTF_8).hash().toString());
+            return;
         }
         if (event.getMessage().toLowerCase().startsWith("keksbot,")
                 || event.getMessage().toLowerCase().startsWith("keksbot:")) {
-            event.getChannel().send().message("^Keksdose");
+            event.getChannel().send().message("^ Keksdose");
+            return;
         }
 
         if (event.getMessage().contains("secs") && event.getUser().getNick().equals("broti")) {

@@ -12,6 +12,8 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.util.JSON;
+
 
 import keksdose.fwkib.quiz.model.User;
 
@@ -121,6 +123,15 @@ public class MongoDB {
            StringBuilder str = new StringBuilder(userObject.getName());
            str.insert(1, NBSP);
           return str.toString() + ":" + number + ". ";
-	}
+    }
+    public String getBrati(){
+        DBCollection brati = mongoClient.getDB(dbName).getCollection("brati");
+        Random random = new Random();
+
+       DBObject json = brati.find().limit(-1).skip(random.nextInt((int) brati.count())).next();
+       String s=(String) json.get("brati");
+       return  String.valueOf(s);
+         
+    }
 
 }
