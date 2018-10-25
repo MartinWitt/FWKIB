@@ -1,0 +1,50 @@
+package keksdose.fwkib.modules;
+
+
+
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import org.pircbotx.hooks.events.MessageEvent;
+
+public class BrotiQuiz implements Command {
+
+    @Override
+    public String apply(MessageEvent event) {
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        String message = event.getMessage();
+
+        service.submit(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    int index = message.indexOf("secs");
+                    int wait = Integer.parseInt((message.subSequence(index - 3, index).toString()).trim());
+                    TimeUnit.SECONDS.sleep(new Random().nextInt(wait / 2) + wait / 2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                char letter = 'a';
+                int num = 0;
+                if (message.contains("b) "))
+                    num++;
+                if (message.contains("c) "))
+                    num++;
+                if (message.contains("d) "))
+                    num++;
+                if (num == 0)
+                    return;
+                num = new Random().nextInt(num);
+                letter = (char) (letter + num);
+                event.getChannel().send().message(String.valueOf(letter));
+            }
+
+        });
+        return "yeah punkte";
+
+    }
+
+}
