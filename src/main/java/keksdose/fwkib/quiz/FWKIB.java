@@ -4,13 +4,11 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.SequenceInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.charset.Charset;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -46,9 +44,7 @@ import keksdose.fwkib.quiz.DB.MongoDB;
 import keksdose.fwkib.quiz.model.Question;
 import keksdose.fwkib.quiz.model.QuestionWithAnswer;
 
-import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+
 
 
 public class FWKIB extends ListenerAdapter {
@@ -57,6 +53,7 @@ public class FWKIB extends ListenerAdapter {
     private Multimap<String, String> answers = ArrayListMultimap.create();
     private static String gitHubhome = "https://github.com/MartinWitt/FWKIB";
     private static String quote = "Any fool can write code that a computer can understand:  ";
+    private List<String> answerList = null;
 
     // TODO Quiz etc. In Klassen machen und in ne Map putten. CleanUp das hier nur
     // noch einzelne Methoden mit if stehen und nicht mehr der Code.
@@ -67,7 +64,6 @@ public class FWKIB extends ListenerAdapter {
                 event.getChannel().send().message("quiz running");
                 return;
             }
-            ExecutorService exService = Executors.newSingleThreadExecutor();
 
             List<String> splitter = Splitter.on("#quiz").splitToList(event.getMessage());
             String topic = splitter.size() == 2 ? splitter.get(1).trim() : "info";
@@ -82,25 +78,24 @@ public class FWKIB extends ListenerAdapter {
 
             Question question = new QuestionWithAnswer(o);
             answers.clear();
+
             event.getChannel().send().message(question.getQuestion());
-            exService.submit(new Runnable() {
+            answerList = question.getAnswerList();
+            Executors.newSingleThreadExecutor().submit(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         bool.set(true);
 
-                        // System.out.println("mache quiz");
                         TimeUnit.SECONDS.sleep(question.getTime());
                         String answersString = "";
                         for (String var : question.getAnswerList()) {
                             answersString += var + " ";
                         }
-                        // System.out.println(answersString);
                         event.getChannel().send().message("richtig ist: " + answersString);
                         List<String> correctPersons = new ArrayList<>();
                         question.getAnswerList()
                                 .forEach((element) -> correctPersons.addAll(answers.get(element.toLowerCase())));
-                        // System.out.println(String.valueOf(correctPersons.size()));
                         correctPersons.forEach(v -> System.out.println(v));
                         new MongoDB().updateStats(correctPersons);
                         event.getChannel().send().message(correctPersons.size() + " were correct of " + answers.size());
@@ -289,10 +284,14 @@ public class FWKIB extends ListenerAdapter {
             return;
         }
 
-        if (bool.get() && !answers.containsValue(event.getUser().getNick())
-                && !event.getUser().equals(event.getBot().getUserBot())) {
-
-            answers.put(event.getMessage().toLowerCase(), event.getUser().getNick());
+        if (bool.get() && !event.getUser().equals(event.getBot().getUserBot())) {
+                    System.out.println(String.valueOf(answerList));
+                    if(answerList!= null && answerList.contains(event.getMessage().toLowerCase())) {
+                        
+                        answers.entries().removeIf(v->v.getValue().equals(event.getUser().getNick()));
+                    
+                    answers.put(event.getMessage().toLowerCase(), event.getUser().getNick());
+                    }
 
         }
 
