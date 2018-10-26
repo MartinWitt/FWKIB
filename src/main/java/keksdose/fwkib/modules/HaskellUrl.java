@@ -14,8 +14,8 @@ import org.pircbotx.hooks.events.MessageEvent;
 public class HaskellUrl implements Command {
 
     @Override
-    public String apply(MessageEvent event) {
-        String url = event.getMessage().length() > 12 ? event.getMessage().substring(12) : "";
+    public String apply(String message) {
+        String url = message.length() > 12 ? message.substring(12) : "";
         if (url.isEmpty()) {
             return "";
         }

@@ -7,7 +7,7 @@ import keksdose.fwkib.quiz.DB.MongoDB;
 public class Brati implements Command {
 
     @Override
-    public String apply(MessageEvent event) {
+    public String apply(String message) {
         return String.valueOf(new MongoDB().getBrati());
        
 

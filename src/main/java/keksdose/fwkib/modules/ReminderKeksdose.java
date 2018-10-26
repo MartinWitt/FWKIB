@@ -8,7 +8,7 @@ import org.pircbotx.hooks.events.MessageEvent;
 public class ReminderKeksdose implements Command {
 
     @Override
-    public String apply(MessageEvent event) {
+    public String apply(String message) {
         return "^ Keksdose";
 
     }

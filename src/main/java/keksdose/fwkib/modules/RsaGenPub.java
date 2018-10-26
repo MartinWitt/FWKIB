@@ -16,7 +16,7 @@ import org.pircbotx.hooks.events.MessageEvent;
 public class RsaGenPub implements Command {
 
     @Override
-	public String apply(MessageEvent event) {
+	public String apply(String message) {
         KeyPairGenerator kpg;
         try {
             kpg = KeyPairGenerator.getInstance("RSA");

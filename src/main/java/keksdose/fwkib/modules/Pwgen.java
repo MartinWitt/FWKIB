@@ -9,7 +9,7 @@ import org.pircbotx.hooks.events.MessageEvent;
 public class Pwgen implements Command {
 
 	@Override
-	public String apply(MessageEvent event) {
+	public String apply(String message) {
 		char[] possibleCharacters = (new String(
 				"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~`!@#$%^&*()-_=+[{]}\\|;:\'\",<.>/?"))
 						.toCharArray();

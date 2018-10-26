@@ -8,9 +8,9 @@ import org.pircbotx.hooks.events.MessageEvent;
 public class Haskell implements Command {
 
     @Override
-    public String apply(MessageEvent event) {
+    public String apply(String message) {
         try {
-            String haskellString = event.getMessage().length() > 8 ? event.getMessage().substring(8) : "";
+            String haskellString = message.length() > 8 ? message.substring(8) : "";
             if (haskellString.isEmpty()) {
                 return "";
             }
@@ -21,9 +21,9 @@ public class Haskell implements Command {
             p.waitFor();
             Scanner s = new Scanner(test);
             String output = s.hasNext() ? s.next() : "";
-
-            event.getChannel().send().message(output);
             s.close();
+
+            return(output);
         } catch (Exception e) {
         }
         return "";

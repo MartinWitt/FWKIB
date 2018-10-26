@@ -9,7 +9,7 @@ import org.pircbotx.hooks.events.MessageEvent;
 public class Uuid implements Command{
 
     @Override
-    public String apply(MessageEvent event) {
+    public String apply(String message) {
         return UUID.randomUUID().toString();
 
     }

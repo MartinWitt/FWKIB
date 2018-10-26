@@ -9,7 +9,7 @@ public class Help implements Command {
             "pwgen", "rsagen-pri", "rsagen-pub", "security", "uuid" };
 
     @Override
-    public String apply(MessageEvent event) {
+    public String apply(String message) {
         return Arrays.toString(commands);
 
     }

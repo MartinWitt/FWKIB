@@ -19,6 +19,7 @@ import keksdose.fwkib.modules.BrotiQuiz;
 import keksdose.fwkib.modules.Hash;
 import keksdose.fwkib.modules.Haskell;
 import keksdose.fwkib.modules.HaskellUrl;
+import keksdose.fwkib.modules.Help;
 import keksdose.fwkib.modules.Home;
 import keksdose.fwkib.modules.MongoStats;
 import keksdose.fwkib.modules.Pwgen;
@@ -85,17 +86,7 @@ public class FWKIB extends ListenerAdapter {
                         event.getChannel().send().message(correctPersons.size() + " were correct of " + answers.size());
                         answers.clear();
                         bool.set(false);
-                        if (correctPersons.size() > 0) {
-                            try {
-                                TimeUnit.SECONDS.sleep(10);
-                                if (!bool.get()) {
-                                    onMessage(event);
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                // da ist rekursiv wohl kaputt
-                            }
-                        }
+
 
                     } catch (InterruptedException e) {
                         bool.set(false);
@@ -107,58 +98,65 @@ public class FWKIB extends ListenerAdapter {
             return;
 
         }
-
+        if(event.getMessage().startsWith("#hash #pwgen")){
+            event.getChannel().send().message(new Hash().compose(new Hash()).apply(""));
+            return;
+        }
         if (event.getMessage().startsWith("#stats")) {
-            event.getChannel().send().message(new QuizStats().apply(event));
-
+            event.getChannel().send().message(new QuizStats().apply(event.getMessage()));
+            return;
+        }
+        if (event.getMessage().startsWith("#help")) {
+            event.getChannel().send().message(new Help().apply(event.getMessage()));
+            return;
         }
         if (event.getMessage().equals("#mongo")) {
-            event.getChannel().send().message(new MongoStats().apply(event));
+            event.getChannel().send().message(new MongoStats().apply(event.getMessage()));
             return;
         }
         if (event.getMessage().equals("#security")) {
-            event.getChannel().send().message(new Security().apply(event));
+            event.getChannel().send().message(new Security().apply(event.getMessage()));
             return;
         }
         if (event.getMessage().equals("#uuid")) {
-            event.getChannel().send().message(new Uuid().apply(event));
+            event.getChannel().send().message(new Uuid().apply(event.getMessage()));
             return;
         }
         if (event.getMessage().equals("#rsagen-pub")) {
-            event.getChannel().send().message(new RsaGenPub().apply(event));
+            event.getChannel().send().message(new RsaGenPub().apply(event.getMessage()));
             return;
         }
         if (event.getMessage().equals("#rsagen-pri")) {
-            event.getChannel().send().message(new RsaGenPri().apply(event));
+            event.getChannel().send().message(new RsaGenPri().apply(event.getMessage()));
             return;
         }
         if (event.getMessage().equals("#pwgen")) {
-            event.getChannel().send().message(new Pwgen().apply(event));
+            event.getChannel().send().message(new Pwgen().apply(event.getMessage()));
             return;
         }
         if (event.getMessage().startsWith("#haskell-url")) {
-            event.getChannel().send().message(new HaskellUrl().apply(event));
+            event.getChannel().send().message(new HaskellUrl().apply(event.getMessage()));
             return;
         }
         if (event.getMessage().startsWith("#haskell")) {
-            event.getChannel().send().message(new Haskell().apply(event));
+            event.getChannel().send().message(new Haskell().apply(event.getMessage()));
             return;
         }
         if (event.getMessage().startsWith("#brati")) {
-            event.getChannel().send().message(new Brati().apply(event));
+            event.getChannel().send().message(new Brati().apply(event.getMessage()));
             return;
         }
         if (event.getMessage().startsWith("#home")) {
-            event.getChannel().send().message(new Home().apply(event));
+            event.getChannel().send().message(new Home().apply(event.getMessage()));
             return;
         }
         if (event.getMessage().startsWith("#hash")) {
-            event.getChannel().send().message(new Hash().apply(event));
+            event.getChannel().send().message(new Hash().apply(event.getMessage()));
             return;
         }
         if (event.getMessage().toLowerCase().startsWith("keksbot,")
                 || event.getMessage().toLowerCase().startsWith("keksbot:")) {
-            event.getChannel().send().message(new ReminderKeksdose().apply(event));
+            event.getChannel().send().message(new ReminderKeksdose().apply(event.getMessage()));
             return;
         }
 
