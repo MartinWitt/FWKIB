@@ -28,6 +28,7 @@ import keksdose.fwkib.modules.ReminderKeksdose;
 import keksdose.fwkib.modules.RsaGenPri;
 import keksdose.fwkib.modules.RsaGenPub;
 import keksdose.fwkib.modules.Security;
+import keksdose.fwkib.modules.TvProgramm;
 import keksdose.fwkib.modules.Uuid;
 import keksdose.fwkib.quiz.DB.MongoDB;
 import keksdose.fwkib.quiz.model.Question;
@@ -98,8 +99,12 @@ public class FWKIB extends ListenerAdapter {
             return;
 
         }
+        if(event.getMessage().startsWith("#tv")){          
+            event.getChannel().send().message(new TvProgramm().apply("message"));
+            return;
+        }
         if(event.getMessage().startsWith("#hash #pwgen")){
-            event.getChannel().send().message(new Hash().compose(new Hash()).apply(""));
+            event.getChannel().send().message(new Hash().compose(new Pwgen()).apply(""));
             return;
         }
         if (event.getMessage().startsWith("#stats")) {

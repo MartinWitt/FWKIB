@@ -104,7 +104,6 @@ public class QuestionWithAnswer implements Question {
             if (option.endsWith("\"")) {
                 option = option.substring(0, option.length() - 1).trim();
             }
-            System.out.println(option);
             solutionList.add(option.toLowerCase());
             Optional.ofNullable(optionLetterMap.get(option)).ifPresent(solutionList::add);
         }
