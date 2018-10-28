@@ -3,7 +3,6 @@ package keksdose.fwkib.modules;
 import java.io.SequenceInputStream;
 import java.util.Scanner;
 
-import org.pircbotx.hooks.events.MessageEvent;
 
 public class Haskell implements Command {
 
@@ -19,7 +18,7 @@ public class Haskell implements Command {
             Process p = Runtime.getRuntime().exec(args);
             SequenceInputStream test = new SequenceInputStream(p.getErrorStream(), p.getInputStream());
             p.waitFor();
-            Scanner s = new Scanner(test);
+            Scanner s = new Scanner(test).useDelimiter("\\A");
             String output = s.hasNext() ? s.next() : "";
             s.close();
 

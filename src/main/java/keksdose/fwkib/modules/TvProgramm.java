@@ -20,12 +20,13 @@ import org.xml.sax.SAXException;
 
 public class TvProgramm implements Command {
 
-    private String link = "https://www.tvspielfilm.de/tv-programm/rss/heute2015.xml";
+    private String link2015 = "https://www.tvspielfilm.de/tv-programm/rss/heute2015.xml";
+    private String linkNow = "https://www.tvspielfilm.de/tv-programm/rss/jetzt.xml";
     private String time = "20:15";
 
     @Override
     public String apply(String message) {
-         return getContent();
+         return message.equals("now")?getContent(linkNow): getContent(link2015);
 
         /*
          * List<String> splitter = Splitter.on("#tv").splitToList(message); String
@@ -37,7 +38,7 @@ public class TvProgramm implements Command {
          */
     }
 
-    private String getContent() {
+    private String getContent(String link) {
         URL url;
         try {
             // get URL content
@@ -57,7 +58,7 @@ public class TvProgramm implements Command {
             NodeList list = doc.getElementsByTagName("title");
             System.out.println(String.valueOf(list));
             String tv ="";
-            for (int i = 0; i < list.getLength() && i<9; i++) {
+            for (int i = 2; i < list.getLength() && i<9; i++) {
                 Element element = (Element) list.item(i);
                 channel.add(String.valueOf(element.getTextContent().toString()));                           
             }

@@ -99,8 +99,12 @@ public class FWKIB extends ListenerAdapter {
             return;
 
         }
+        if(event.getMessage().startsWith("#tv-nau")|| event.getMessage().startsWith("#tv-now")){          
+            event.getChannel().send().message(new TvProgramm().apply("now"));
+            return;
+        }
         if(event.getMessage().startsWith("#tv")){          
-            event.getChannel().send().message(new TvProgramm().apply("message"));
+            event.getChannel().send().message(new TvProgramm().apply(""));
             return;
         }
         if(event.getMessage().startsWith("#hash #pwgen")){
