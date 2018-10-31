@@ -36,7 +36,15 @@ public class HaskellUrl implements Command {
 
     private String getContent(String adress) {
         URL url;
-        if (!InternetDomainName.from(adress).topPrivateDomain().toString().equals("pastebin.com")) {
+        try {
+            if(adress.startsWith("https://")){
+                adress = adress.substring(8);
+            }
+            if(adress.startsWith("http://")){
+                adress = adress.substring(7);
+            }
+
+        if (!InternetDomainName.from(adress.trim()).topPrivateDomain().toString().equals("pastebin.com")) {
             return "";
         }
         try {
@@ -64,6 +72,9 @@ public class HaskellUrl implements Command {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    } catch (Exception e) {
+        return "furchtbar, domain oder so kaputt";
+    }
 
         return "";
     }

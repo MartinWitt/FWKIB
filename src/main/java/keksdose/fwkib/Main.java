@@ -15,6 +15,8 @@ public class Main {
         //System.out.print("Enter channel:");
         //String input = System.console().readLine();
         service.execute(new BotStart("#kitinfo")); 
+        System.out.close();
+
 
 
             

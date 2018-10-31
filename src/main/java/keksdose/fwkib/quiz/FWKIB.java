@@ -1,6 +1,7 @@
 package keksdose.fwkib.quiz;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +22,7 @@ import keksdose.fwkib.modules.Haskell;
 import keksdose.fwkib.modules.HaskellUrl;
 import keksdose.fwkib.modules.Help;
 import keksdose.fwkib.modules.Home;
+import keksdose.fwkib.modules.Missspell;
 import keksdose.fwkib.modules.MongoStats;
 import keksdose.fwkib.modules.Pwgen;
 import keksdose.fwkib.modules.QuizStats;
@@ -30,6 +32,7 @@ import keksdose.fwkib.modules.RsaGenPub;
 import keksdose.fwkib.modules.Security;
 import keksdose.fwkib.modules.TvProgramm;
 import keksdose.fwkib.modules.Uuid;
+import keksdose.fwkib.modules.Youtube;
 import keksdose.fwkib.quiz.DB.MongoDB;
 import keksdose.fwkib.quiz.model.Question;
 import keksdose.fwkib.quiz.model.QuestionWithAnswer;
@@ -38,13 +41,16 @@ public class FWKIB extends ListenerAdapter {
 
     private AtomicBoolean bool = new AtomicBoolean(false);
     private Multimap<String, String> answers = ArrayListMultimap.create();
-
+    private List<String> ignore = Arrays.asList("Keksbot","Chrisliebot");
     private List<String> answerList = null;
 
     // TODO Quiz etc. In Klassen machen und in ne Map putten. CleanUp das hier nur
     // noch einzelne Methoden mit if stehen und nicht mehr der Code.
     @Override
     public void onMessage(MessageEvent event) throws Exception {
+        if(ignore.contains(event.getUser().getNick())){
+            return;
+        }
         if (event.getMessage().startsWith("#quiz")) {
             if (bool.get()) {
                 event.getChannel().send().message("quiz running");
@@ -101,6 +107,14 @@ public class FWKIB extends ListenerAdapter {
         }
         if(event.getMessage().startsWith("#tv-nau")|| event.getMessage().startsWith("#tv-now")){          
             event.getChannel().send().message(new TvProgramm().apply("now"));
+            return;
+        }
+        if(event.getMessage().startsWith("#fehler")){          
+            event.getChannel().send().message(new Missspell().apply(event.getMessage()));
+            return;
+        }
+        if(event.getMessage().startsWith("#yt")){          
+            event.getChannel().send().message(new Youtube().apply(event.getMessage()));
             return;
         }
         if(event.getMessage().startsWith("#tv")){          

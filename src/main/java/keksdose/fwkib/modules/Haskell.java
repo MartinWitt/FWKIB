@@ -16,9 +16,8 @@ public class Haskell implements Command {
 
             String[] args = { "mueval", "-E", "-e", haskellString };
             Process p = Runtime.getRuntime().exec(args);
-            SequenceInputStream test = new SequenceInputStream(p.getErrorStream(), p.getInputStream());
-            p.waitFor();
-            Scanner s = new Scanner(test).useDelimiter("\\A");
+            //SequenceInputStream test = new SequenceInputStream(p.getErrorStream(), p.getInputStream());
+            Scanner s = new Scanner(p.getInputStream()).useDelimiter("\\A");
             String output = s.hasNext() ? s.next() : "";
             s.close();
 
