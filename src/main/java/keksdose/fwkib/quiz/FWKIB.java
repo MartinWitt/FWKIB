@@ -109,8 +109,10 @@ public class FWKIB extends ListenerAdapter {
             event.getChannel().send().message(new TvProgramm().apply("now"));
             return;
         }
-        if(event.getMessage().startsWith("#fehler")){          
+        if(event.getMessage().startsWith("#fehler")){
+            System.out.println("starte function");
             event.getChannel().send().message(new Missspell().apply(event.getMessage()));
+            System.out.println("ende function");
             return;
         }
         if(event.getMessage().startsWith("#yt")){          
