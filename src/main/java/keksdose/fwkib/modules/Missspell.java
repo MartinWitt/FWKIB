@@ -29,12 +29,12 @@ public class Missspell implements Command {
                return var;
            }
         }
-        if (wordWrong.isBlank() || wordCorrect.isBlank() || wordRemember.isBlank()) {
+        if (wordWrong.isEmpty() || wordCorrect.isEmpty() || wordRemember.isEmpty()) {
             return "furchtbar du monster";
         }
 
         String var = "\"" + wordWrong + "\"" + " schreibt sich eigentlich " + "\"" + wordCorrect + "\""
-                + " , du kannst es dir merken mit " + "\"" + wordCorrect + "\"" + " wie " + "\"" + wordRemember
+                + ", du kannst es dir merken mit " + "\"" + wordCorrect + "\"" + " wie " + "\"" + wordRemember
                 + "\" .";
                 System.out.println("state save");
 

@@ -19,6 +19,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
+import com.mongodb.operation.AggregateToCollectionOperation;
 
 import org.bson.Document;
 
@@ -144,41 +145,51 @@ public class MongoDB {
     public void insertMistake(String sentence, String mistake) {
         System.out.println("starte insert");
         MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("mistake");
-        System.out.println(String.valueOf(collection));
+        if(collection.countDocuments()>1000){
+            collection.findOneAndDelete(collection.find().first());
+        }
         Document toInsert = new Document().append("mistake", mistake).append("sentence", sentence);
         collection.insertOne(toInsert);
         System.out.println("ende insert");
 
     }
+    public void removeMistake(String mistake) {
+        System.out.println("starte insert");
+        MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("mistake");
 
+        Document toInsert = new Document().append("mistake", mistake);
+        collection.findOneAndDelete(toInsert);
+
+    }
     public String getMistake(String mistake) {
         MongoDatabase database = mongoClient.getDatabase("test");
         MongoCollection<Document> collection = database.getCollection("mistake");
-        List<Document> list = new ArrayList<>();
-        /*
+        
         collection.aggregate(
             Arrays.asList(
                     Aggregates.match(Filters.eq("mistake", mistake))
-                   
             )
-            ).forEach(printBlock);;
+            ).forEach(printBlock);
       
             Random random = new SecureRandom();
+            System.out.println(list.size());
         if(list.size()!=0){
 
         String var = String.valueOf(list.get(random.nextInt(list.size())).get("sentence")); 
         list = new ArrayList<>();
-      */
-        return String.valueOf(collection.find(Filters.eq("mistake", mistake)).first().get("sentence"));
-        
-
-
-    }
+      
+        return String.valueOf(var);
+       
+   }
+   return "";
+}
 
     Block<Document> printBlock = new Block<Document>() {
         @Override
         public void apply(final Document document) {
+            System.out.println("bin im  func");
             list.add(document);
+            System.out.println(list.size());
         }
     };
 

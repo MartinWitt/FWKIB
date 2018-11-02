@@ -107,12 +107,15 @@ public class FWKIB extends ListenerAdapter {
         }
         if(event.getMessage().startsWith("#tv-nau")|| event.getMessage().startsWith("#tv-now")){          
             event.getChannel().send().message(new TvProgramm().apply("now"));
+            
             return;
         }
         if(event.getMessage().startsWith("#fehler")){
-            System.out.println("starte function");
             event.getChannel().send().message(new Missspell().apply(event.getMessage()));
-            System.out.println("ende function");
+            return;
+        }
+        if(event.getMessage().startsWith("#remove")){
+            event.getChannel().send().message(new Missspell().apply(event.getMessage()));
             return;
         }
         if(event.getMessage().startsWith("#yt")){          
