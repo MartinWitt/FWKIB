@@ -3,7 +3,6 @@ package keksdose.fwkib.modules;
 import java.io.SequenceInputStream;
 import java.util.Scanner;
 
-
 public class Haskell implements Command {
 
     @Override
@@ -16,12 +15,13 @@ public class Haskell implements Command {
 
             String[] args = { "mueval", "-E", "-e", haskellString };
             Process p = Runtime.getRuntime().exec(args);
-            //SequenceInputStream test = new SequenceInputStream(p.getErrorStream(), p.getInputStream());
+            // SequenceInputStream test = new SequenceInputStream(p.getErrorStream(),
+            // p.getInputStream());
             Scanner s = new Scanner(p.getInputStream()).useDelimiter("\\A");
             String output = s.hasNext() ? s.next() : "";
             s.close();
 
-            return(output);
+            return (output);
         } catch (Exception e) {
         }
         return "";

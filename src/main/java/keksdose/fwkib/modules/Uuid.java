@@ -1,12 +1,8 @@
 package keksdose.fwkib.modules;
 
-
-
 import java.util.UUID;
 
-import org.pircbotx.hooks.events.MessageEvent;
-
-public class Uuid implements Command{
+public class Uuid implements Command {
 
     @Override
     public String apply(String message) {

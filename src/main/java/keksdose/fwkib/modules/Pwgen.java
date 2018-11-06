@@ -4,7 +4,6 @@ package keksdose.fwkib.modules;
 import java.security.SecureRandom;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.pircbotx.hooks.events.MessageEvent;
 
 public class Pwgen implements Command {
 

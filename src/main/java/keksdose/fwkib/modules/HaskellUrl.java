@@ -37,44 +37,43 @@ public class HaskellUrl implements Command {
     private String getContent(String adress) {
         URL url;
         try {
-            if(adress.startsWith("https://")){
+            if (adress.startsWith("https://")) {
                 adress = adress.substring(8);
             }
-            if(adress.startsWith("http://")){
+            if (adress.startsWith("http://")) {
                 adress = adress.substring(7);
             }
 
-        if (!InternetDomainName.from(adress.trim()).topPrivateDomain().toString().equals("pastebin.com")) {
-            return "";
-        }
-        try {
-            // get URL content
-
-            url = new URL(adress);
-            System.out.println(String.valueOf(url));
-            URLConnection conn = url.openConnection();
-            conn.setReadTimeout(5000);
-
-            // open the stream and put it into BufferedReader
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-            String inputLine;
-            String haskell = "";
-            while ((inputLine = br.readLine()) != null) {
-                haskell += inputLine + "\n";
+            if (!InternetDomainName.from(adress.trim()).topPrivateDomain().toString().equals("pastebin.com")) {
+                return "";
             }
-            br.close();
-            System.out.println(haskell);
-            return haskell;
+            try {
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+                // get URL content
+
+                url = new URL(adress);
+                URLConnection conn = url.openConnection();
+                conn.setReadTimeout(5000);
+
+                // open the stream and put it into BufferedReader
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+                String inputLine;
+                String haskell = "";
+                while ((inputLine = br.readLine()) != null) {
+                    haskell += inputLine + "\n";
+                }
+                br.close();
+                return haskell;
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            return "furchtbar, domain oder so kaputt";
         }
-    } catch (Exception e) {
-        return "furchtbar, domain oder so kaputt";
-    }
 
         return "";
     }

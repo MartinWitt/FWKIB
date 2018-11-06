@@ -65,7 +65,6 @@ public class QuestionWithAnswer implements Question {
             if(option.isEmpty()){
                 continue;
             }
-            System.out.println(String.valueOf(option));
             if (option.startsWith("[")) {
                 option = option.substring(1).trim();
             }
@@ -88,7 +87,6 @@ public class QuestionWithAnswer implements Question {
     private void formatSolution(DBObject o) {
 
         String unformatted = o.get("answers").toString();
-        System.out.println(String.valueOf(unformatted));
 
         for (String option : unformatted.split("\" , \"")) {
             option.trim();

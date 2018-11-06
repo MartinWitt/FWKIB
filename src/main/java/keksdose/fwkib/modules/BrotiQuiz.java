@@ -1,7 +1,5 @@
 package keksdose.fwkib.modules;
 
-
-
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -10,13 +8,12 @@ import java.util.function.Function;
 
 import org.pircbotx.hooks.events.MessageEvent;
 
-public class BrotiQuiz implements Function<MessageEvent,String>  {
+public class BrotiQuiz implements Function<MessageEvent, String> {
 
     @Override
     public String apply(MessageEvent event) {
         ExecutorService service = Executors.newSingleThreadExecutor();
         String message = event.getMessage();
-       
 
         service.submit(new Runnable() {
 

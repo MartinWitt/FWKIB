@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.LogManager;
 
-
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
 import org.pircbotx.UtilSSLSocketFactory;
@@ -24,15 +23,14 @@ public class BotStart implements Runnable {
     @Override
     public void run() {
 
-        Configuration<PircBotX> config = new Configuration.Builder().setName("fwkib")
-        .addListener(new FWKIB()).setServer("irc.freenode.net", 7000).setAutoNickChange(true).setSocketFactory(new UtilSSLSocketFactory().trustAllCertificates())
-        .addAutoJoinChannel(channel).addAutoJoinChannel("#kitinfo-test").addAutoJoinChannel("#kitinfo-botnet").setAutoReconnect(true).buildConfiguration();
+        Configuration<PircBotX> config = new Configuration.Builder().setName("fwkib").addListener(new FWKIB())
+                .setServer("irc.freenode.net", 7000).setAutoNickChange(true)
+                .setSocketFactory(new UtilSSLSocketFactory().trustAllCertificates()).addAutoJoinChannel(channel)
+                .addAutoJoinChannel("#kitinfo-test").addAutoJoinChannel("#kitinfo-botnet").setAutoReconnect(true)
+                .buildConfiguration();
 
         PircBotX bot = new PircBotX(config);
-    
 
-    
-        
         try {
             bot.startBot();
         } catch (IOException e) {

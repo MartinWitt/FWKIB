@@ -1,9 +1,5 @@
 package keksdose.fwkib.modules;
 
-
-
-
-
 public class ReminderKeksdose implements Command {
 
     @Override

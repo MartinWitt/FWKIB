@@ -41,14 +41,14 @@ public class FWKIB extends ListenerAdapter {
 
     private AtomicBoolean bool = new AtomicBoolean(false);
     private Multimap<String, String> answers = ArrayListMultimap.create();
-    private List<String> ignore = Arrays.asList("Keksbot","Chrisliebot");
+    private List<String> ignore = Arrays.asList("Keksbot", "Chrisliebot");
     private List<String> answerList = null;
 
     // TODO Quiz etc. In Klassen machen und in ne Map putten. CleanUp das hier nur
     // noch einzelne Methoden mit if stehen und nicht mehr der Code.
     @Override
     public void onMessage(MessageEvent event) throws Exception {
-        if(ignore.contains(event.getUser().getNick())){
+        if (ignore.contains(event.getUser().getNick())) {
             return;
         }
         if (event.getMessage().startsWith("#quiz")) {
@@ -94,7 +94,6 @@ public class FWKIB extends ListenerAdapter {
                         answers.clear();
                         bool.set(false);
 
-
                     } catch (InterruptedException e) {
                         bool.set(false);
                         answers.clear();
@@ -105,28 +104,28 @@ public class FWKIB extends ListenerAdapter {
             return;
 
         }
-        if(event.getMessage().startsWith("#tv-nau")|| event.getMessage().startsWith("#tv-now")){          
+        if (event.getMessage().startsWith("#tv-nau") || event.getMessage().startsWith("#tv-now")) {
             event.getChannel().send().message(new TvProgramm().apply("now"));
-            
+
             return;
         }
-        if(event.getMessage().startsWith("#fehler")){
+        if (event.getMessage().startsWith("#fehler")) {
             event.getChannel().send().message(new Missspell().apply(event.getMessage()));
             return;
         }
-        if(event.getMessage().startsWith("#remove")){
+        if (event.getMessage().startsWith("#remove")) {
             event.getChannel().send().message(new Missspell().apply(event.getMessage()));
             return;
         }
-        if(event.getMessage().startsWith("#yt")){          
+        if (event.getMessage().startsWith("#yt")) {
             event.getChannel().send().message(new Youtube().apply(event.getMessage()));
             return;
         }
-        if(event.getMessage().startsWith("#tv")){          
+        if (event.getMessage().startsWith("#tv")) {
             event.getChannel().send().message(new TvProgramm().apply(""));
             return;
         }
-        if(event.getMessage().startsWith("#hash #pwgen")){
+        if (event.getMessage().startsWith("#hash #pwgen")) {
             event.getChannel().send().message(new Hash().compose(new Pwgen()).apply(""));
             return;
         }

@@ -1,11 +1,14 @@
 package keksdose.fwkib.quiz.DB;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
@@ -16,13 +19,10 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
-import com.mongodb.operation.AggregateToCollectionOperation;
 
 import org.bson.Document;
-
 
 import keksdose.fwkib.quiz.model.User;
 
@@ -33,18 +33,16 @@ public class MongoDB {
     private static MongoClient mongoClient;
     private List<Document> list = new ArrayList<>();
 
-
     public MongoDB() {
         super();
-            if (mongoClient == null) {
-                mongoClient = new MongoClient();
-            }
+        if (mongoClient == null) {
+            mongoClient = new MongoClient();
+        }
     }
 
     public DBObject getQuestion(String collection) {
         DB database = mongoClient.getDB(dbName);
         if (collection.contains(";") || collection.contains(":") || collection.contains("!")) {
-            System.out.println("nö ich behalt die DB");
             return null;
         }
         DBCollection questions = database.getCollection(collection);
@@ -69,7 +67,7 @@ public class MongoDB {
                 DBObject toInsert = new BasicDBObject("name", var).append("number", "1");
                 stats.insert(toInsert);
             } else {
-                System.out.println("update " + var);
+
                 // update wäre änderbar
                 Integer number = Integer.parseInt(search.get("number").toString());
                 number++;
@@ -143,58 +141,82 @@ public class MongoDB {
     }
 
     public void insertMistake(String sentence, String mistake) {
-        System.out.println("starte insert");
         MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("mistake");
-        if(collection.countDocuments()>1000){
+        if (collection.countDocuments() > 1000) {
             collection.findOneAndDelete(collection.find().first());
         }
         Document toInsert = new Document().append("mistake", mistake).append("sentence", sentence);
         collection.insertOne(toInsert);
-        System.out.println("ende insert");
 
     }
+
     public void removeMistake(String mistake) {
-        System.out.println("starte insert");
         MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("mistake");
 
         Document toInsert = new Document().append("mistake", mistake);
         collection.findOneAndDelete(toInsert);
 
     }
+
     public String getMistake(String mistake) {
         MongoDatabase database = mongoClient.getDatabase("test");
         MongoCollection<Document> collection = database.getCollection("mistake");
-        
-        collection.aggregate(
-            Arrays.asList(
-                    Aggregates.match(Filters.eq("mistake", mistake))
-            )
-            ).forEach(printBlock);
-      
-            Random random = new SecureRandom();
-            System.out.println(list.size());
-        if(list.size()!=0){
 
-        String var = String.valueOf(list.get(random.nextInt(list.size())).get("sentence")); 
-        list = new ArrayList<>();
-      
-        return String.valueOf(var);
-       
-   }
-   return "";
-}
+        collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("mistake", mistake)))).forEach(printBlock);
+
+        Random random = new SecureRandom();
+        if (list.size() != 0) {
+
+            String var = String.valueOf(list.get(random.nextInt(list.size())).get("sentence"));
+            list = new ArrayList<>();
+
+            return String.valueOf(var);
+
+        }
+        return "";
+    }
+
+    public String getYtLink(int n) {
+        MongoDatabase database = mongoClient.getDatabase("test");
+        MongoCollection<Document> collection = database.getCollection("youtube");
+        if (n == 0) {
+            Document doc = collection.find().sort(new BasicDBObject().append("time", -1)).first();
+
+            if (doc != null) {
+                collection.deleteOne(doc);
+                return String.valueOf(doc.get("link"));
+
+            } else {
+                return "stack leer";
+            }
+
+        } else {
+            Document doc = collection.find().sort(new BasicDBObject().append("time", -1)).skip(n).first();
+            if (doc != null) {
+                // collection.deleteOne(doc);
+                return String.valueOf(doc.get("link"));
+
+            } else {
+                return "nicht im stack vorhanden.Max : " + collection.estimatedDocumentCount();
+            }
+        }
+    }
+
+    public void insertLink(String link) {
+        MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("youtube");
+        if (collection.countDocuments() > 1000) {
+            collection.findOneAndDelete(collection.find().first());
+        }
+        Document toInsert = new Document().append("link", link).append("uuid", UUID.randomUUID()).append("time",
+                LocalTime.now());
+        collection.insertOne(toInsert);
+    }
 
     Block<Document> printBlock = new Block<Document>() {
         @Override
         public void apply(final Document document) {
-            System.out.println("bin im  func");
             list.add(document);
-            System.out.println(list.size());
         }
     };
-
-
-
-    
 
 }

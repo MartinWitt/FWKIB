@@ -6,8 +6,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.util.Base64;
 
-import org.pircbotx.hooks.events.MessageEvent;
-
 public class RsaGenPri implements Command {
 
     @Override
