@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
@@ -43,9 +45,10 @@ public class FWKIB extends ListenerAdapter {
     private Multimap<String, String> answers = ArrayListMultimap.create();
     private List<String> ignore = Arrays.asList("Keksbot", "Chrisliebot");
     private List<String> answerList = null;
+    private static Pattern pattern = Pattern.compile("(?<=youtu.be/|watch\\?v=|/videos/|embed\\/)[^ #\\&\\?]*",
+            Pattern.CASE_INSENSITIVE);
+    private static Matcher matcher;
 
-    // TODO Quiz etc. In Klassen machen und in ne Map putten. CleanUp das hier nur
-    // noch einzelne Methoden mit if stehen und nicht mehr der Code.
     @Override
     public void onMessage(MessageEvent event) throws Exception {
         if (ignore.contains(event.getUser().getNick())) {
@@ -59,11 +62,8 @@ public class FWKIB extends ListenerAdapter {
 
             List<String> splitter = Splitter.on("#quiz").splitToList(event.getMessage());
             String topic = splitter.size() == 2 ? splitter.get(1).trim() : "info";
-            System.out.println(topic);
-            System.out.println(splitter.size());
 
             DBObject o = new MongoDB().getQuestion(topic);
-            System.out.println(String.valueOf(o));
             if (o == null) {
                 return;
             }
@@ -72,7 +72,10 @@ public class FWKIB extends ListenerAdapter {
             answers.clear();
 
             event.getChannel().send().message(question.getQuestion());
-            answerList = question.getAnswerList();
+            answerList = question.getOptions();
+            System.out.println(String.valueOf(answerList));
+            System.out.println(String.valueOf(answerList.size()));
+
             Executors.newSingleThreadExecutor().submit(new Runnable() {
                 @Override
                 public void run() {
@@ -88,7 +91,6 @@ public class FWKIB extends ListenerAdapter {
                         List<String> correctPersons = new ArrayList<>();
                         question.getAnswerList()
                                 .forEach((element) -> correctPersons.addAll(answers.get(element.toLowerCase())));
-                        correctPersons.forEach(v -> System.out.println(v));
                         new MongoDB().updateStats(correctPersons);
                         event.getChannel().send().message(correctPersons.size() + " were correct of " + answers.size());
                         answers.clear();
@@ -106,7 +108,6 @@ public class FWKIB extends ListenerAdapter {
         }
         if (event.getMessage().startsWith("#tv-nau") || event.getMessage().startsWith("#tv-now")) {
             event.getChannel().send().message(new TvProgramm().apply("now"));
-
             return;
         }
         if (event.getMessage().startsWith("#fehler")) {
@@ -191,13 +192,15 @@ public class FWKIB extends ListenerAdapter {
             new BrotiQuiz().apply(event);
             return;
         }
+        matcher = pattern.matcher(event.getMessage());
+        if ((matcher.find())) {
+            event.getChannel().send().message(new Youtube().apply("http://youtu.be/" + matcher.group(0).trim()));
+            return;
+        }
 
         if (bool.get() && !event.getUser().equals(event.getBot().getUserBot())) {
-            System.out.println(String.valueOf(answerList));
             if (answerList != null && answerList.contains(event.getMessage().toLowerCase())) {
-
                 answers.entries().removeIf(v -> v.getValue().equals(event.getUser().getNick()));
-
                 answers.put(event.getMessage().toLowerCase(), event.getUser().getNick());
             }
 

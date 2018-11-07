@@ -1,7 +1,7 @@
 package keksdose.fwkib.quiz.DB;
 
+import java.nio.charset.Charset;
 import java.security.SecureRandom;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -197,7 +197,7 @@ public class MongoDB {
                 return String.valueOf(doc.get("link"));
 
             } else {
-                return "nicht im stack vorhanden.Max : " + collection.estimatedDocumentCount();
+                return "nicht im stack vorhanden.Vorhanden : " + collection.estimatedDocumentCount();
             }
         }
     }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 
 public class QuestionWithAnswer implements Question {
@@ -51,68 +52,38 @@ public class QuestionWithAnswer implements Question {
         if (o == null || o.get("options") == null) {
             return "";
         }
-        
-        String list = o.get("options").toString();
 
-        if (list == null) {
-            return "";
-        }
-        
+        BasicDBList list = (BasicDBList) o.get("options");
         String var = "  ";
         char letter = 'a';
-        for (String option : list.split("\" , \"")) {
-            option.trim();
-            if(option.isEmpty()){
+        for (Object iterObject : list) {
+            String option = String.valueOf(iterObject);
+            if (option.isEmpty()) {
                 continue;
             }
-            if (option.startsWith("[")) {
-                option = option.substring(1).trim();
-            }
-            if (option.startsWith("\"")) {
-                option = option.substring(1).trim();
-            }
-            if (option.endsWith("]")) {
-                option = option.substring(0, option.length() - 1).trim();
-            }
-            if (option.endsWith("\"")) {
-                option = option.substring(0, option.length() - 1).trim();
-            }
             optionLetterMap.put(option, String.valueOf(letter));
+            answersList.add(String.valueOf(letter));
+            answersList.add(option);
             var += letter + ") " + String.valueOf(option) + " ";
             letter++;
+
         }
         return var;
     }
 
     private void formatSolution(DBObject o) {
 
-        String unformatted = o.get("answers").toString();
-
-        for (String option : unformatted.split("\" , \"")) {
-            option.trim();
-            if (option.startsWith("[")) {
-                option = option.substring(1).trim();
-            }
-            if (option.startsWith("\"")) {
-                option = option.substring(1).trim();
-            }
-            if (option.endsWith("]")) {
-                option = option.substring(0, option.length() - 1).trim();
-            }
-            if (option.endsWith("\"")) {
-                option = option.substring(0, option.length() - 1).trim();
-            }
-            solutionList.add(option.toLowerCase());
+        BasicDBList list = (BasicDBList) o.get("answers");
+        for (Object listObject : list) {
+            String option = String.valueOf(listObject);
+            solutionList.add(option);
             Optional.ofNullable(optionLetterMap.get(option)).ifPresent(solutionList::add);
         }
-
     }
 
     private void formatTime(DBObject o) {
         time = Integer.parseInt(o.get("time").toString());
 
     }
-
-
 
 }

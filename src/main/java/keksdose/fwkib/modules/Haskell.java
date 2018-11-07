@@ -1,6 +1,5 @@
 package keksdose.fwkib.modules;
 
-import java.io.SequenceInputStream;
 import java.util.Scanner;
 
 public class Haskell implements Command {
