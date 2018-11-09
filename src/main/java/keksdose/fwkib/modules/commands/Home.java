@@ -1,4 +1,6 @@
-package keksdose.fwkib.modules;
+package keksdose.fwkib.modules.commands;
+
+import keksdose.fwkib.modules.Command;
 
 public class Home implements Command {
     private static String gitHubhome = "https://github.com/MartinWitt/FWKIB";

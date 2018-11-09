@@ -1,12 +1,13 @@
-package keksdose.fwkib.modules;
+package keksdose.fwkib.modules.commands;
 
 import java.util.List;
 
-import com.google.common.base.Splitter;
+import keksdose.fwkib.modules.Command;
 
+import com.google.common.base.Splitter;
 import keksdose.fwkib.quiz.DB.MongoDB;
 
-public class Missspell implements Command {
+public class Misspell implements Command {
 
     @Override
     public String apply(String message) {
@@ -30,7 +31,7 @@ public class Missspell implements Command {
         }
 
         String var = "\"" + wordWrong + "\"" + " schreibt sich eigentlich " + "\"" + wordCorrect + "\""
-                + ", du kannst es dir merken mit " + "\"" + wordCorrect + "\"" + " wie " + "\"" + wordRemember + "\" .";
+                + ", du kannst es dir merken mit " + "\"" + wordCorrect + "\"" + " wie " + "\"" + wordRemember + "\".";
 
         saveMisstake(var, wordWrong);
 

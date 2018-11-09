@@ -1,7 +1,8 @@
 
-package keksdose.fwkib.modules;
+package keksdose.fwkib.modules.commands;
 
 import java.security.SecureRandom;
+import keksdose.fwkib.modules.Command;
 
 import org.apache.commons.lang3.RandomStringUtils;
 

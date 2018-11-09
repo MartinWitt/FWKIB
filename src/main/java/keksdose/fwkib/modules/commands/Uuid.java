@@ -1,6 +1,7 @@
-package keksdose.fwkib.modules;
+package keksdose.fwkib.modules.commands;
 
 import java.util.UUID;
+import keksdose.fwkib.modules.Command;
 
 public class Uuid implements Command {
 

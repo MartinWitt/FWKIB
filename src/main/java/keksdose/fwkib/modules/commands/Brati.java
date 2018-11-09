@@ -1,5 +1,6 @@
-package keksdose.fwkib.modules;
+package keksdose.fwkib.modules.commands;
 
+import keksdose.fwkib.modules.Command;
 import keksdose.fwkib.quiz.DB.MongoDB;
 
 public class Brati implements Command {

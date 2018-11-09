@@ -1,9 +1,10 @@
-package keksdose.fwkib.modules;
+package keksdose.fwkib.modules.commands;
 
 import java.net.URL;
 import java.util.List;
 
 import com.google.common.base.Splitter;
+import keksdose.fwkib.modules.Command;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;

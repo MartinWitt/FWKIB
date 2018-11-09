@@ -1,6 +1,7 @@
-package keksdose.fwkib.modules;
+package keksdose.fwkib.modules.commands;
 
 import java.util.List;
+import keksdose.fwkib.modules.Command;
 
 import com.google.common.base.Splitter;
 

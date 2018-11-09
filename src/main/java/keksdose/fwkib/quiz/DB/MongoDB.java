@@ -2,6 +2,7 @@ package keksdose.fwkib.quiz.DB;
 
 import java.nio.charset.Charset;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -121,9 +122,6 @@ public class MongoDB {
             return "user not found";
         }
         Integer number = Integer.parseInt(search.get("number").toString());
-        if (number == null) {
-            return "user not found";
-        }
         User userObject = new User(search.get("name").toString(), search.get("number").toString());
         StringBuilder str = new StringBuilder(userObject.getName());
         str.insert(1, NBSP);
@@ -140,9 +138,22 @@ public class MongoDB {
 
     }
 
+    public String getHelp(String command) {
+        MongoDatabase database = mongoClient.getDatabase(dbName);
+        MongoCollection<Document> collection = database.getCollection("help");
+
+        Document doc = collection.find(Filters.eq("commandName", command.toLowerCase())).first();
+        if (doc == null) {
+            return "befehl nicht vorhanden";
+        }
+        String s = (String) doc.get("helpText");
+        return String.valueOf(s);
+
+    }
+
     public void insertMistake(String sentence, String mistake) {
         MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("mistake");
-        if (collection.countDocuments() > 1000) {
+        if (collection.countDocuments() > 10000) {
             collection.findOneAndDelete(collection.find().first());
         }
         Document toInsert = new Document().append("mistake", mistake).append("sentence", sentence);
@@ -177,6 +188,7 @@ public class MongoDB {
     }
 
     public String getYtLink(int n) {
+        System.out.println(Charset.defaultCharset());
         MongoDatabase database = mongoClient.getDatabase("test");
         MongoCollection<Document> collection = database.getCollection("youtube");
         if (n == 0) {
@@ -193,7 +205,6 @@ public class MongoDB {
         } else {
             Document doc = collection.find().sort(new BasicDBObject().append("time", -1)).skip(n).first();
             if (doc != null) {
-                // collection.deleteOne(doc);
                 return String.valueOf(doc.get("link"));
 
             } else {

@@ -1,4 +1,6 @@
-package keksdose.fwkib.modules;
+package keksdose.fwkib.modules.commands;
+
+import keksdose.fwkib.modules.Command;
 
 public class MongoStats implements Command {
 

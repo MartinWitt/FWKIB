@@ -1,6 +1,7 @@
-package keksdose.fwkib.modules;
+package keksdose.fwkib.modules.commands;
 
 import java.io.BufferedReader;
+import keksdose.fwkib.modules.Command;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;

@@ -1,8 +1,10 @@
-package keksdose.fwkib.modules;
+package keksdose.fwkib.modules.commands;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
+import keksdose.fwkib.modules.Command;
+
 
 public class Hash implements Command {
 

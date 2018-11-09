@@ -1,4 +1,4 @@
-package keksdose.fwkib.modules;
+package keksdose.fwkib.modules.commands;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -16,6 +16,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import keksdose.fwkib.modules.Command;
 
 public class TvProgramm implements Command {
 

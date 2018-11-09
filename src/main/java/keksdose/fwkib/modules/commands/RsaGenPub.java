@@ -1,4 +1,4 @@
-package keksdose.fwkib.modules;
+package keksdose.fwkib.modules.commands;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -8,6 +8,7 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
+import keksdose.fwkib.modules.Command;
 
 public class RsaGenPub implements Command {
 

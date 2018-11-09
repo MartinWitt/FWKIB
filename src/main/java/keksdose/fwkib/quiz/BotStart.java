@@ -2,10 +2,6 @@ package keksdose.fwkib.quiz;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.LogManager;
 
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
@@ -24,11 +20,11 @@ public class BotStart implements Runnable {
     @Override
     public void run() {
 
-        Configuration<PircBotX> config = new Configuration.Builder().setName("fwkib").addListener(new FWKIB())
+        Configuration<PircBotX> config = new Configuration.Builder().setName("fwkib-test").addListener(new FWKIB())
                 .setServer("irc.freenode.net", 7000).setAutoNickChange(true)
                 .setSocketFactory(new UtilSSLSocketFactory().trustAllCertificates()).addAutoJoinChannel("#kitinfo-test")
-                .addAutoJoinChannel(channel).addAutoJoinChannel("#kitinfo-botnet").setAutoReconnect(true)
-                .setEncoding(Charset.forName("UTF-8")).buildConfiguration();
+                .addAutoJoinChannel("#kitinfo-botnet").setAutoReconnect(true).setEncoding(Charset.forName("UTF-8"))
+                .buildConfiguration();
 
         PircBotX bot = new PircBotX(config);
 

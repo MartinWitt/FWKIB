@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
@@ -17,24 +15,24 @@ import com.mongodb.DBObject;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 
-import keksdose.fwkib.modules.Brati;
 import keksdose.fwkib.modules.BrotiQuiz;
-import keksdose.fwkib.modules.Hash;
-import keksdose.fwkib.modules.Haskell;
-import keksdose.fwkib.modules.HaskellUrl;
-import keksdose.fwkib.modules.Help;
-import keksdose.fwkib.modules.Home;
-import keksdose.fwkib.modules.Missspell;
-import keksdose.fwkib.modules.MongoStats;
-import keksdose.fwkib.modules.Pwgen;
-import keksdose.fwkib.modules.QuizStats;
 import keksdose.fwkib.modules.ReminderKeksdose;
-import keksdose.fwkib.modules.RsaGenPri;
-import keksdose.fwkib.modules.RsaGenPub;
-import keksdose.fwkib.modules.Security;
-import keksdose.fwkib.modules.TvProgramm;
-import keksdose.fwkib.modules.Uuid;
-import keksdose.fwkib.modules.Youtube;
+import keksdose.fwkib.modules.commands.Brati;
+import keksdose.fwkib.modules.commands.Hash;
+import keksdose.fwkib.modules.commands.Haskell;
+import keksdose.fwkib.modules.commands.HaskellUrl;
+import keksdose.fwkib.modules.commands.Help;
+import keksdose.fwkib.modules.commands.Home;
+import keksdose.fwkib.modules.commands.Misspell;
+import keksdose.fwkib.modules.commands.MongoStats;
+import keksdose.fwkib.modules.commands.Pwgen;
+import keksdose.fwkib.modules.commands.QuizStats;
+import keksdose.fwkib.modules.commands.RsaGenPri;
+import keksdose.fwkib.modules.commands.RsaGenPub;
+import keksdose.fwkib.modules.commands.Security;
+import keksdose.fwkib.modules.commands.TvProgramm;
+import keksdose.fwkib.modules.commands.Uuid;
+import keksdose.fwkib.modules.commands.Youtube;
 import keksdose.fwkib.quiz.DB.MongoDB;
 import keksdose.fwkib.quiz.model.Question;
 import keksdose.fwkib.quiz.model.QuestionWithAnswer;
@@ -45,10 +43,9 @@ public class FWKIB extends ListenerAdapter {
     private Multimap<String, String> answers = ArrayListMultimap.create();
     private List<String> ignore = Arrays.asList("Keksbot", "Chrisliebot");
     private List<String> answerList = null;
-    private static Pattern pattern = Pattern.compile("(?<=youtu.be/|watch\\?v=|/videos/|embed\\/)[^ #\\&\\?]*",
-            Pattern.CASE_INSENSITIVE);
-    private static Matcher matcher;
 
+    // TODO Quiz etc. In Klassen machen und in ne Map putten. CleanUp das hier nur
+    // noch einzelne Methoden mit if stehen und nicht mehr der Code.
     @Override
     public void onMessage(MessageEvent event) throws Exception {
         if (ignore.contains(event.getUser().getNick())) {
@@ -62,8 +59,11 @@ public class FWKIB extends ListenerAdapter {
 
             List<String> splitter = Splitter.on("#quiz").splitToList(event.getMessage());
             String topic = splitter.size() == 2 ? splitter.get(1).trim() : "info";
+            System.out.println(topic);
+            System.out.println(splitter.size());
 
             DBObject o = new MongoDB().getQuestion(topic);
+            System.out.println(String.valueOf(o));
             if (o == null) {
                 return;
             }
@@ -72,10 +72,7 @@ public class FWKIB extends ListenerAdapter {
             answers.clear();
 
             event.getChannel().send().message(question.getQuestion());
-            answerList = question.getOptions();
-            System.out.println(String.valueOf(answerList));
-            System.out.println(String.valueOf(answerList.size()));
-
+            answerList = question.getAnswerList();
             Executors.newSingleThreadExecutor().submit(new Runnable() {
                 @Override
                 public void run() {
@@ -91,6 +88,7 @@ public class FWKIB extends ListenerAdapter {
                         List<String> correctPersons = new ArrayList<>();
                         question.getAnswerList()
                                 .forEach((element) -> correctPersons.addAll(answers.get(element.toLowerCase())));
+                        correctPersons.forEach(v -> System.out.println(v));
                         new MongoDB().updateStats(correctPersons);
                         event.getChannel().send().message(correctPersons.size() + " were correct of " + answers.size());
                         answers.clear();
@@ -108,14 +106,15 @@ public class FWKIB extends ListenerAdapter {
         }
         if (event.getMessage().startsWith("#tv-nau") || event.getMessage().startsWith("#tv-now")) {
             event.getChannel().send().message(new TvProgramm().apply("now"));
+
             return;
         }
         if (event.getMessage().startsWith("#fehler")) {
-            event.getChannel().send().message(new Missspell().apply(event.getMessage()));
+            event.getChannel().send().message(new Misspell().apply(event.getMessage()));
             return;
         }
         if (event.getMessage().startsWith("#remove")) {
-            event.getChannel().send().message(new Missspell().apply(event.getMessage()));
+            event.getChannel().send().message(new Misspell().apply(event.getMessage()));
             return;
         }
         if (event.getMessage().startsWith("#yt")) {
@@ -192,15 +191,13 @@ public class FWKIB extends ListenerAdapter {
             new BrotiQuiz().apply(event);
             return;
         }
-        matcher = pattern.matcher(event.getMessage());
-        if ((matcher.find())) {
-            event.getChannel().send().message(new Youtube().apply("http://youtu.be/" + matcher.group(0).trim()));
-            return;
-        }
 
         if (bool.get() && !event.getUser().equals(event.getBot().getUserBot())) {
+            System.out.println(String.valueOf(answerList));
             if (answerList != null && answerList.contains(event.getMessage().toLowerCase())) {
+
                 answers.entries().removeIf(v -> v.getValue().equals(event.getUser().getNick()));
+
                 answers.put(event.getMessage().toLowerCase(), event.getUser().getNick());
             }
 
