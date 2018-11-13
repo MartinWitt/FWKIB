@@ -18,7 +18,7 @@ public class QuestionWithAnswer implements Question {
     private List<String> solutionList = new ArrayList<>();
 
     public QuestionWithAnswer(DBObject o) {
-        questionString = (o.get("question").toString() + formatOptions(o) + "  zeit: " + o.get("time").toString());
+        questionString = String.valueOf(o.get("question")) + formatOptions(o) + "  zeit: " + o.get("time").toString();
         formatSolution(o);
         formatTime(o);
     }

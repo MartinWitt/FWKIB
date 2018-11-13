@@ -2,7 +2,6 @@ package keksdose.fwkib.quiz.DB;
 
 import java.nio.charset.Charset;
 import java.security.SecureRandom;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -138,15 +137,39 @@ public class MongoDB {
 
     }
 
+    public String getBrati(String regex) {
+        MongoDatabase database = mongoClient.getDatabase("test");
+        MongoCollection<Document> collection = database.getCollection("brati");
+
+        collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("brati", regex)))).forEach(printBlock);
+
+        Random random = new SecureRandom();
+        if (list.size() != 0) {
+
+            String var = String.valueOf(list.get(random.nextInt(list.size())).get("brati"));
+            list = new ArrayList<>();
+
+            return String.valueOf(var);
+
+        }
+        return "";
+
+    }
+
     public String getHelp(String command) {
         MongoDatabase database = mongoClient.getDatabase(dbName);
-        MongoCollection<Document> collection = database.getCollection("help");
-
+        MongoCollection<Document> collection = database.getCollection("hilfe");
+        String fix = collection.find(Filters.eq("id", "1")).first().getString("umlautText");
+        System.out.println(fix);
         Document doc = collection.find(Filters.eq("commandName", command.toLowerCase())).first();
         if (doc == null) {
-            return "befehl nicht vorhanden";
+            System.out.println(command);
+            doc = collection.find(Filters.eq("modulname", command.toLowerCase())).first();
+            if (doc == null) {
+                return "befehl nicht vorhanden";
+            }
         }
-        String s = (String) doc.get("helpText");
+        String s = fix + " #" + doc.getString("commandName") + " ||" + doc.getString("helpText");
         return String.valueOf(s);
 
     }

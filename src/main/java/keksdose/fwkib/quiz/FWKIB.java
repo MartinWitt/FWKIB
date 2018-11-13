@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.*;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
@@ -43,6 +44,8 @@ public class FWKIB extends ListenerAdapter {
     private Multimap<String, String> answers = ArrayListMultimap.create();
     private List<String> ignore = Arrays.asList("Keksbot", "Chrisliebot");
     private List<String> answerList = null;
+    private String pattern = "(?<=youtu.be/|watch\\?v=|/videos/|embed\\/)[^#\\&\\?]*";
+    private List<String> optionList = null;
 
     // TODO Quiz etc. In Klassen machen und in ne Map putten. CleanUp das hier nur
     // noch einzelne Methoden mit if stehen und nicht mehr der Code.
@@ -72,7 +75,9 @@ public class FWKIB extends ListenerAdapter {
             answers.clear();
 
             event.getChannel().send().message(question.getQuestion());
+
             answerList = question.getAnswerList();
+            optionList = question.getOptions();
             Executors.newSingleThreadExecutor().submit(new Runnable() {
                 @Override
                 public void run() {
@@ -169,7 +174,7 @@ public class FWKIB extends ListenerAdapter {
             event.getChannel().send().message(new Haskell().apply(event.getMessage()));
             return;
         }
-        if (event.getMessage().startsWith("#brati")) {
+        if (event.getMessage().startsWith("#brati") || event.getMessage().startsWith("#rage")) {
             event.getChannel().send().message(new Brati().apply(event.getMessage()));
             return;
         }
@@ -187,14 +192,24 @@ public class FWKIB extends ListenerAdapter {
             return;
         }
 
-        if (event.getMessage().contains("secs") && event.getUser().getNick().equals("broti")) {
+        if (event.getMessage().contains("secs") && event.getUser().getNick().equals("broti")
+                || event.getUser().getNick().equals("fwkib") && event.getMessage().contains("zeit: ")) {
             new BrotiQuiz().apply(event);
             return;
         }
+        Pattern compiledPattern = Pattern.compile(pattern);
+        Matcher matcher = compiledPattern.matcher(event.getMessage());
 
+        if (matcher.find()) {
+            System.out.println(matcher.group());
+            event.getChannel().send()
+                    .message(new Youtube().apply("https://www.youtube.com/watch?v=" + matcher.group().trim()));
+            return;
+        }
         if (bool.get() && !event.getUser().equals(event.getBot().getUserBot())) {
             System.out.println(String.valueOf(answerList));
-            if (answerList != null && answerList.contains(event.getMessage().toLowerCase())) {
+            if (optionList != null
+                    && (optionList.contains(event.getMessage().toLowerCase()) || optionList.size() == 0)) {
 
                 answers.entries().removeIf(v -> v.getValue().equals(event.getUser().getNick()));
 
