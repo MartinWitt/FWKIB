@@ -46,3 +46,4 @@ settings.gradle
 .classPath
 .idea
 .settings
+.project

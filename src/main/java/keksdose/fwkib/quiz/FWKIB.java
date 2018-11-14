@@ -13,6 +13,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.mongodb.DBObject;
 
+import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 
@@ -197,6 +198,12 @@ public class FWKIB extends ListenerAdapter {
             new BrotiQuiz().apply(event);
             return;
         }
+        if (event.getMessage().contains("#nick") && event.getUser().getLogin().equals("~Keksdose")
+                && event.getUser().getHostmask().equals("2a01:4f8:1c1c:11a7::1")) {
+            event.getBot().sendRaw().rawLine("nick " + event.getMessage().split(" ")[1]);
+            return;
+        }
+
         Pattern compiledPattern = Pattern.compile(pattern);
         Matcher matcher = compiledPattern.matcher(event.getMessage());
 

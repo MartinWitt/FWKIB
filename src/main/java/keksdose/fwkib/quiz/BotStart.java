@@ -24,7 +24,8 @@ public class BotStart implements Runnable {
                 .setServer("irc.freenode.net", 7000).setAutoNickChange(true)
                 .setSocketFactory(new UtilSSLSocketFactory().trustAllCertificates()).addAutoJoinChannel("#kitinfo-test")
                 .addAutoJoinChannel(channel).addAutoJoinChannel("#kitinfo-botnet").setAutoReconnect(true)
-                .setEncoding(Charset.forName("UTF-8")).buildConfiguration();
+                .setAutoSplitMessage(true).setCapEnabled(true).setEncoding(Charset.forName("UTF-8"))
+                .buildConfiguration();
 
         PircBotX bot = new PircBotX(config);
 
