@@ -1,0 +1,20 @@
+package keksdose.fwkib.modules.commands;
+
+import java.util.List;
+import com.google.common.base.Splitter;
+import keksdose.fwkib.modules.Command;
+import keksdose.fwkib.quiz.DB.MongoDB;
+
+public class BratiSong implements Command {
+
+    @Override
+    public String apply(String message) {
+        List<String> list =
+                Splitter.on("#bratisong").trimResults().omitEmptyStrings().splitToList(message);
+        if (list.size() == 0) {
+            return String.valueOf(new MongoDB().getBratiSong(""));
+        } else {
+            return String.valueOf(new MongoDB().getBratiSong(list.get(0)));
+        }
+    }
+}

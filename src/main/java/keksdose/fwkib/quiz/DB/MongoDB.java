@@ -1,6 +1,5 @@
 package keksdose.fwkib.quiz.DB;
 
-import java.nio.charset.Charset;
 import java.security.SecureRandom;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -9,7 +8,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
 import com.mongodb.DB;
@@ -21,9 +19,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
-
 import org.bson.Document;
-
 import keksdose.fwkib.quiz.model.User;
 
 public class MongoDB {
@@ -88,7 +84,8 @@ public class MongoDB {
         while (cursor.hasNext()) {
             cursor.next();
 
-            list.add(new User(cursor.curr().get("name").toString(), cursor.curr().get("number").toString()));
+            list.add(new User(cursor.curr().get("name").toString(),
+                    cursor.curr().get("number").toString()));
 
         }
         list.sort(new Comparator<User>() {
@@ -138,10 +135,11 @@ public class MongoDB {
     }
 
     public String getBrati(String regex) {
-        MongoDatabase database = mongoClient.getDatabase("test");
+        MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("brati");
 
-        collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("brati", regex)))).forEach(printBlock);
+        collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("brati", regex))))
+                .forEach(printBlock);
 
         Random random = new SecureRandom();
         if (list.size() != 0) {
@@ -156,14 +154,30 @@ public class MongoDB {
 
     }
 
+    public String getBratiSong(String regex) {
+        MongoDatabase database = mongoClient.getDatabase(dbName);
+        MongoCollection<Document> collection = database.getCollection("bratiSong");
+        collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("text", regex))))
+                .forEach(printBlock);
+
+        Random random = new SecureRandom();
+        if (list.size() != 0) {
+
+            String var = String.valueOf(list.get(random.nextInt(list.size())).get("text"));
+            list = new ArrayList<>();
+
+            return String.valueOf(var);
+        }
+        return "";
+
+    }
+
     public String getHelp(String command) {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("hilfe");
         String fix = collection.find(Filters.eq("id", "1")).first().getString("umlautText");
-        System.out.println(fix);
         Document doc = collection.find(Filters.eq("commandName", command.toLowerCase())).first();
         if (doc == null) {
-            System.out.println(command);
             doc = collection.find(Filters.eq("modulname", command.toLowerCase())).first();
             if (doc == null) {
                 return "befehl nicht vorhanden";
@@ -175,7 +189,8 @@ public class MongoDB {
     }
 
     public void insertMistake(String sentence, String mistake) {
-        MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("mistake");
+        MongoCollection<Document> collection =
+                mongoClient.getDatabase(dbName).getCollection("mistake");
         if (collection.countDocuments() > 10000) {
             collection.findOneAndDelete(collection.find().first());
         }
@@ -185,7 +200,8 @@ public class MongoDB {
     }
 
     public void removeMistake(String mistake) {
-        MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("mistake");
+        MongoCollection<Document> collection =
+                mongoClient.getDatabase(dbName).getCollection("mistake");
 
         Document toInsert = new Document().append("mistake", mistake);
         collection.findOneAndDelete(toInsert);
@@ -193,10 +209,11 @@ public class MongoDB {
     }
 
     public String getMistake(String mistake) {
-        MongoDatabase database = mongoClient.getDatabase("test");
+        MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("mistake");
 
-        collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("mistake", mistake)))).forEach(printBlock);
+        collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("mistake", mistake))))
+                .forEach(printBlock);
 
         Random random = new SecureRandom();
         if (list.size() != 0) {
@@ -211,7 +228,6 @@ public class MongoDB {
     }
 
     public String getYtLink(int n) {
-        System.out.println(Charset.defaultCharset());
         MongoDatabase database = mongoClient.getDatabase("test");
         MongoCollection<Document> collection = database.getCollection("youtube");
         if (n == 0) {
@@ -226,23 +242,27 @@ public class MongoDB {
             }
 
         } else {
-            Document doc = collection.find().sort(new BasicDBObject().append("time", -1)).skip(n).first();
+            Document doc =
+                    collection.find().sort(new BasicDBObject().append("time", -1)).skip(n).first();
             if (doc != null) {
                 return String.valueOf(doc.get("link"));
 
             } else {
-                return "nicht im stack vorhanden.Vorhanden : " + collection.estimatedDocumentCount();
+                return "nicht im stack vorhanden.Vorhanden : "
+                        + collection.estimatedDocumentCount();
             }
         }
     }
 
+
     public void insertLink(String link) {
-        MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("youtube");
+        MongoCollection<Document> collection =
+                mongoClient.getDatabase(dbName).getCollection("youtube");
         if (collection.countDocuments() > 1000) {
             collection.findOneAndDelete(collection.find().first());
         }
-        Document toInsert = new Document().append("link", link).append("uuid", UUID.randomUUID()).append("time",
-                LocalTime.now());
+        Document toInsert = new Document().append("link", link).append("uuid", UUID.randomUUID())
+                .append("time", LocalTime.now());
         collection.insertOne(toInsert);
     }
 

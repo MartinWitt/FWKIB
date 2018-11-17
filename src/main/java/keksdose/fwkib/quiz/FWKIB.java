@@ -7,19 +7,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.*;
-
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.mongodb.DBObject;
-
 import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
-
 import keksdose.fwkib.modules.BrotiQuiz;
 import keksdose.fwkib.modules.ReminderKeksdose;
 import keksdose.fwkib.modules.commands.Brati;
+import keksdose.fwkib.modules.commands.BratiSong;
 import keksdose.fwkib.modules.commands.Hash;
 import keksdose.fwkib.modules.commands.Haskell;
 import keksdose.fwkib.modules.commands.HaskellUrl;
@@ -92,11 +90,12 @@ public class FWKIB extends ListenerAdapter {
                         }
                         event.getChannel().send().message("richtig ist: " + answersString);
                         List<String> correctPersons = new ArrayList<>();
-                        question.getAnswerList()
-                                .forEach((element) -> correctPersons.addAll(answers.get(element.toLowerCase())));
+                        question.getAnswerList().forEach((element) -> correctPersons
+                                .addAll(answers.get(element.toLowerCase())));
                         correctPersons.forEach(v -> System.out.println(v));
                         new MongoDB().updateStats(correctPersons);
-                        event.getChannel().send().message(correctPersons.size() + " were correct of " + answers.size());
+                        event.getChannel().send().message(
+                                correctPersons.size() + " were correct of " + answers.size());
                         answers.clear();
                         bool.set(false);
 
@@ -175,10 +174,15 @@ public class FWKIB extends ListenerAdapter {
             event.getChannel().send().message(new Haskell().apply(event.getMessage()));
             return;
         }
+        if (event.getMessage().startsWith("#bratisong")) {
+            event.getChannel().send().message(new BratiSong().apply(event.getMessage()));
+            return;
+        }
         if (event.getMessage().startsWith("#brati") || event.getMessage().startsWith("#rage")) {
             event.getChannel().send().message(new Brati().apply(event.getMessage()));
             return;
         }
+
         if (event.getMessage().startsWith("#home")) {
             event.getChannel().send().message(new Home().apply(event.getMessage()));
             return;
@@ -194,7 +198,8 @@ public class FWKIB extends ListenerAdapter {
         }
 
         if (event.getMessage().contains("secs") && event.getUser().getNick().equals("broti")
-                || event.getUser().getNick().equals("fwkib") && event.getMessage().contains("zeit: ")) {
+                || event.getUser().getNick().equals("fwkib")
+                        && event.getMessage().contains("zeit: ")) {
             new BrotiQuiz().apply(event);
             return;
         }
@@ -208,15 +213,15 @@ public class FWKIB extends ListenerAdapter {
         Matcher matcher = compiledPattern.matcher(event.getMessage());
 
         if (matcher.find()) {
-            System.out.println(matcher.group());
-            event.getChannel().send()
-                    .message(new Youtube().apply("https://www.youtube.com/watch?v=" + matcher.group().trim()));
+            System.out.println(matcher.group(0).split(" ")[0]);
+            event.getChannel().send().message(new Youtube().apply(
+                    "https://www.youtube.com/watch?v=" + matcher.group(0).split(" ")[0].trim()));
             return;
         }
         if (bool.get() && !event.getUser().equals(event.getBot().getUserBot())) {
             System.out.println(String.valueOf(answerList));
-            if (optionList != null
-                    && (optionList.contains(event.getMessage().toLowerCase()) || optionList.size() == 0)) {
+            if (optionList != null && (optionList.contains(event.getMessage().toLowerCase())
+                    || optionList.size() == 0)) {
 
                 answers.entries().removeIf(v -> v.getValue().equals(event.getUser().getNick()));
 

@@ -3,24 +3,22 @@ package keksdose.fwkib.modules.commands;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
 import keksdose.fwkib.modules.Command;
 import keksdose.fwkib.quiz.DB.MongoDB;
-
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 
 public class Help implements Command {
-    private static final String[] commands = { "brati", "hash", "haskell", "haskell-url", "help", "home", "stats",
-            "pwgen", "rsagen-pri", "rsagen-pub", "security", "uuid", "fehler", "tv", "tv-nau" };
+
     private static ClassLoader loader = Thread.currentThread().getContextClassLoader();
     private static final String path = "keksdose.fwkib.modules.commands";
 
     @Override
     public String apply(String message) {
-        List<String> parameterList = Splitter.on("#help").omitEmptyStrings().trimResults().splitToList(message);
+        List<String> parameterList =
+                Splitter.on("#help").omitEmptyStrings().trimResults().splitToList(message);
         if (parameterList.size() != 1) {
             try {
                 ClassPath classpath = ClassPath.from(loader);
@@ -36,7 +34,7 @@ public class Help implements Command {
             return new MongoDB().getHelp(parameterList.get(0));
         }
 
-        return Arrays.toString(commands);
+        return "";
     }
 
 }
