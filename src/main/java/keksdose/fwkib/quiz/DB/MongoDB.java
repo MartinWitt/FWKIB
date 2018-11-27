@@ -84,8 +84,7 @@ public class MongoDB {
         while (cursor.hasNext()) {
             cursor.next();
 
-            list.add(new User(cursor.curr().get("name").toString(),
-                    cursor.curr().get("number").toString()));
+            list.add(new User(cursor.curr().get("name").toString(), cursor.curr().get("number").toString()));
 
         }
         list.sort(new Comparator<User>() {
@@ -138,8 +137,7 @@ public class MongoDB {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("brati");
 
-        collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("brati", regex))))
-                .forEach(printBlock);
+        collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("brati", regex)))).forEach(printBlock);
 
         Random random = new SecureRandom();
         if (list.size() != 0) {
@@ -157,8 +155,7 @@ public class MongoDB {
     public String getBratiSong(String regex) {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("bratiSong");
-        collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("text", regex))))
-                .forEach(printBlock);
+        collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("text", regex)))).forEach(printBlock);
 
         Random random = new SecureRandom();
         if (list.size() != 0) {
@@ -188,40 +185,87 @@ public class MongoDB {
 
     }
 
-    public void insertMistake(String sentence, String mistake) {
-        MongoCollection<Document> collection =
-                mongoClient.getDatabase(dbName).getCollection("mistake");
+    public void insertMistake(String wordWrong, String wordCorrect, String wordRemeber) {
+        MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("mistake");
         if (collection.countDocuments() > 10000) {
             collection.findOneAndDelete(collection.find().first());
         }
-        Document toInsert = new Document().append("mistake", mistake).append("sentence", sentence);
+        Document toInsert = new Document().append("wordWrong", wordWrong).append("wordCorrect", wordCorrect)
+                .append("wordRemeber", wordRemeber);
         collection.insertOne(toInsert);
 
     }
 
     public void removeMistake(String mistake) {
-        MongoCollection<Document> collection =
-                mongoClient.getDatabase(dbName).getCollection("mistake");
+        MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("mistake");
 
         Document toInsert = new Document().append("mistake", mistake);
         collection.findOneAndDelete(toInsert);
 
     }
 
-    public String getMistake(String mistake) {
+    public String getMistake(String wordWrong) {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("mistake");
 
-        collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("mistake", mistake))))
+        collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("wordWrong", wordWrong)))).forEach(printBlock);
+
+        Random random = new SecureRandom();
+        if (list.size() != 0) {
+            try {
+                Document output = list.get(random.nextInt(list.size()));
+                list = new ArrayList<>();
+                String var = "\"" + String.valueOf(output.get("wordWrong")) + "\"" + " schreibt sich eigentlich " + "\""
+                        + String.valueOf(output.get("wordCorrect")) + "\"" + ", du kannst es dir merken mit " + "\""
+                        + String.valueOf(output.get("wordCorrect")) + "\"" + " wie " + "\""
+                        + String.valueOf(output.get("wordRemember")) + "\".";
+                return String.valueOf(var);
+            } catch (Exception e) {
+                return "null";
+            }
+
+        }
+        return "null";
+    }
+
+    public String getWrongWord(String wordCorrect) {
+        MongoDatabase database = mongoClient.getDatabase(dbName);
+        MongoCollection<Document> collection = database.getCollection("mistake");
+
+        collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("wordCorrect", wordCorrect))))
                 .forEach(printBlock);
 
         Random random = new SecureRandom();
         if (list.size() != 0) {
+            try {
+                Document output = list.get(random.nextInt(list.size()));
+                list = new ArrayList<>();
+                String var = String.valueOf(output.get("wordWrong"));
+                return String.valueOf(var);
+            } catch (Exception e) {
+                return "";
+            }
 
-            String var = String.valueOf(list.get(random.nextInt(list.size())).get("sentence"));
-            list = new ArrayList<>();
+        }
+        return "";
+    }
 
-            return String.valueOf(var);
+    public String getCorrectWord(String wordWrong) {
+        MongoDatabase database = mongoClient.getDatabase(dbName);
+        MongoCollection<Document> collection = database.getCollection("mistake");
+
+        collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("wordWrong", wordWrong)))).forEach(printBlock);
+
+        Random random = new SecureRandom();
+        if (list.size() != 0) {
+            try {
+                Document output = list.get(random.nextInt(list.size()));
+                list = new ArrayList<>();
+                String var = String.valueOf(output.get("wordCorrect"));
+                return String.valueOf(var);
+            } catch (Exception e) {
+                return "";
+            }
 
         }
         return "";
@@ -242,27 +286,23 @@ public class MongoDB {
             }
 
         } else {
-            Document doc =
-                    collection.find().sort(new BasicDBObject().append("time", -1)).skip(n).first();
+            Document doc = collection.find().sort(new BasicDBObject().append("time", -1)).skip(n).first();
             if (doc != null) {
                 return String.valueOf(doc.get("link"));
 
             } else {
-                return "nicht im stack vorhanden.Vorhanden : "
-                        + collection.estimatedDocumentCount();
+                return "nicht im stack vorhanden.Vorhanden : " + collection.estimatedDocumentCount();
             }
         }
     }
 
-
     public void insertLink(String link) {
-        MongoCollection<Document> collection =
-                mongoClient.getDatabase(dbName).getCollection("youtube");
+        MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("youtube");
         if (collection.countDocuments() > 1000) {
             collection.findOneAndDelete(collection.find().first());
         }
-        Document toInsert = new Document().append("link", link).append("uuid", UUID.randomUUID())
-                .append("time", LocalTime.now());
+        Document toInsert = new Document().append("link", link).append("uuid", UUID.randomUUID()).append("time",
+                LocalTime.now());
         collection.insertOne(toInsert);
     }
 

@@ -12,7 +12,7 @@ public class Misspell implements Command {
     @Override
     public String apply(String message) {
 
-        List<String> splitter = Splitter.on(" ").omitEmptyStrings().splitToList(message);
+        List<String> splitter = Splitter.on(" ").omitEmptyStrings().limit(4).splitToList(message);
         String wordWrong = splitter.size() == 4 ? splitter.get(1).trim() : "";
         String wordCorrect = splitter.size() == 4 ? splitter.get(2).trim() : "";
         String wordRemember = splitter.size() == 4 ? splitter.get(3).trim() : "";
@@ -22,7 +22,6 @@ public class Misspell implements Command {
             String var = new MongoDB().getMistake(splitter.get(1));
 
             if (!var.equalsIgnoreCase("null")) {
-
                 return var;
             }
         }
@@ -33,13 +32,9 @@ public class Misspell implements Command {
         String var = "\"" + wordWrong + "\"" + " schreibt sich eigentlich " + "\"" + wordCorrect + "\""
                 + ", du kannst es dir merken mit " + "\"" + wordCorrect + "\"" + " wie " + "\"" + wordRemember + "\".";
 
-        saveMisstake(var, wordWrong);
+        new MongoDB().insertMistake(wordWrong, wordCorrect, wordRemember);
 
         return var;
-    }
-
-    private void saveMisstake(String var, String wordWrong) {
-        new MongoDB().insertMistake(var, wordWrong);
     }
 
 }
