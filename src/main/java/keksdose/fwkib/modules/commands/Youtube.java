@@ -10,7 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
 
-import keksdose.fwkib.quiz.DB.MongoDB;
+import keksdose.fwkib.mongo.MongoDB;
 
 public class Youtube implements Command {
 
@@ -27,7 +27,7 @@ public class Youtube implements Command {
             if (title != null) {
                 URL embededURL = new URL("http://www.youtube.com/oembed?url=" + title + "&format=json");
                 String var = new JSONObject(IOUtils.toString(embededURL)).getString("title");
-                new MongoDB().insertLink(var);
+                new MongoDB().insertLink(var + " Link: " + title);
                 return NBSP + var;
 
             } else {

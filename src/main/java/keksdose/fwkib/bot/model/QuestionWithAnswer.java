@@ -1,4 +1,4 @@
-package keksdose.fwkib.quiz.model;
+package keksdose.fwkib.bot.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;

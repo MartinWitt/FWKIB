@@ -7,7 +7,7 @@ import java.util.List;
 import com.google.common.base.Splitter;
 
 import keksdose.fwkib.modules.Command;
-import keksdose.fwkib.quiz.DB.MongoDB;
+import keksdose.fwkib.mongo.MongoDB;
 
 public class Spellcheck implements Command {
 
@@ -18,9 +18,11 @@ public class Spellcheck implements Command {
             return "";
         }
         MongoDB db = new MongoDB();
-        splitter.remove(splitter.get(0));
         List<String> returnvalue = new ArrayList<>();
         for (String var : splitter) {
+            if (var == "#spellcheck") {
+                continue;
+            }
             String toTest = db.getCorrectWord(var);
             if (toTest.isEmpty()) {
                 returnvalue.add(var);

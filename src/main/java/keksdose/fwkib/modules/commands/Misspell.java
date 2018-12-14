@@ -5,7 +5,7 @@ import java.util.List;
 import keksdose.fwkib.modules.Command;
 
 import com.google.common.base.Splitter;
-import keksdose.fwkib.quiz.DB.MongoDB;
+import keksdose.fwkib.mongo.MongoDB;
 
 public class Misspell implements Command {
 
@@ -21,7 +21,7 @@ public class Misspell implements Command {
 
             String var = new MongoDB().getMistake(splitter.get(1));
 
-            if (!var.equalsIgnoreCase("null")) {
+            if (!var.equalsIgnoreCase("")) {
                 return var;
             }
         }

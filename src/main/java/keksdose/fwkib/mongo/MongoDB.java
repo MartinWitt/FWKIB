@@ -1,4 +1,4 @@
-package keksdose.fwkib.quiz.DB;
+package keksdose.fwkib.mongo;
 
 import java.security.SecureRandom;
 import java.time.LocalTime;
@@ -19,8 +19,11 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
+import com.mongodb.internal.connection.Time;
+
 import org.bson.Document;
-import keksdose.fwkib.quiz.model.User;
+
+import keksdose.fwkib.bot.model.User;
 
 public class MongoDB {
 
@@ -169,6 +172,18 @@ public class MongoDB {
 
     }
 
+    public void insertBratiSong(String song, String user) {
+        if (song.isBlank()) {
+            return;
+        }
+        MongoDatabase database = mongoClient.getDatabase(dbName);
+        MongoCollection<Document> collection = database.getCollection("bratiSong");
+        Document o = new Document();
+        o.append("text", "~~~" + song + "~~").append("time", Time.nanoTime()).append("user", user);
+        collection.insertOne(o);
+
+    }
+
     public String getHelp(String command) {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("hilfe");
@@ -216,16 +231,16 @@ public class MongoDB {
                 Document output = list.get(random.nextInt(list.size()));
                 list = new ArrayList<>();
                 String var = "\"" + String.valueOf(output.get("wordWrong")) + "\"" + " schreibt sich eigentlich " + "\""
-                        + String.valueOf(output.get("wordCorrect")) + "\"" + ", du kannst es dir merken mit " + "\""
+                        + String.valueOf(output.get("wordCorrect")) + "\"" + ", kannst es dir merken mit " + "\""
                         + String.valueOf(output.get("wordCorrect")) + "\"" + " wie " + "\""
-                        + String.valueOf(output.get("wordRemember")) + "\".";
+                        + String.valueOf(output.get("wordRemember")) + "\"" + ".";
                 return String.valueOf(var);
             } catch (Exception e) {
-                return "null";
+                return "";
             }
 
         }
-        return "null";
+        return "";
     }
 
     public String getWrongWord(String wordCorrect) {

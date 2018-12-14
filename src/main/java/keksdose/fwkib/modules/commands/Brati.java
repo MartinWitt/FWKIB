@@ -5,7 +5,7 @@ import java.util.List;
 import com.google.common.base.Splitter;
 
 import keksdose.fwkib.modules.Command;
-import keksdose.fwkib.quiz.DB.MongoDB;
+import keksdose.fwkib.mongo.MongoDB;
 
 public class Brati implements Command {
 

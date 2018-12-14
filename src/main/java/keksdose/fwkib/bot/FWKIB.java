@@ -1,4 +1,4 @@
-package keksdose.fwkib.quiz;
+package keksdose.fwkib.bot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +13,8 @@ import com.google.common.collect.Multimap;
 import com.mongodb.DBObject;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
+
+import keksdose.fwkib.modules.BratiSongInsert;
 import keksdose.fwkib.modules.BrotiQuiz;
 import keksdose.fwkib.modules.ReminderKeksdose;
 import keksdose.fwkib.modules.commands.Brati;
@@ -34,9 +36,9 @@ import keksdose.fwkib.modules.commands.Spelluncheck;
 import keksdose.fwkib.modules.commands.TvProgramm;
 import keksdose.fwkib.modules.commands.Uuid;
 import keksdose.fwkib.modules.commands.Youtube;
-import keksdose.fwkib.quiz.DB.MongoDB;
-import keksdose.fwkib.quiz.model.Question;
-import keksdose.fwkib.quiz.model.QuestionWithAnswer;
+import keksdose.fwkib.mongo.MongoDB;
+import keksdose.fwkib.bot.model.Question;
+import keksdose.fwkib.bot.model.QuestionWithAnswer;
 
 public class FWKIB extends ListenerAdapter {
 
@@ -214,6 +216,11 @@ public class FWKIB extends ListenerAdapter {
         if (event.getMessage().contains("#nick") && event.getUser().getLogin().equals("~Keksdose")
                 && event.getUser().getHostmask().equals("2a01:4f8:1c1c:11a7::1")) {
             event.getBot().sendRaw().rawLine("nick " + event.getMessage().split(" ")[1]);
+            return;
+        }
+        if (event.getMessage().trim().startsWith("~") && event.getUser().getNick().contains("brati")
+                && event.getMessage().trim().endsWith("~")) {
+            new BratiSongInsert().apply(event.getMessage(), event.getUser().getNick());
             return;
         }
 

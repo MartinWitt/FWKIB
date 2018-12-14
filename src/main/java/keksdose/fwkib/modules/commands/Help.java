@@ -1,10 +1,9 @@
 package keksdose.fwkib.modules.commands;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import keksdose.fwkib.modules.Command;
-import keksdose.fwkib.quiz.DB.MongoDB;
+import keksdose.fwkib.mongo.MongoDB;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.reflect.ClassPath;
@@ -17,8 +16,7 @@ public class Help implements Command {
 
     @Override
     public String apply(String message) {
-        List<String> parameterList =
-                Splitter.on("#help").omitEmptyStrings().trimResults().splitToList(message);
+        List<String> parameterList = Splitter.on("#help").omitEmptyStrings().trimResults().splitToList(message);
         if (parameterList.size() != 1) {
             try {
                 ClassPath classpath = ClassPath.from(loader);

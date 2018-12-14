@@ -5,7 +5,7 @@ import keksdose.fwkib.modules.Command;
 
 import com.google.common.base.Splitter;
 
-import keksdose.fwkib.quiz.DB.MongoDB;
+import keksdose.fwkib.mongo.MongoDB;
 
 public class QuizStats implements Command {
 
