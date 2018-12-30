@@ -6,14 +6,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import org.pircbotx.hooks.events.MessageEvent;
+import keksdose.keksIrc.Message.Message;
 
-public class BrotiQuiz implements Function<MessageEvent, String> {
+public class BrotiQuiz implements Function<Message, String> {
 
     @Override
-    public String apply(MessageEvent event) {
+    public String apply(Message event) {
         ExecutorService service = Executors.newSingleThreadExecutor();
-        String message = event.getMessage();
+        String message = event.getContent();
 
         service.submit(new Runnable() {
 
@@ -38,7 +38,7 @@ public class BrotiQuiz implements Function<MessageEvent, String> {
                     return;
                 num = new Random().nextInt(num);
                 letter = (char) (letter + num);
-                event.getChannel().send().message(String.valueOf(letter));
+                event.answer(String.valueOf(letter));
             }
 
         });

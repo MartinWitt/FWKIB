@@ -2,9 +2,10 @@
 package keksdose.fwkib.modules.commands;
 
 import java.security.SecureRandom;
-import keksdose.fwkib.modules.Command;
 
 import org.apache.commons.lang3.RandomStringUtils;
+
+import keksdose.fwkib.modules.Command;
 
 public class Pwgen implements Command {
 

@@ -3,6 +3,7 @@ plugins {
     id 'java'
     id 'application'
 
+
     
 }
 // Define the main class for the application
@@ -11,22 +12,24 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
     // https://mvnrepository.com/artifact/org.pircbotx/pircbotx
-    implementation group: 'org.pircbotx', name: 'pircbotx', version: '2.0.1'
+    //implementation group: 'org.pircbotx', name: 'pircbotx', version: '2.0.1'
 
     //implementation 'org.mongodb:mongodb-driver-async:3.8.2'
     compile 'org.mongodb:mongo-java-driver:3.8.2'
-
+    compile name:"KeksIRC",version:"+"
         // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
 
     compile 'com.google.guava:guava:25.0-jre'
     // https://mvnrepository.com/artifact/org.pircbotx/pircbotx
-    compile group: 'org.pircbotx', name: 'pircbotx', version: '2.0.1'
+    //compile group: 'org.pircbotx', name: 'pircbotx', version: '2.0.1'
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
     compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.60'
     compile group: 'commons-io', name: 'commons-io', version: '2.4'
     compile group: 'org.json', name: 'json', version: '20180813'
+compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
+
 
 
 

@@ -1,41 +1,44 @@
 package keksdose.fwkib.bot;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import org.pircbotx.Configuration;
-import org.pircbotx.PircBotX;
-import org.pircbotx.UtilSSLSocketFactory;
-import org.pircbotx.exception.IrcException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Executors;
+
+import keksdose.keksIrc.IRCStart;
+import keksdose.keksIrc.Message.Message;
 
 public class BotStart implements Runnable {
-    private String channel;
 
     public BotStart(String channel) {
         super();
-        this.channel = channel.isEmpty() ? "#kitinfo" : channel;
 
     }
 
     @Override
     public void run() {
 
-        Configuration<PircBotX> config = new Configuration.Builder().setName("fwkib").addListener(new FWKIB())
-                .setServer("irc.freenode.net", 7000).setAutoNickChange(true)
-                .setSocketFactory(new UtilSSLSocketFactory().trustAllCertificates()).addAutoJoinChannel("#kitinfo-test")
-                .addAutoJoinChannel(channel).addAutoJoinChannel("#kitinfo-botnet").setAutoReconnect(true)
-                .setAutoSplitMessage(true).setCapEnabled(true).setEncoding(Charset.forName("UTF-8"))
-                .buildConfiguration();
+        ArrayBlockingQueue<Message> container = new ArrayBlockingQueue<>(100);
+        IRCStart start = new IRCStart(container);
+        start.setCapHandler(true);
+        start.setNickname("FWKIB|Test");
+        start.addChannel("#kitinfo-botnet");
+        start.addChannel("#kitinfo-test");
+        // start.addChannel("#kitinfo");
+        Executors.newSingleThreadExecutor().submit(new Runnable() {
 
-        PircBotX bot = new PircBotX(config);
+            @Override
+            public void run() {
+                new FWKIB(container);
+            }
+        });
 
         try {
-            bot.startBot();
+            start.start();
+
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (IrcException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
 
 }

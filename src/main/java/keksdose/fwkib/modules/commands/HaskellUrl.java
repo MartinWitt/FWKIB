@@ -10,8 +10,6 @@ import java.net.URLConnection;
 
 import com.google.common.net.InternetDomainName;
 
-import org.pircbotx.hooks.events.MessageEvent;
-
 public class HaskellUrl implements Command {
 
     @Override

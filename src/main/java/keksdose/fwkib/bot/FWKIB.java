@@ -3,6 +3,7 @@ package keksdose.fwkib.bot;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -11,8 +12,6 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.mongodb.DBObject;
-import org.pircbotx.hooks.ListenerAdapter;
-import org.pircbotx.hooks.events.MessageEvent;
 
 import keksdose.fwkib.modules.BratiSongInsert;
 import keksdose.fwkib.modules.BrotiQuiz;
@@ -31,16 +30,30 @@ import keksdose.fwkib.modules.commands.QuizStats;
 import keksdose.fwkib.modules.commands.RsaGenPri;
 import keksdose.fwkib.modules.commands.RsaGenPub;
 import keksdose.fwkib.modules.commands.Security;
+import keksdose.fwkib.modules.commands.Sleepdose;
 import keksdose.fwkib.modules.commands.Spellcheck;
 import keksdose.fwkib.modules.commands.Spelluncheck;
 import keksdose.fwkib.modules.commands.TvProgramm;
 import keksdose.fwkib.modules.commands.Uuid;
 import keksdose.fwkib.modules.commands.Youtube;
 import keksdose.fwkib.mongo.MongoDB;
+import keksdose.keksIrc.Message.Message;
 import keksdose.fwkib.bot.model.Question;
 import keksdose.fwkib.bot.model.QuestionWithAnswer;
 
-public class FWKIB extends ListenerAdapter {
+public class FWKIB {
+    public FWKIB(ArrayBlockingQueue<Message> queue) {
+        while (true) {
+            Message m;
+            try {
+                m = queue.take();
+                onMessage(m);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
 
     private AtomicBoolean bool = new AtomicBoolean(false);
     private Multimap<String, String> answers = ArrayListMultimap.create();
@@ -51,18 +64,15 @@ public class FWKIB extends ListenerAdapter {
 
     // TODO Quiz etc. In Klassen machen und in ne Map putten. CleanUp das hier nur
     // noch einzelne Methoden mit if stehen und nicht mehr der Code.
-    @Override
-    public void onMessage(MessageEvent event) throws Exception {
-        if (ignore.contains(event.getUser().getNick())) {
-            return;
-        }
-        if (event.getMessage().startsWith("#quiz")) {
+    public void onMessage(Message event) throws Exception {
+
+        if (event.getContent().startsWith("#quiz")) {
             if (bool.get()) {
-                event.getChannel().send().message("quiz running");
+                event.answer("quiz running");
                 return;
             }
 
-            List<String> splitter = Splitter.on("#quiz").splitToList(event.getMessage());
+            List<String> splitter = Splitter.on("#quiz").splitToList(event.getContent());
             String topic = splitter.size() == 2 ? splitter.get(1).trim() : "info";
             System.out.println(topic);
             System.out.println(splitter.size());
@@ -76,7 +86,7 @@ public class FWKIB extends ListenerAdapter {
             Question question = new QuestionWithAnswer(o);
             answers.clear();
 
-            event.getChannel().send().message(question.getQuestion());
+            event.answer(question.getQuestion());
 
             answerList = question.getAnswerList();
             optionList = question.getOptions();
@@ -91,13 +101,13 @@ public class FWKIB extends ListenerAdapter {
                         for (String var : question.getAnswerList()) {
                             answersString += var + " ";
                         }
-                        event.getChannel().send().message("richtig ist: " + answersString);
+                        event.answer("richtig ist: " + answersString);
                         List<String> correctPersons = new ArrayList<>();
                         question.getAnswerList()
                                 .forEach((element) -> correctPersons.addAll(answers.get(element.toLowerCase())));
                         correctPersons.forEach(v -> System.out.println(v));
                         new MongoDB().updateStats(correctPersons);
-                        event.getChannel().send().message(correctPersons.size() + " were correct of " + answers.size());
+                        event.answer(correctPersons.size() + " were correct of " + answers.size());
                         answers.clear();
                         bool.set(false);
 
@@ -112,139 +122,144 @@ public class FWKIB extends ListenerAdapter {
 
         }
 
-        if (event.getMessage().startsWith("#tv-nau") || event.getMessage().startsWith("#tv-now")) {
-            event.getChannel().send().message(new TvProgramm().apply("now"));
-
+        if (event.getContent().startsWith("#tv-nau") || event.getContent().startsWith("#tv-now")) {
+            event.answer(new TvProgramm().apply("now"));
             return;
         }
-        if (event.getMessage().startsWith("#spellcheck")) {
-            event.getChannel().send().message(new Spellcheck().apply(event.getMessage()));
+        if (event.getContent().startsWith("#spellcheck")) {
+            event.answer(new Spellcheck().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().startsWith("#spelluncheck")) {
-            event.getChannel().send().message(new Spelluncheck().apply(event.getMessage()));
+        if (event.getContent().startsWith("#spelluncheck")) {
+            event.answer(new Spelluncheck().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().startsWith("#fehler")) {
-            event.getChannel().send().message(new Misspell().apply(event.getMessage()));
+        if (event.getContent().startsWith("#fehler")) {
+            event.answer(new Misspell().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().startsWith("#remove")) {
-            event.getChannel().send().message(new Misspell().apply(event.getMessage()));
+        if (event.getContent().startsWith("#remove")) {
+            event.answer(new Misspell().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().startsWith("#yt")) {
-            event.getChannel().send().message(new Youtube().apply(event.getMessage()));
+        if (event.getContent().startsWith("#yt")) {
+            event.answer(new Youtube().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().startsWith("#tv")) {
-            event.getChannel().send().message(new TvProgramm().apply(""));
+        if (event.getContent().startsWith("#tv")) {
+            event.answer(new TvProgramm().apply(""));
             return;
         }
-        if (event.getMessage().startsWith("#hash #pwgen")) {
-            event.getChannel().send().message(new Hash().compose(new Pwgen()).apply(""));
+        if (event.getContent().startsWith("#hash #pwgen")) {
+            event.answer(new Hash().compose(new Pwgen()).apply(""));
             return;
         }
-        if (event.getMessage().startsWith("#stats")) {
-            event.getChannel().send().message(new QuizStats().apply(event.getMessage()));
+        if (event.getContent().startsWith("#stats")) {
+            event.answer(new QuizStats().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().startsWith("#help")) {
-            event.getChannel().send().message(new Help().apply(event.getMessage()));
+        if (event.getContent().startsWith("#help")) {
+            event.answer(new Help().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().equals("#mongo")) {
-            event.getChannel().send().message(new MongoStats().apply(event.getMessage()));
+        if (event.getContent().equals("#mongo")) {
+            event.answer(new MongoStats().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().equals("#security")) {
-            event.getChannel().send().message(new Security().apply(event.getMessage()));
+        if (event.getContent().equals("#security")) {
+            event.answer(new Security().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().equals("#uuid")) {
-            event.getChannel().send().message(new Uuid().apply(event.getMessage()));
+        if (event.getContent().equals("#uuid")) {
+            event.answer(new Uuid().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().equals("#rsagen-pub")) {
-            event.getChannel().send().message(new RsaGenPub().apply(event.getMessage()));
+        if (event.getContent().equals("#rsagen-pub")) {
+            event.answer(new RsaGenPub().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().equals("#rsagen-pri")) {
-            event.getChannel().send().message(new RsaGenPri().apply(event.getMessage()));
+        if (event.getContent().equals("#rsagen-pri")) {
+            event.answer(new RsaGenPri().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().equals("#pwgen")) {
-            event.getChannel().send().message(new Pwgen().apply(event.getMessage()));
+        if (event.getContent().equals("#pwgen")) {
+            event.answer(new Pwgen().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().startsWith("#haskell-url")) {
-            event.getChannel().send().message(new HaskellUrl().apply(event.getMessage()));
+        if (event.getContent().startsWith("#haskell-url")) {
+            event.answer(new HaskellUrl().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().startsWith("#haskell")) {
-            event.getChannel().send().message(new Haskell().apply(event.getMessage()));
+        if (event.getContent().startsWith("#haskell")) {
+            event.answer(new Haskell().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().startsWith("#bratisong")) {
-            event.getChannel().send().message(new BratiSong().apply(event.getMessage()));
+        if (event.getContent().startsWith("#bratisong")) {
+            event.answer(new BratiSong().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().startsWith("#brati") || event.getMessage().startsWith("#rage")) {
-            event.getChannel().send().message(new Brati().apply(event.getMessage()));
+        if (event.getContent().startsWith("#brati") || event.getContent().startsWith("#rage")) {
+            event.answer(new Brati().apply(event.getContent()));
             return;
         }
-
-        if (event.getMessage().startsWith("#home")) {
-            event.getChannel().send().message(new Home().apply(event.getMessage()));
+        if (event.getContent().startsWith("#sleepdose")) {
+            event.answer(new Sleepdose().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().startsWith("#hash")) {
-            event.getChannel().send().message(new Hash().apply(event.getMessage()));
+        if (event.getContent().startsWith("#home")) {
+            event.answer(new Home().apply(event.getContent()));
             return;
         }
-        if (event.getMessage().toLowerCase().startsWith("keksbot,")
-                || event.getMessage().toLowerCase().startsWith("keksbot:")) {
-            event.getChannel().send().message(new ReminderKeksdose().apply(event.getMessage()));
+        if (event.getContent().startsWith("#hash")) {
+            event.answer(new Hash().apply(event.getContent()));
             return;
         }
-
-        if (event.getMessage().contains("secs") && event.getUser().getNick().equals("broti")
-                || event.getUser().getNick().equals("fwkib") && event.getMessage().contains("zeit: ")) {
-            new BrotiQuiz().apply(event);
-            return;
-        }
-        if (event.getMessage().contains("#nick") && event.getUser().getLogin().equals("~Keksdose")
-                && event.getUser().getHostmask().equals("2a01:4f8:1c1c:11a7::1")) {
-            event.getBot().sendRaw().rawLine("nick " + event.getMessage().split(" ")[1]);
-            return;
-        }
-        if (event.getMessage().trim().startsWith("~") && event.getUser().getNick().contains("brati")
-                && event.getMessage().trim().endsWith("~")) {
-            new BratiSongInsert().apply(event.getMessage(), event.getUser().getNick());
+        if (event.getContent().toLowerCase().startsWith("keksbot,")
+                || event.getContent().toLowerCase().startsWith("keksbot:")) {
+            event.answer(new ReminderKeksdose().apply(event.getContent()));
             return;
         }
 
+        /*
+         * if (event.getContent().contains("secs") &&
+         * event.getUser().getNick().equals("broti") ||
+         * event.getHostName().getNick().equals("fwkib") &&
+         * event.getContent().contains("zeit: ")) { new BrotiQuiz().apply(event);
+         * return; }
+         */
+        /*
+         * if (event.getContent().contains("#nick") &&
+         * event.getUser().getLogin().equals("~Keksdose") &&
+         * event.getUser().getHostmask().equals("2a01:4f8:1c1c:11a7::1")) {
+         * event.getBot().sendRaw().rawLine("nick " + event.getContent().split(" ")[1]);
+         * return; } if (event.getContent().trim().startsWith("~") &&
+         * event.getUser().getNick().contains("brati") &&
+         * event.getContent().trim().endsWith("~")) { new
+         * BratiSongInsert().apply(event.getContent().replaceAll("~", ""),
+         * event.getUser().getNick()); return; }
+         * 
+         */
         Pattern compiledPattern = Pattern.compile(pattern);
-        Matcher matcher = compiledPattern.matcher(event.getMessage());
+        Matcher matcher = compiledPattern.matcher(event.getContent());
 
         if (matcher.find()) {
             System.out.println(matcher.group(0).split(" ")[0]);
-            event.getChannel().send().message(
+            event.answer(
                     new Youtube().apply("https://www.youtube.com/watch?v=" + matcher.group(0).split(" ")[0].trim()));
             return;
         }
-        if (bool.get() && !event.getUser().equals(event.getBot().getUserBot())) {
-            System.out.println(String.valueOf(answerList));
-            if (optionList != null
-                    && (optionList.contains(event.getMessage().toLowerCase()) || optionList.size() == 0)) {
-
-                answers.entries().removeIf(v -> v.getValue().equals(event.getUser().getNick()));
-
-                answers.put(event.getMessage().toLowerCase(), event.getUser().getNick());
-            }
-
-        }
-
+        /*
+         * if (bool.get() && !event.getUser().equals(event.getBot().getUserBot())) {
+         * System.out.println(String.valueOf(answerList)); if (optionList != null &&
+         * (optionList.contains(event.getContent().toLowerCase()) || optionList.size()
+         * == 0)) {
+         * 
+         * answers.entries().removeIf(v ->
+         * v.getValue().equals(event.getUser().getNick()));
+         * 
+         * answers.put(event.getContent().toLowerCase(), event.getUser().getNick()); }
+         * 
+         */
     }
 
 }
