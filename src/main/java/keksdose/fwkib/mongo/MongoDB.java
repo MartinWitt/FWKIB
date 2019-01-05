@@ -235,7 +235,7 @@ public class MongoDB {
             collection.findOneAndDelete(collection.find().first());
         }
         Document toInsert = new Document().append("wordWrong", wordWrong).append("wordCorrect", wordCorrect)
-                .append("wordRemeber", wordRemeber);
+                .append("wordRemember", wordRemeber);
         collection.insertOne(toInsert);
 
     }

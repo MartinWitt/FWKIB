@@ -20,10 +20,10 @@ public class BotStart implements Runnable {
         ArrayBlockingQueue<Message> container = new ArrayBlockingQueue<>(100);
         IRCStart start = new IRCStart(container);
         start.setCapHandler(true);
-        start.setNickname("FWKIB|Test");
+        start.setNickname("fwkib");
         start.addChannel("#kitinfo-botnet");
         start.addChannel("#kitinfo-test");
-        // start.addChannel("#kitinfo");
+        start.addChannel("#kitinfo");
         Executors.newSingleThreadExecutor().submit(new Runnable() {
 
             @Override

@@ -25,12 +25,15 @@ import keksdose.fwkib.modules.commands.Help;
 import keksdose.fwkib.modules.commands.Home;
 import keksdose.fwkib.modules.commands.Misspell;
 import keksdose.fwkib.modules.commands.MongoStats;
+import keksdose.fwkib.modules.commands.NNDose;
 import keksdose.fwkib.modules.commands.Pwgen;
 import keksdose.fwkib.modules.commands.QuizStats;
+import keksdose.fwkib.modules.commands.RandomBrati;
 import keksdose.fwkib.modules.commands.RsaGenPri;
 import keksdose.fwkib.modules.commands.RsaGenPub;
 import keksdose.fwkib.modules.commands.Security;
 import keksdose.fwkib.modules.commands.Sleepdose;
+import keksdose.fwkib.modules.commands.SmartDose;
 import keksdose.fwkib.modules.commands.Spellcheck;
 import keksdose.fwkib.modules.commands.Spelluncheck;
 import keksdose.fwkib.modules.commands.TvProgramm;
@@ -47,7 +50,12 @@ public class FWKIB {
             Message m;
             try {
                 m = queue.take();
+                if (m == null) {
+                    continue;
+                }
+
                 onMessage(m);
+
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -138,6 +146,21 @@ public class FWKIB {
             event.answer(new Misspell().apply(event.getContent()));
             return;
         }
+        // --------------------------NN------------------------------//
+        if (event.getContent().startsWith("#smartDose")) {
+            event.answer(new NNDose().apply(event.getContent()));
+            return;
+        }
+        if (event.getContent().startsWith("#markovDose")) {
+            event.answer(new SmartDose().apply(event.getContent()));
+            return;
+        }
+        if (event.getContent().startsWith("#randomBrati")) {
+            event.answer(new RandomBrati().apply(event.getContent()));
+            return;
+        }
+        // --------------------------NN-Ende-----------------------------//
+
         if (event.getContent().startsWith("#remove")) {
             event.answer(new Misspell().apply(event.getContent()));
             return;
