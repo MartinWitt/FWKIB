@@ -15,6 +15,8 @@ import com.mongodb.DBObject;
 
 import keksdose.fwkib.modules.BratiSongInsert;
 import keksdose.fwkib.modules.BrotiQuiz;
+import keksdose.fwkib.modules.Command;
+import keksdose.fwkib.modules.ModuleSupplier;
 import keksdose.fwkib.modules.ReminderKeksdose;
 import keksdose.fwkib.modules.commands.Brati;
 import keksdose.fwkib.modules.commands.BratiSong;
@@ -69,6 +71,7 @@ public class FWKIB {
     private List<String> answerList = null;
     private String pattern = "(?<=youtu.be/|watch\\?v=|/videos/|embed\\/)[^#\\&\\?]*";
     private List<String> optionList = null;
+    private ModuleSupplier supplier = new ModuleSupplier();
 
     // TODO Quiz etc. In Klassen machen und in ne Map putten. CleanUp das hier nur
     // noch einzelne Methoden mit if stehen und nicht mehr der Code.
@@ -129,7 +132,26 @@ public class FWKIB {
             return;
 
         }
+        if (event.getContent().startsWith("#command")) {
+            try {
+                List<String> splitter = Splitter.on(" ").omitEmptyStrings().limit(2)
+                        .splitToList((event.getContent().replace("#command", "")));
+                if (splitter.size() == 0) {
+                    Command c = supplier.getCommand("");
+                    event.answer(c.apply(event.getContent().replace("#command", "")));
+                    return;
+                } else {
+                    Command c = supplier.getCommand(splitter.get(0));
+                    event.answer(c.apply(event.getContent().replace("#command", "")));
+                    return;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                event.answer("furchtbar");
+                return;
+            }
 
+        }
         if (event.getContent().startsWith("#tv-nau") || event.getContent().startsWith("#tv-now")) {
             event.answer(new TvProgramm().apply("now"));
             return;
@@ -156,6 +178,10 @@ public class FWKIB {
             return;
         }
         if (event.getContent().startsWith("#randomBrati")) {
+            event.answer(new RandomBrati().apply(event.getContent()));
+            return;
+        }
+        if (event.getContent().startsWith("#smartBrati")) {
             event.answer(new RandomBrati().apply(event.getContent()));
             return;
         }
