@@ -38,7 +38,7 @@ public class BrotiQuiz implements Function<Message, String> {
                     return;
                 num = new Random().nextInt(num);
                 letter = (char) (letter + num);
-                event.answer(String.valueOf(letter));
+                event.answerNoPrefix(String.valueOf(letter));
             }
 
         });

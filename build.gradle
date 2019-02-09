@@ -54,14 +54,6 @@ repositories {
 
 
 
-test {
-    testLogging {
-        // Make sure output from
-        // standard out or error is shown
-        // in Gradle output.
-        showStandardStreams = true
-     }
-}
 
 
 mainClassName = 'keksdose.fwkib.Main'

@@ -28,6 +28,7 @@ import keksdose.fwkib.modules.commands.Home;
 import keksdose.fwkib.modules.commands.Misspell;
 import keksdose.fwkib.modules.commands.MongoStats;
 import keksdose.fwkib.modules.commands.NNDose;
+import keksdose.fwkib.modules.commands.OCR;
 import keksdose.fwkib.modules.commands.Pwgen;
 import keksdose.fwkib.modules.commands.QuizStats;
 import keksdose.fwkib.modules.commands.RandomBrati;
@@ -36,6 +37,8 @@ import keksdose.fwkib.modules.commands.RsaGenPub;
 import keksdose.fwkib.modules.commands.Security;
 import keksdose.fwkib.modules.commands.Sleepdose;
 import keksdose.fwkib.modules.commands.SmartDose;
+import keksdose.fwkib.modules.commands.SmartMensa;
+import keksdose.fwkib.modules.commands.SmartViceTitle;
 import keksdose.fwkib.modules.commands.Spellcheck;
 import keksdose.fwkib.modules.commands.Spelluncheck;
 import keksdose.fwkib.modules.commands.TvProgramm;
@@ -185,6 +188,19 @@ public class FWKIB {
             event.answer(new RandomBrati().apply(event.getContent()));
             return;
         }
+        if (event.getContent().startsWith("#smartMensa")) {
+            event.answer(new SmartMensa().apply(event.getContent()));
+            return;
+        }
+        if (event.getContent().startsWith("#smartTitle") || event.getContent().startsWith("#smartTitel")) {
+            event.answer(new SmartViceTitle().apply(event.getContent()));
+            return;
+        }
+        if (event.getContent().startsWith("#ocr")) {
+            event.answer(new OCR().apply(event.getContent()));
+            return;
+        }
+
         // --------------------------NN-Ende-----------------------------//
 
         if (event.getContent().startsWith("#remove")) {
@@ -269,25 +285,35 @@ public class FWKIB {
             return;
         }
 
-        /*
-         * if (event.getContent().contains("secs") &&
-         * event.getUser().getNick().equals("broti") ||
-         * event.getHostName().getNick().equals("fwkib") &&
-         * event.getContent().contains("zeit: ")) { new BrotiQuiz().apply(event);
-         * return; }
-         */
+        if (event.getContent().contains("secs") && event.getNick().equals("broti")
+                || event.getNick().equals("fwkib") && event.getContent().contains("zeit: ")) {
+            new BrotiQuiz().apply(event);
+            return;
+        }
+        if (event.getHostName().equals("2a01:4f8:1c1c:11a7::1")) {
+            if (!(event.getContent().startsWith(">") || event.getContent().startsWith("\""))) {
+
+                new MongoDB().insertKeksdose(event.getContent());
+            }
+        }
+
         /*
          * if (event.getContent().contains("#nick") &&
          * event.getUser().getLogin().equals("~Keksdose") &&
          * event.getUser().getHostmask().equals("2a01:4f8:1c1c:11a7::1")) {
          * event.getBot().sendRaw().rawLine("nick " + event.getContent().split(" ")[1]);
-         * return; } if (event.getContent().trim().startsWith("~") &&
-         * event.getUser().getNick().contains("brati") &&
-         * event.getContent().trim().endsWith("~")) { new
-         * BratiSongInsert().apply(event.getContent().replaceAll("~", ""),
-         * event.getUser().getNick()); return; }
-         * 
+         * return; }
          */
+        if (event.getContent().trim().startsWith("~") && event.getNick().contains("brati")
+                && event.getContent().trim().endsWith("~")) {
+            new BratiSongInsert().apply(event.getContent().replaceAll("~", ""), event.getNick());
+            return;
+        }
+        if (event.getHostName().equals("2a01:4f8:1c1c:11a7::1") && event.getContent().equals("#restart")) {
+            new ProcessBuilder("./restart.sh").start();
+            return;
+        }
+
         Pattern compiledPattern = Pattern.compile(pattern);
         Matcher matcher = compiledPattern.matcher(event.getContent());
 
@@ -297,18 +323,18 @@ public class FWKIB {
                     new Youtube().apply("https://www.youtube.com/watch?v=" + matcher.group(0).split(" ")[0].trim()));
             return;
         }
-        /*
-         * if (bool.get() && !event.getUser().equals(event.getBot().getUserBot())) {
-         * System.out.println(String.valueOf(answerList)); if (optionList != null &&
-         * (optionList.contains(event.getContent().toLowerCase()) || optionList.size()
-         * == 0)) {
-         * 
-         * answers.entries().removeIf(v ->
-         * v.getValue().equals(event.getUser().getNick()));
-         * 
-         * answers.put(event.getContent().toLowerCase(), event.getUser().getNick()); }
-         * 
-         */
-    }
 
+        if (bool.get() && !event.getNick().equals("fwkib")) {
+            System.out.println(String.valueOf(answerList));
+            if (optionList != null
+                    && (optionList.contains(event.getContent().toLowerCase()) || optionList.size() == 0)) {
+
+                answers.entries().removeIf(v -> v.getValue().equals(event.getNick()));
+
+                answers.put(event.getContent().toLowerCase(), event.getNick());
+            }
+
+        }
+
+    }
 }

@@ -350,6 +350,16 @@ public class MongoDB {
         collection.insertOne(toInsert);
     }
 
+    public void insertKeksdose(String input) {
+        if (input.startsWith("\u0001ACTION")) {
+            input = "FWKIB glaubt Sleepdose: " + input.replaceAll("\u0001ACTION", "");
+            input = input.replaceAll("\u0001", "");
+        }
+        MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("keksdose");
+        Document toInsert = new Document().append("text", input).append("time", LocalTime.now());
+        collection.insertOne(toInsert);
+    }
+
     Block<Document> printBlock = new Block<Document>() {
         @Override
         public void apply(final Document document) {
