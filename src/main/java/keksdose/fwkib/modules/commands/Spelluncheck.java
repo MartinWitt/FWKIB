@@ -14,15 +14,13 @@ public class Spelluncheck implements Command {
     @Override
     public String apply(String message) {
         List<String> splitter = Splitter.on(" ").omitEmptyStrings().trimResults().splitToList(message);
-        if (splitter.size() == 1) {
+        if (splitter.size() == 0) {
             return "";
         }
         MongoDB db = new MongoDB();
         List<String> returnvalue = new ArrayList<>();
         for (String var : splitter) {
-            if (var == "#spelluncheck") {
-                continue;
-            }
+
             String toTest = db.getWrongWord(var);
             if (toTest.isEmpty()) {
                 returnvalue.add(var);

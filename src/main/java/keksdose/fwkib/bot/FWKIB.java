@@ -15,7 +15,7 @@ import com.mongodb.DBObject;
 
 import keksdose.fwkib.modules.BratiSongInsert;
 import keksdose.fwkib.modules.BrotiQuiz;
-import keksdose.fwkib.modules.Command;
+import keksdose.fwkib.modules.CommandController;
 import keksdose.fwkib.modules.ModuleSupplier;
 import keksdose.fwkib.modules.ReminderKeksdose;
 import keksdose.fwkib.modules.commands.Brati;
@@ -74,12 +74,15 @@ public class FWKIB {
     private List<String> answerList = null;
     private String pattern = "(?<=youtu.be/|watch\\?v=|/videos/|embed\\/)[^#\\&\\?]*";
     private List<String> optionList = null;
-    private ModuleSupplier supplier = new ModuleSupplier();
+    private CommandController controller = new CommandController();
 
     // TODO Quiz etc. In Klassen machen und in ne Map putten. CleanUp das hier nur
     // noch einzelne Methoden mit if stehen und nicht mehr der Code.
     public void onMessage(Message event) throws Exception {
-
+        if (ignore.contains(event.getNick())) {
+            return;
+            // stops bots
+        }
         if (event.getContent().startsWith("#quiz")) {
             if (bool.get()) {
                 event.answer("quiz running");
@@ -92,7 +95,6 @@ public class FWKIB {
             System.out.println(splitter.size());
 
             DBObject o = new MongoDB().getQuestion(topic);
-            System.out.println(String.valueOf(o));
             if (o == null) {
                 return;
             }
@@ -135,150 +137,10 @@ public class FWKIB {
             return;
 
         }
-        if (event.getContent().startsWith("#command")) {
-            try {
-                List<String> splitter = Splitter.on(" ").omitEmptyStrings().limit(2)
-                        .splitToList((event.getContent().replace("#command", "")));
-                if (splitter.size() == 0) {
-                    Command c = supplier.getCommand("");
-                    event.answer(c.apply(event.getContent().replace("#command", "")));
-                    return;
-                } else {
-                    Command c = supplier.getCommand(splitter.get(0));
-                    event.answer(c.apply(event.getContent().replace("#command", "")));
-                    return;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                event.answer("furchtbar");
-                return;
-            }
-
-        }
-        if (event.getContent().startsWith("#tv-nau") || event.getContent().startsWith("#tv-now")) {
-            event.answer(new TvProgramm().apply("now"));
-            return;
-        }
-        if (event.getContent().startsWith("#spellcheck")) {
-            event.answer(new Spellcheck().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#spelluncheck")) {
-            event.answer(new Spelluncheck().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#fehler")) {
-            event.answer(new Misspell().apply(event.getContent()));
-            return;
-        }
-        // --------------------------NN------------------------------//
-        if (event.getContent().startsWith("#smartDose")) {
-            event.answer(new NNDose().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#markovDose")) {
-            event.answer(new SmartDose().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#randomBrati")) {
-            event.answer(new RandomBrati().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#smartBrati")) {
-            event.answer(new RandomBrati().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#smartMensa")) {
-            event.answer(new SmartMensa().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#smartTitle") || event.getContent().startsWith("#smartTitel")) {
-            event.answer(new SmartViceTitle().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#ocr")) {
-            event.answer(new OCR().apply(event.getContent()));
-            return;
+        if (event.getContent().startsWith("#")) {
+            event.answer(controller.executeInput(event.getContent()));
         }
 
-        // --------------------------NN-Ende-----------------------------//
-
-        if (event.getContent().startsWith("#remove")) {
-            event.answer(new Misspell().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#yt")) {
-            event.answer(new Youtube().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#tv")) {
-            event.answer(new TvProgramm().apply(""));
-            return;
-        }
-        if (event.getContent().startsWith("#hash #pwgen")) {
-            event.answer(new Hash().compose(new Pwgen()).apply(""));
-            return;
-        }
-        if (event.getContent().startsWith("#stats")) {
-            event.answer(new QuizStats().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#help")) {
-            event.answer(new Help().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().equals("#mongo")) {
-            event.answer(new MongoStats().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().equals("#security")) {
-            event.answer(new Security().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().equals("#uuid")) {
-            event.answer(new Uuid().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().equals("#rsagen-pub")) {
-            event.answer(new RsaGenPub().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().equals("#rsagen-pri")) {
-            event.answer(new RsaGenPri().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().equals("#pwgen")) {
-            event.answer(new Pwgen().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#haskell-url")) {
-            event.answer(new HaskellUrl().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#haskell")) {
-            event.answer(new Haskell().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#bratisong")) {
-            event.answer(new BratiSong().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#brati") || event.getContent().startsWith("#rage")) {
-            event.answer(new Brati().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#sleepdose")) {
-            event.answer(new Sleepdose().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#home")) {
-            event.answer(new Home().apply(event.getContent()));
-            return;
-        }
-        if (event.getContent().startsWith("#hash")) {
-            event.answer(new Hash().apply(event.getContent()));
-            return;
-        }
         if (event.getContent().toLowerCase().startsWith("keksbot,")
                 || event.getContent().toLowerCase().startsWith("keksbot:")) {
             event.answer(new ReminderKeksdose().apply(event.getContent()));

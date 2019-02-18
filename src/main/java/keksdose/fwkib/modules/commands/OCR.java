@@ -17,7 +17,6 @@ public class OCR implements Command {
     public String apply(String message) {
 
         try {
-            message = message.replaceFirst("#.*\\s", "");
             int maxDownload = 1024 * 1024 * 2;
             URL website = new URL(message);
 
@@ -33,8 +32,7 @@ public class OCR implements Command {
             ProcessBuilder pb = new ProcessBuilder("tesseract", "200MB.jpg", "stdout", "-l", "deu+eng", "--oem", "1");
             String output = IOUtils.toString(pb.start().getInputStream());
             output = output.replaceAll("\n", " ");
-
-            return output;
+            return output.isBlank() ? "nix erkannt ;_; " : output;
         } catch (FileNotFoundException e) {
             return "naja wohl mal nachfragen";
         } catch (IOException e) {

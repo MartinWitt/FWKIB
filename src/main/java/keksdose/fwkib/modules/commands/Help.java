@@ -16,8 +16,7 @@ public class Help implements Command {
 
     @Override
     public String apply(String message) {
-        List<String> parameterList = Splitter.on("#help").omitEmptyStrings().trimResults().splitToList(message);
-        if (parameterList.size() != 1) {
+        if (message.trim().isEmpty()) {
             try {
                 ClassPath classpath = ClassPath.from(loader);
                 ImmutableList<ClassInfo> classes = classpath.getTopLevelClasses(path).asList();
@@ -29,7 +28,7 @@ public class Help implements Command {
                 e.printStackTrace();
             }
         } else {
-            return new MongoDB().getHelp(parameterList.get(0));
+            return new MongoDB().getHelp(message);
         }
 
         return "";

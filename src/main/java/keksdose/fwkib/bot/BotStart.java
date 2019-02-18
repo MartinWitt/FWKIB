@@ -10,8 +10,6 @@ import keksdose.keksIrc.Message.Message;
 public class BotStart implements Runnable {
 
     public BotStart(String channel) {
-        super();
-
     }
 
     @Override

@@ -13,13 +13,9 @@ public class NNDose implements Command {
 
     @Override
     public String apply(String message) {
-        String[] args = message.split(" ", 2);
-        String prefix = "";
-        if (args.length == 2) {
-            prefix = args[1];
-        }
+
         try {
-            String[] command = { "./smartDoseNNscript.sh", prefix };
+            String[] command = { "./smartDoseNNscript.sh" };
             Process process;
             process = Runtime.getRuntime().exec(command);
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));

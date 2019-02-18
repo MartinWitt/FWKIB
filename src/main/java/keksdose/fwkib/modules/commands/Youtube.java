@@ -19,9 +19,8 @@ public class Youtube implements Command {
     @Override
     public String apply(String message) {
         try {
-            List<String> splitter = Splitter.on("#yt").omitEmptyStrings().splitToList(message);
-            String title = splitter.size() == 1 ? splitter.get(0).trim() : null;
-            if (NumberUtils.isNumber(title)) {
+            String title = message;
+            if (NumberUtils.isCreatable(title)) {
                 return NBSP + new MongoDB().getYtLink(Integer.parseInt(title));
             }
             if (title != null) {
