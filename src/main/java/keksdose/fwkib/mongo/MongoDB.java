@@ -155,6 +155,35 @@ public class MongoDB {
 
     }
 
+    public String getKeksdose() {
+        DBCollection keksdose = mongoClient.getDB(dbName).getCollection("keksdose");
+        Random random = new Random();
+
+        DBObject json = keksdose.find().limit(-1).skip(random.nextInt((int) keksdose.count())).next();
+        String s = (String) json.get("text");
+        return String.valueOf(s);
+
+    }
+
+    public String getkeksdose(String regex) {
+        MongoDatabase database = mongoClient.getDatabase(dbName);
+        MongoCollection<Document> collection = database.getCollection("keksdose");
+
+        collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("text", regex)))).forEach(printBlock);
+
+        Random random = new SecureRandom();
+        if (list.size() != 0) {
+
+            String var = String.valueOf(list.get(random.nextInt(list.size())).get("text"));
+            list = new ArrayList<>();
+
+            return String.valueOf(var);
+
+        }
+        return "";
+
+    }
+
     public String getBratiSong(String regex) {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("bratiSong");
@@ -179,7 +208,7 @@ public class MongoDB {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("bratiSong");
         Document o = new Document();
-        o.append("text", "~~~" + song + "~~").append("time", Time.nanoTime()).append("user", user);
+        o.append("text", "~~~" + song + "~~~").append("time", Time.nanoTime()).append("user", user);
         collection.insertOne(o);
 
     }
@@ -206,7 +235,7 @@ public class MongoDB {
             collection.findOneAndDelete(collection.find().first());
         }
         Document toInsert = new Document().append("wordWrong", wordWrong).append("wordCorrect", wordCorrect)
-                .append("wordRemeber", wordRemeber);
+                .append("wordRemember", wordRemeber);
         collection.insertOne(toInsert);
 
     }
@@ -318,6 +347,16 @@ public class MongoDB {
         }
         Document toInsert = new Document().append("link", link).append("uuid", UUID.randomUUID()).append("time",
                 LocalTime.now());
+        collection.insertOne(toInsert);
+    }
+
+    public void insertKeksdose(String input) {
+        if (input.startsWith("\u0001ACTION")) {
+            input = "FWKIB glaubt Sleepdose: " + input.replaceAll("\u0001ACTION", "");
+            input = input.replaceAll("\u0001", "");
+        }
+        MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("keksdose");
+        Document toInsert = new Document().append("text", input).append("time", LocalTime.now());
         collection.insertOne(toInsert);
     }
 

@@ -9,11 +9,10 @@ public class BratiSong implements Command {
 
     @Override
     public String apply(String message) {
-        List<String> list = Splitter.on("#bratisong").trimResults().omitEmptyStrings().splitToList(message);
-        if (list.size() == 0) {
+        if (message.trim().isEmpty()) {
             return String.valueOf(new MongoDB().getBratiSong(""));
         } else {
-            return String.valueOf(new MongoDB().getBratiSong(list.get(0)));
+            return String.valueOf(new MongoDB().getBratiSong(message));
         }
     }
 }
