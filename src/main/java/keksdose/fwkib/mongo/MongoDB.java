@@ -228,7 +228,9 @@ public class MongoDB {
         Document output = collection
                 .aggregate(Arrays.asList(Aggregates.match(Filters.eq("wordWrong", wordWrong)), Aggregates.sample(1)))
                 .first();
-
+        if (output == null) {
+            return "";
+        }
         String var = "\"" + String.valueOf(output.get("wordWrong")) + "\"" + " schreibt sich eigentlich " + "\""
                 + String.valueOf(output.get("wordCorrect")) + "\"" + ", kannst es dir merken mit " + "\""
                 + String.valueOf(output.get("wordCorrect")) + "\"" + " wie " + "\""
@@ -245,6 +247,9 @@ public class MongoDB {
                 .aggregate(
                         Arrays.asList(Aggregates.match(Filters.eq("wordCorrect", wordCorrect)), Aggregates.sample(1)))
                 .first();
+        if (output == null) {
+            return "";
+        }
         String var = String.valueOf(output.get("wordWrong"));
         return String.valueOf(var);
 
@@ -259,6 +264,9 @@ public class MongoDB {
         Document output = collection
                 .aggregate(Arrays.asList(Aggregates.match(Filters.eq("wordWrong", wordWrong)), Aggregates.sample(1)))
                 .first();
+        if (output == null) {
+            return "";
+        }
         String var = String.valueOf(output.get("wordCorrect"));
         return String.valueOf(var);
     }
