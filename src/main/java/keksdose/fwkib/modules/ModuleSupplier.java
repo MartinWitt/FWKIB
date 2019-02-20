@@ -22,6 +22,7 @@ import keksdose.fwkib.modules.commands.RsaGenPri;
 import keksdose.fwkib.modules.commands.RsaGenPub;
 import keksdose.fwkib.modules.commands.Security;
 import keksdose.fwkib.modules.commands.Sleepdose;
+import keksdose.fwkib.modules.commands.SmartAllah;
 import keksdose.fwkib.modules.commands.SmartBrati;
 import keksdose.fwkib.modules.commands.SmartDose;
 import keksdose.fwkib.modules.commands.SmartMensa;
@@ -64,6 +65,8 @@ public class ModuleSupplier {
       commands.put("#home", Home::new);
       commands.put("#hash", Hash::new);
       commands.put("#brati", Brati::new);
+      commands.put("#rage", Brati::new);
+      commands.put("#smartAllah", SmartAllah::new);
 
       COMMAND_SUPPLIER = Collections.unmodifiableMap(commands);
    }
