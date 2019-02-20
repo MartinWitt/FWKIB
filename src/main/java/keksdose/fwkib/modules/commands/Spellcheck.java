@@ -13,7 +13,10 @@ public class Spellcheck implements Command {
 
     @Override
     public String apply(String message) {
+        System.out.println(message);
         List<String> splitter = Splitter.on(" ").omitEmptyStrings().trimResults().splitToList(message);
+        System.out.println(splitter.toString());
+
         if (splitter.size() == 0) {
             return "";
         }
