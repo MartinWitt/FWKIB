@@ -7,7 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.mongodb.BasicDBList;
-import com.mongodb.DBObject;
+
+import org.bson.Document;
 
 public class QuestionWithAnswer implements Question {
 
@@ -17,7 +18,7 @@ public class QuestionWithAnswer implements Question {
     private Map<String, String> optionLetterMap = new HashMap<>();
     private List<String> solutionList = new ArrayList<>();
 
-    public QuestionWithAnswer(DBObject o) {
+    public QuestionWithAnswer(Document o) {
         questionString = String.valueOf(o.get("question")) + formatOptions(o) + "  zeit: " + o.get("time").toString();
         formatSolution(o);
         formatTime(o);
@@ -48,7 +49,7 @@ public class QuestionWithAnswer implements Question {
         return time;
     }
 
-    private String formatOptions(DBObject o) {
+    private String formatOptions(Document o) {
         if (o == null || o.get("options") == null) {
             return "";
         }
@@ -71,7 +72,7 @@ public class QuestionWithAnswer implements Question {
         return var;
     }
 
-    private void formatSolution(DBObject o) {
+    private void formatSolution(Document o) {
 
         BasicDBList list = (BasicDBList) o.get("answers");
         for (Object listObject : list) {
@@ -81,7 +82,7 @@ public class QuestionWithAnswer implements Question {
         }
     }
 
-    private void formatTime(DBObject o) {
+    private void formatTime(Document o) {
         time = Integer.parseInt(o.get("time").toString());
 
     }

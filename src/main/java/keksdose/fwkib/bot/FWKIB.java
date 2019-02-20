@@ -13,6 +13,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.mongodb.DBObject;
 
+import org.bson.Document;
+
 import keksdose.fwkib.modules.BratiSongInsert;
 import keksdose.fwkib.modules.BrotiQuiz;
 import keksdose.fwkib.modules.CommandController;
@@ -94,7 +96,7 @@ public class FWKIB {
             System.out.println(topic);
             System.out.println(splitter.size());
 
-            DBObject o = new MongoDB().getQuestion(topic);
+            Document o = new MongoDB().getQuestion(topic);
             if (o == null) {
                 return;
             }

@@ -1,6 +1,5 @@
 package keksdose.fwkib.mongo;
 
-import java.security.SecureRandom;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +14,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Aggregates;
@@ -39,55 +39,54 @@ public class MongoDB {
         }
     }
 
-    public DBObject getQuestion(String collection) {
-        DB database = mongoClient.getDB(dbName);
+    public Document getQuestion(String collection) {
+        MongoDatabase database = mongoClient.getDatabase(dbName);
         if (collection.contains(";") || collection.contains(":") || collection.contains("!")) {
             return null;
         }
-        DBCollection questions = database.getCollection(collection);
-        Random random = new Random();
+        MongoCollection<Document> questions = database.getCollection(collection);
         if (questions == null) {
             return null;
         }
 
-        return questions.find().limit(-1).skip(random.nextInt((int) questions.count())).next();
+        return questions.aggregate(Arrays.asList(Aggregates.sample(1))).first();
     }
 
     public void updateStats(List<String> username) {
-        DBCollection stats = mongoClient.getDB(dbName).getCollection("stat");
+        MongoCollection<Document> stats = mongoClient.getDatabase(dbName).getCollection("stat");
         for (String var : username) {
             if (var.length() > 40) {
                 continue;
             }
-            BasicDBObject user = new BasicDBObject();
+            Document user = new Document();
             user.put("name", var);
-            DBObject search = stats.find(user).one();
+            Document search = stats.find(user).first();
             if (search == null) {
-                DBObject toInsert = new BasicDBObject("name", var).append("number", "1");
-                stats.insert(toInsert);
+                Document toInsert = new Document("name", var).append("number", "1");
+                stats.insertOne(toInsert);
             } else {
 
-                // update wäre änderbar
+                // update wÃ¤re Ã¤nderbar
                 Integer number = Integer.parseInt(search.get("number").toString());
                 number++;
                 BasicDBObject update = new BasicDBObject();
                 update.append("$set", new BasicDBObject().append("number", number.toString()));
-                stats.update(search, update);
+                stats.updateOne(search, update);
+
             }
         }
 
     }
 
     public String getStats() {
-        DBCollection stats = mongoClient.getDB(dbName).getCollection("stat");
-        DBCursor cursor = stats.find();
+        MongoCollection<Document> stats = mongoClient.getDatabase(dbName).getCollection("stat");
+        FindIterable<Document> cursor = stats.find();
 
         String value = "";
         List<User> list = new ArrayList<>();
-        while (cursor.hasNext()) {
-            cursor.next();
+        for (Document doc : cursor) {
 
-            list.add(new User(cursor.curr().get("name").toString(), cursor.curr().get("number").toString()));
+            list.add(new User(doc.get("name").toString(), doc.get("number").toString()));
 
         }
         list.sort(new Comparator<User>() {
@@ -112,10 +111,10 @@ public class MongoDB {
     }
 
     public String getStats(String username) {
-        DBCollection stats = mongoClient.getDB(dbName).getCollection("stat");
+        MongoCollection<Document> stats = mongoClient.getDatabase(dbName).getCollection("stat");
         BasicDBObject user = new BasicDBObject();
         user.put("name", username);
-        DBObject search = stats.find(user).one();
+        Document search = stats.find(user).first();
         if (search == null) {
             return "user not found";
         }
@@ -127,12 +126,11 @@ public class MongoDB {
     }
 
     public String getBrati() {
-        DBCollection brati = mongoClient.getDB(dbName).getCollection("brati");
-        Random random = new Random();
+        MongoDatabase database = mongoClient.getDatabase(dbName);
+        MongoCollection<Document> collection = database.getCollection("brati");
 
-        DBObject json = brati.find().limit(-1).skip(random.nextInt((int) brati.count())).next();
-        String s = (String) json.get("brati");
-        return String.valueOf(s);
+        Document brati = collection.aggregate(Arrays.asList(Aggregates.sample(1))).first();
+        return String.valueOf(brati.get("text"));
 
     }
 
@@ -140,26 +138,15 @@ public class MongoDB {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("brati");
 
-        collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("brati", regex)))).forEach(printBlock);
-
-        Random random = new SecureRandom();
-        if (list.size() != 0) {
-
-            String var = String.valueOf(list.get(random.nextInt(list.size())).get("brati"));
-            list = new ArrayList<>();
-
-            return String.valueOf(var);
-
-        }
-        return "";
+        Document brati = collection
+                .aggregate(Arrays.asList(Aggregates.match(Filters.regex("text", regex)), Aggregates.sample(1))).first();
+        return String.valueOf(brati.get("text"));
 
     }
 
     public String getKeksdose() {
-        DBCollection keksdose = mongoClient.getDB(dbName).getCollection("keksdose");
-        Random random = new Random();
-
-        DBObject json = keksdose.find().limit(-1).skip(random.nextInt((int) keksdose.count())).next();
+        MongoCollection<Document> keksdose = mongoClient.getDatabase(dbName).getCollection("keksdose");
+        Document json = keksdose.aggregate(Arrays.asList((Aggregates.sample(1)))).first();
         String s = (String) json.get("text");
         return String.valueOf(s);
 
@@ -169,35 +156,19 @@ public class MongoDB {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("keksdose");
 
-        collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("text", regex)))).forEach(printBlock);
+        Document brati = collection
+                .aggregate(Arrays.asList(Aggregates.match(Filters.regex("text", regex)), Aggregates.sample(1))).first();
 
-        Random random = new SecureRandom();
-        if (list.size() != 0) {
-
-            String var = String.valueOf(list.get(random.nextInt(list.size())).get("text"));
-            list = new ArrayList<>();
-
-            return String.valueOf(var);
-
-        }
-        return "";
-
+        return String.valueOf(brati.get("text"));
     }
 
     public String getBratiSong(String regex) {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("bratiSong");
-        collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("text", regex)))).forEach(printBlock);
 
-        Random random = new SecureRandom();
-        if (list.size() != 0) {
-
-            String var = String.valueOf(list.get(random.nextInt(list.size())).get("text"));
-            list = new ArrayList<>();
-
-            return String.valueOf(var);
-        }
-        return "";
+        Document bratiSong = collection
+                .aggregate(Arrays.asList(Aggregates.match(Filters.regex("text", regex)), Aggregates.sample(1))).first();
+        return String.valueOf(bratiSong.get("text"));
 
     }
 
@@ -254,44 +225,29 @@ public class MongoDB {
 
         collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("wordWrong", wordWrong)))).forEach(printBlock);
 
-        Random random = new SecureRandom();
-        if (list.size() != 0) {
-            try {
-                Document output = list.get(random.nextInt(list.size()));
-                list = new ArrayList<>();
-                String var = "\"" + String.valueOf(output.get("wordWrong")) + "\"" + " schreibt sich eigentlich " + "\""
-                        + String.valueOf(output.get("wordCorrect")) + "\"" + ", kannst es dir merken mit " + "\""
-                        + String.valueOf(output.get("wordCorrect")) + "\"" + " wie " + "\""
-                        + String.valueOf(output.get("wordRemember")) + "\"" + ".";
-                return String.valueOf(var);
-            } catch (Exception e) {
-                return "";
-            }
+        Document output = collection
+                .aggregate(Arrays.asList(Aggregates.match(Filters.eq("wordWrong", wordWrong)), Aggregates.sample(1)))
+                .first();
 
-        }
-        return "";
+        String var = "\"" + String.valueOf(output.get("wordWrong")) + "\"" + " schreibt sich eigentlich " + "\""
+                + String.valueOf(output.get("wordCorrect")) + "\"" + ", kannst es dir merken mit " + "\""
+                + String.valueOf(output.get("wordCorrect")) + "\"" + " wie " + "\""
+                + String.valueOf(output.get("wordRemember")) + "\"" + ".";
+        return String.valueOf(var);
+
     }
 
     public String getWrongWord(String wordCorrect) {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("mistake");
 
-        collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("wordCorrect", wordCorrect))))
-                .forEach(printBlock);
+        Document output = collection
+                .aggregate(
+                        Arrays.asList(Aggregates.match(Filters.eq("wordCorrect", wordCorrect)), Aggregates.sample(1)))
+                .first();
+        String var = String.valueOf(output.get("wordWrong"));
+        return String.valueOf(var);
 
-        Random random = new SecureRandom();
-        if (list.size() != 0) {
-            try {
-                Document output = list.get(random.nextInt(list.size()));
-                list = new ArrayList<>();
-                String var = String.valueOf(output.get("wordWrong"));
-                return String.valueOf(var);
-            } catch (Exception e) {
-                return "";
-            }
-
-        }
-        return "";
     }
 
     public String getCorrectWord(String wordWrong) {
@@ -300,23 +256,15 @@ public class MongoDB {
 
         collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("wordWrong", wordWrong)))).forEach(printBlock);
 
-        Random random = new SecureRandom();
-        if (list.size() != 0) {
-            try {
-                Document output = list.get(random.nextInt(list.size()));
-                list = new ArrayList<>();
-                String var = String.valueOf(output.get("wordCorrect"));
-                return String.valueOf(var);
-            } catch (Exception e) {
-                return "";
-            }
-
-        }
-        return "";
+        Document output = collection
+                .aggregate(Arrays.asList(Aggregates.match(Filters.eq("wordWrong", wordWrong)), Aggregates.sample(1)))
+                .first();
+        String var = String.valueOf(output.get("wordCorrect"));
+        return String.valueOf(var);
     }
 
     public String getYtLink(int n) {
-        MongoDatabase database = mongoClient.getDatabase("test");
+        MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("youtube");
         if (n == 0) {
             Document doc = collection.find().sort(new BasicDBObject().append("time", -1)).first();
