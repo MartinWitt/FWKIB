@@ -13,11 +13,11 @@ public class Misspell implements Command {
     public String apply(String message) {
 
         List<String> splitter = Splitter.on(" ").omitEmptyStrings().limit(4).splitToList(message);
-        String wordWrong = splitter.size() == 4 ? splitter.get(0).trim() : "";
-        String wordCorrect = splitter.size() == 4 ? splitter.get(1).trim() : "";
-        String wordRemember = splitter.size() == 4 ? splitter.get(2).trim() : "";
+        String wordWrong = splitter.size() == 3 ? splitter.get(0).trim() : "";
+        String wordCorrect = splitter.size() == 3 ? splitter.get(1).trim() : "";
+        String wordRemember = splitter.size() == 3 ? splitter.get(2).trim() : "";
 
-        if (splitter.size() == 2) {
+        if (splitter.size() == 1) {
 
             String var = new MongoDB().getMistake(splitter.get(0));
 

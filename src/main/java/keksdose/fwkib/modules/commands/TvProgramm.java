@@ -55,7 +55,7 @@ public class TvProgramm implements Command {
                     .filter(v -> v.contains("| Das Erste |") || v.contains("| ZDF |") || v.contains("| RTL |")
                             || v.contains("| SAT.1 |") || v.contains("| ProSieben |") || v.contains("| kabel eins |")
                             || v.contains("| RTL II |") || v.contains("| VOX |"))
-                    .collect(Collectors.joining(" || "));
+                    .collect(Collectors.joining(" || ")).replace("&amp;", "");
 
             // return String.join(",", channel);
         } catch (MalformedURLException e) {

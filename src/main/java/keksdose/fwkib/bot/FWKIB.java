@@ -137,8 +137,14 @@ public class FWKIB {
             return;
 
         }
+        if (event.getHostName().equals("2a01:4f8:1c1c:11a7::1") && event.getContent().equals("#restart")) {
+            new ProcessBuilder("./restart.sh").start();
+            return;
+        }
+
         if (event.getContent().startsWith("#")) {
             event.answer(controller.executeInput(event.getContent()));
+            return;
         }
 
         if (event.getContent().toLowerCase().startsWith("keksbot,")
@@ -169,10 +175,6 @@ public class FWKIB {
         if (event.getContent().trim().startsWith("~") && event.getNick().contains("brati")
                 && event.getContent().trim().endsWith("~")) {
             new BratiSongInsert().apply(event.getContent().replaceAll("~", ""), event.getNick());
-            return;
-        }
-        if (event.getHostName().equals("2a01:4f8:1c1c:11a7::1") && event.getContent().equals("#restart")) {
-            new ProcessBuilder("./restart.sh").start();
             return;
         }
 
