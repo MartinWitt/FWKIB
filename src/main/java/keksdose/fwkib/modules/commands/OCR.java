@@ -6,16 +6,22 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 
 import keksdose.fwkib.modules.Command;
 
 public class OCR implements Command {
+    private static Pattern printScrn = Pattern.compile("http://prntscr.com/[\\w]*");
 
     @Override
     public String apply(String message) {
-
+        Matcher m = printScrn.matcher(message);
+        if (m.find()) {
+            return new PrintScrOCr().apply(message);
+        }
         try {
             int maxDownload = 1024 * 1024 * 2;
             URL website = new URL(message);
@@ -32,6 +38,8 @@ public class OCR implements Command {
             ProcessBuilder pb = new ProcessBuilder("tesseract", "200MB.jpg", "stdout", "-l", "deu+eng", "--oem", "1");
             String output = IOUtils.toString(pb.start().getInputStream());
             output = output.replaceAll("\n", " ");
+            output = output.trim();
+            System.out.println(output);
             return output.isBlank() ? "nix erkannt ;_; " : output;
         } catch (FileNotFoundException e) {
             return "naja wohl mal nachfragen";

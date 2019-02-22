@@ -15,6 +15,7 @@ import keksdose.fwkib.modules.commands.Misspell;
 import keksdose.fwkib.modules.commands.MongoStats;
 import keksdose.fwkib.modules.commands.NNDose;
 import keksdose.fwkib.modules.commands.OCR;
+import keksdose.fwkib.modules.commands.PrintScrOCr;
 import keksdose.fwkib.modules.commands.Pwgen;
 import keksdose.fwkib.modules.commands.QuizStats;
 import keksdose.fwkib.modules.commands.RandomBrati;
@@ -67,6 +68,7 @@ public class ModuleSupplier {
       commands.put("#brati", Brati::new);
       commands.put("#rage", Brati::new);
       commands.put("#smartAllah", SmartAllah::new);
+      commands.put("#printscr", PrintScrOCr::new);
 
       COMMAND_SUPPLIER = Collections.unmodifiableMap(commands);
    }
