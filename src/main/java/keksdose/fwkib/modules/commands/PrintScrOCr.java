@@ -11,7 +11,7 @@ import org.apache.commons.io.IOUtils;
 import keksdose.fwkib.modules.Command;
 
 public class PrintScrOCr implements Command {
-    private static Pattern printScrn = Pattern.compile("http://prntscr.com/[\\w]*");
+    private static Pattern printScrn = Pattern.compile("(https?:)//prntscr.com/[\\w]*");
     private static Pattern extract = Pattern.compile("https://image.prntscr.com/image/[^>]*.png");
 
     @Override
@@ -22,7 +22,7 @@ public class PrintScrOCr implements Command {
         if (m.find()) {
             try {
 
-                URL url = new URL(m.group(0).replaceFirst("http", "https"));
+                URL url = new URL(m.group(0).replaceFirst("http:", "https:"));
                 System.out.println(m.group(0));
                 URLConnection con = url.openConnection();
                 InputStream in = con.getInputStream();

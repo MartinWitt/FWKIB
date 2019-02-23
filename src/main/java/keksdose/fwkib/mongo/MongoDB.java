@@ -139,7 +139,8 @@ public class MongoDB {
         MongoCollection<Document> collection = database.getCollection("brati");
 
         Document brati = collection
-                .aggregate(Arrays.asList(Aggregates.match(Filters.regex("text", regex)), Aggregates.sample(1))).first();
+                .aggregate(Arrays.asList(Aggregates.match(Filters.regex("brati", regex)), Aggregates.sample(1)))
+                .first();
         return String.valueOf(brati.get("brati"));
 
     }
