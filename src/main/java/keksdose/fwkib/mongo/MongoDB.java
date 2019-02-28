@@ -14,6 +14,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -145,6 +146,29 @@ public class MongoDB {
 
     }
 
+    public String getRage() {
+        MongoDatabase database = mongoClient.getDatabase(dbName);
+        MongoCollection<Document> collection = database.getCollection("brati");
+
+        Document brati = collection
+                .aggregate(Arrays.asList(Aggregates.match(Filters.eq("rage", true)), Aggregates.sample(1))).first();
+        return String.valueOf(brati.get("brati"));
+
+    }
+
+    public String getRage(String regex) {
+        MongoDatabase database = mongoClient.getDatabase(dbName);
+        MongoCollection<Document> collection = database.getCollection("brati");
+
+        Document brati = collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("rage", true)),
+                Aggregates.match(Filters.regex("brati", regex)), Aggregates.sample(1))).first();
+        if (brati == null) {
+            return "";
+        }
+        return String.valueOf(brati.get("brati"));
+
+    }
+
     public String getKeksdose() {
         MongoCollection<Document> keksdose = mongoClient.getDatabase(dbName).getCollection("keksdose");
         Document json = keksdose.aggregate(Arrays.asList((Aggregates.sample(1)))).first();
@@ -183,6 +207,45 @@ public class MongoDB {
         o.append("text", "~~~" + song + "~~~").append("time", Time.nanoTime()).append("user", user);
         collection.insertOne(o);
 
+    }
+
+    public String insertBrati(String brati, boolean rage, String user) {
+        if (brati.isBlank()) {
+            return "no add";
+        }
+        MongoDatabase database = mongoClient.getDatabase(dbName);
+        MongoCollection<Document> collection = database.getCollection("brati");
+        Document o = new Document();
+        o.append("rage", rage).append("brati", brati).append("time", Time.nanoTime()).append("user", user);
+        collection.insertOne(o);
+        return "\\o/ webscale";
+    }
+
+    public String flipRage(String regex) {
+        if (regex.isBlank()) {
+            return "war wohl leer dein regex";
+        }
+        MongoDatabase database = mongoClient.getDatabase(dbName);
+        MongoCollection<Document> collection = database.getCollection("brati");
+
+        Document brati = collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("brati", regex)))).first();
+
+        Document toFlip = brati;
+        collection.deleteOne(
+                collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("brati", regex)))).first());
+        if ((Boolean) toFlip.get("rage")) {
+            System.out.println("war true");
+            toFlip.replace("rage", false);
+            collection.insertOne(toFlip);
+            return "set false";
+        } else {
+            System.out.println("war false");
+
+            toFlip.replace("rage", true);
+            collection.insertOne(toFlip);
+
+            return "set true";
+        }
     }
 
     public String getHelp(String command) {

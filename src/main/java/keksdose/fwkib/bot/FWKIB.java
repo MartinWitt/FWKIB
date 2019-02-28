@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -34,8 +35,18 @@ public class FWKIB {
                 if (m == null) {
                     continue;
                 }
+                pool.execute(new Runnable() {
 
-                onMessage(m);
+                    @Override
+                    public void run() {
+                        try {
+                            onMessage(m);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                });
 
             } catch (Exception e) {
                 // TODO Auto-generated catch block
@@ -44,6 +55,7 @@ public class FWKIB {
         }
     }
 
+    private ExecutorService pool = Executors.newCachedThreadPool();
     private AtomicBoolean bool = new AtomicBoolean(false);
     private Multimap<String, String> answers = ArrayListMultimap.create();
     private List<String> ignore = Arrays.asList("Keksbot", "Chrisliebot");
@@ -117,8 +129,13 @@ public class FWKIB {
             new ProcessBuilder("./restart.sh").start();
             return;
         }
+        if (event.getHostName().equals("2a01:4f8:1c1c:11a7::1") && event.getContent().startsWith("#addBrati")) {
+            event.answer(new MongoDB().insertBrati(event.getContent().replaceFirst("#addBrati", "").trim(), false,
+                    "SleepDose"));
+            return;
+        }
 
-        if (event.getContent().startsWith("#")) {
+        if (event.getContent().startsWith("#") && !event.getContent().startsWith("#!")) {
             event.answer(controller.executeInput(event.getContent()));
             return;
         }

@@ -9,7 +9,10 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Strings;
+
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import keksdose.fwkib.modules.Command;
 
@@ -38,7 +41,7 @@ public class OCR implements Command {
             ProcessBuilder pb = new ProcessBuilder("tesseract", "200MB.jpg", "stdout", "-l", "deu+eng", "--oem", "1");
             String output = IOUtils.toString(pb.start().getInputStream());
             output = output.replaceAll("\n", " ");
-            output = output.trim();
+            output = StringUtils.substring(StringUtils.normalizeSpace(output), 0, 510);
             System.out.println(output);
             return output.isBlank() ? "nix erkannt ;_; " : output;
         } catch (FileNotFoundException e) {
