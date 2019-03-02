@@ -387,4 +387,32 @@ public class MongoDB {
         }
     };
 
+    public String getQuote() {
+        MongoDatabase database = mongoClient.getDatabase(dbName);
+        MongoCollection<Document> collection = database.getCollection("quote");
+
+        Document quote = collection.aggregate(Arrays.asList(Aggregates.sample(1))).first();
+        return String.valueOf(quote.get("quote"));
+
+    }
+
+    public String getQuote(String regex) {
+        MongoDatabase database = mongoClient.getDatabase(dbName);
+        MongoCollection<Document> collection = database.getCollection("quote");
+
+        Document quote = collection
+                .aggregate(Arrays.asList(Aggregates.match(Filters.regex("quote", regex)), Aggregates.sample(1)))
+                .first();
+        return String.valueOf(quote.get("quote"));
+
+    }
+
+    public String insertQuote(String input, String inserter) {
+        MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("quote");
+        Document toInsert = new Document().append("quote", input).append("time", LocalTime.now()).append("inserter",
+                inserter);
+        collection.insertOne(toInsert);
+        return "webscale?";
+    }
+
 }

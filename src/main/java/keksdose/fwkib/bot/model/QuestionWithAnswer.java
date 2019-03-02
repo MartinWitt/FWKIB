@@ -54,7 +54,7 @@ public class QuestionWithAnswer implements Question {
             return "";
         }
 
-        BasicDBList list = (BasicDBList) o.get("options");
+        ArrayList<?> list = (ArrayList<?>) o.get("options");
         String var = "  ";
         char letter = 'a';
         for (Object iterObject : list) {
@@ -73,8 +73,8 @@ public class QuestionWithAnswer implements Question {
     }
 
     private void formatSolution(Document o) {
+        ArrayList<?> list = (ArrayList<?>) o.get("answers");
 
-        BasicDBList list = (BasicDBList) o.get("answers");
         for (Object listObject : list) {
             String option = String.valueOf(listObject);
             solutionList.add(option);

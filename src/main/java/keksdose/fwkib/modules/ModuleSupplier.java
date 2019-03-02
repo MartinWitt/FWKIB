@@ -25,6 +25,7 @@ import keksdose.fwkib.modules.commands.OCR;
 import keksdose.fwkib.modules.commands.PrintScrOCr;
 import keksdose.fwkib.modules.commands.Pwgen;
 import keksdose.fwkib.modules.commands.QuizStats;
+import keksdose.fwkib.modules.commands.Quote;
 import keksdose.fwkib.modules.commands.Rage;
 import keksdose.fwkib.modules.commands.RandomBrati;
 import keksdose.fwkib.modules.commands.RsaGenPri;
@@ -79,6 +80,9 @@ public class ModuleSupplier {
       commands.put("#fliprage", FlipRage::new);
       commands.put("#ramstats", JvmStats::new);
       commands.put("#dummdose", Sleepdose::new);
+      commands.put("#dummbrati", SmartBrati::new);
+      commands.put("#quote", Quote::new);
+
       COMMAND_SUPPLIER = Collections.unmodifiableNavigableMap(commands);
    }
 

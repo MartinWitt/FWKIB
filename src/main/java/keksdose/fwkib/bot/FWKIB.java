@@ -78,7 +78,11 @@ public class FWKIB {
             }
 
             List<String> splitter = Splitter.on("#quiz").splitToList(event.getContent());
-            String topic = splitter.size() == 2 ? splitter.get(1).trim() : "info";
+            String topic = splitter.size() == 2 ? splitter.get(1).trim() : "";
+            if (topic.isBlank()) {
+                event.answer("cant find topic");
+                return;
+            }
             System.out.println(topic);
             System.out.println(splitter.size());
 
@@ -134,8 +138,14 @@ public class FWKIB {
                     "SleepDose"));
             return;
         }
+        if (event.getContent().startsWith("#addQuote") || event.getContent().startsWith("#addquote")) {
+            event.answer(new MongoDB().insertQuote(event.getContent().replaceFirst("(?i)#addQuote", "").trim(),
+                    event.getNick()));
+            return;
+        }
+        if (event.getContent().startsWith("#") && !event.getContent().startsWith("#!"))
 
-        if (event.getContent().startsWith("#") && !event.getContent().startsWith("#!")) {
+        {
             event.answer(controller.executeInput(event.getContent()));
             return;
         }
