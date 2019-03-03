@@ -82,6 +82,7 @@ public class ModuleSupplier {
       commands.put("#dummdose", Sleepdose::new);
       commands.put("#dummbrati", SmartBrati::new);
       commands.put("#quote", Quote::new);
+      commands.put("#mensa", SmartMensa::new);
 
       COMMAND_SUPPLIER = Collections.unmodifiableNavigableMap(commands);
    }
