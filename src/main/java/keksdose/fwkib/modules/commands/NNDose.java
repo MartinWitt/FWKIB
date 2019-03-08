@@ -4,6 +4,8 @@ package keksdose.fwkib.modules.commands;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -16,24 +18,18 @@ public class NNDose implements Command {
 
         try {
             String[] command = { "./smartDoseNNscript.sh" };
-            Process process;
-            process = Runtime.getRuntime().exec(command);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String s;
-            String returnvalue = "";
-            while ((s = reader.readLine()) != null) {
-                if (s.equals("\n")) {
-                    continue;
-                }
-                returnvalue += StringUtils.capitalize((s).stripTrailing());
-            }
-            return returnvalue.replaceAll("\n", " ").replaceAll("\\?\\.", "\\?").replaceAll("!\\.", "!");
+            ProcessBuilder builder;
+            builder = new ProcessBuilder(command);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(builder.start().getInputStream()));
+            List<String> returnvalue = (reader.lines()).filter(v -> !v.isBlank())
+                    .map(v -> v.replaceAll("(\\t|\\r?\\n)+", ". ")).map(v -> v.replaceAll("\"", ""))
+                    .map(v -> StringUtils.capitalize(v)).collect(Collectors.toList());
+            return String.join("", returnvalue);
+
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            return "da ist tf wohl exlodiert";
         }
 
-        return "";
     }
 
 }

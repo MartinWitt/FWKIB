@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,9 +31,8 @@ public class SmartMensa implements Command {
             ProcessBuilder builder;
             builder = new ProcessBuilder(command);
             BufferedReader reader = new BufferedReader(new InputStreamReader(builder.start().getInputStream()));
-            String s;
-            List<String> returnvalue = new ArrayList<>();
-            (reader.lines()).filter(v -> !v.isBlank()).forEach(returnvalue::add);
+            List<String> returnvalue = (reader.lines()).filter(v -> !v.isBlank()).map(v -> v.replaceAll("\"", ""))
+                    .collect(Collectors.toList());
 
             if (returnvalue.size() != 4) {
                 System.out.println(returnvalue.toString());
@@ -47,10 +47,9 @@ public class SmartMensa implements Command {
                 date = LocalDate.now()
                         .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(Locale.GERMANY));
             }
-            SecureRandom random = new SecureRandom();
             StringBuilder mensa = new StringBuilder();
             DecimalFormat df = new DecimalFormat("#.0");
-            Iterator<Double> doubleStream = random.doubles(2, 6).distinct().boxed().iterator();
+            Iterator<Double> doubleStream = new SecureRandom().doubles(2, 6).distinct().boxed().iterator();
             mensa.append(date + " ");
             mensa.append("Linie 1: " + returnvalue.get(0) + " " + df.format(doubleStream.next()) + "0 " + "\u20ac ");
             mensa.append("Linie 2: " + returnvalue.get(1) + " " + df.format(doubleStream.next()) + "0 " + "\u20ac ");
@@ -59,7 +58,6 @@ public class SmartMensa implements Command {
             return StringUtils.normalizeSpace(mensa.toString());
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

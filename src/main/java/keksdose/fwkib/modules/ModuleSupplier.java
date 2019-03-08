@@ -28,6 +28,7 @@ import keksdose.fwkib.modules.commands.QuizStats;
 import keksdose.fwkib.modules.commands.Quote;
 import keksdose.fwkib.modules.commands.Rage;
 import keksdose.fwkib.modules.commands.RandomBrati;
+import keksdose.fwkib.modules.commands.Revert;
 import keksdose.fwkib.modules.commands.RsaGenPri;
 import keksdose.fwkib.modules.commands.RsaGenPub;
 import keksdose.fwkib.modules.commands.Security;
@@ -83,6 +84,7 @@ public class ModuleSupplier {
       commands.put("#dummbrati", SmartBrati::new);
       commands.put("#quote", Quote::new);
       commands.put("#mensa", SmartMensa::new);
+      commands.put("#revert", Revert::new);
 
       COMMAND_SUPPLIER = Collections.unmodifiableNavigableMap(commands);
    }
