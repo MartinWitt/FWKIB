@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import keksdose.fwkib.modules.Command;
+import keksdose.fwkib.modules.TensorLock;
 
 public class SmartViceTitle implements Command {
 
@@ -13,6 +14,7 @@ public class SmartViceTitle implements Command {
     public String apply(String message) {
 
         try {
+            TensorLock.getLock();
             String[] command = { "./smartViceTitleNNscript.sh" };
             Process process;
             process = Runtime.getRuntime().exec(command);
@@ -22,9 +24,10 @@ public class SmartViceTitle implements Command {
             while ((s = reader.readLine()) != null) {
                 returnvalue += s;
             }
+            TensorLock.releaseLock();
             return returnvalue.replaceAll("\n", "");
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            TensorLock.releaseLock();
             e.printStackTrace();
         }
 

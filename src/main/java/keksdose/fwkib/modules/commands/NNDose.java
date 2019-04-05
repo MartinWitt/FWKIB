@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 import keksdose.fwkib.modules.Command;
+import keksdose.fwkib.modules.TensorLock;
 
 public class NNDose implements Command {
 
@@ -17,16 +18,19 @@ public class NNDose implements Command {
     public String apply(String message) {
 
         try {
+            TensorLock.getLock();
             String[] command = { "./smartDoseNNscript.sh" };
             ProcessBuilder builder;
             builder = new ProcessBuilder(command);
             BufferedReader reader = new BufferedReader(new InputStreamReader(builder.start().getInputStream()));
             List<String> returnvalue = (reader.lines()).filter(v -> !v.isBlank())
-                    .map(v -> v.replaceAll("(\\t|\\r?\\n)+", ". ")).map(v -> v.replaceAll("\"", ""))
+                    .map(v -> v.replaceAll("(\\t|\\r?\\n)+", "")).map(v -> v.replaceAll("\"", ""))
                     .map(v -> StringUtils.capitalize(v)).collect(Collectors.toList());
-            return String.join("", returnvalue);
+            TensorLock.releaseLock();
+            return String.join(". ", returnvalue);
 
         } catch (IOException e) {
+            TensorLock.releaseLock();
             return "da ist tf wohl exlodiert";
         }
 

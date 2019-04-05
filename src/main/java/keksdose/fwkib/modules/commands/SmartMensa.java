@@ -9,8 +9,6 @@ import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.time.format.TextStyle;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -19,6 +17,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 import keksdose.fwkib.modules.Command;
+import keksdose.fwkib.modules.TensorLock;
 
 public class SmartMensa implements Command {
 
@@ -26,7 +25,7 @@ public class SmartMensa implements Command {
     public String apply(String message) {
 
         try {
-
+            TensorLock.getLock();
             String[] command = { "./smartMensaNNscript.sh" };
             ProcessBuilder builder;
             builder = new ProcessBuilder(command);
@@ -55,9 +54,11 @@ public class SmartMensa implements Command {
             mensa.append("Linie 2: " + returnvalue.get(1) + " " + df.format(doubleStream.next()) + "0 " + "\u20ac ");
             mensa.append("Linie 3: " + returnvalue.get(2) + " " + df.format(doubleStream.next()) + "0 " + "\u20ac ");
             mensa.append("Linie 4/5: " + returnvalue.get(3) + " " + df.format(doubleStream.next()) + "0 " + "\u20ac ");
+            TensorLock.releaseLock();
             return StringUtils.normalizeSpace(mensa.toString());
 
         } catch (IOException e) {
+            TensorLock.releaseLock();
             e.printStackTrace();
         }
 

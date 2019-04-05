@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import org.apache.commons.lang3.StringUtils;
 
 import keksdose.fwkib.modules.Command;
+import keksdose.fwkib.modules.TensorLock;
 
 public class SmartAllah implements Command {
 
@@ -15,6 +16,7 @@ public class SmartAllah implements Command {
     public String apply(String message) {
 
         try {
+            TensorLock.getLock();
             String[] command = { "./smartAllahNNscript.sh" };
             Process process;
             process = Runtime.getRuntime().exec(command);
@@ -28,11 +30,10 @@ public class SmartAllah implements Command {
                 returnvalue = returnvalue.concat(StringUtils.capitalize((s + ". ").replaceAll("(\\t|\\r?\\n)+", " ")));
                 returnvalue = returnvalue.substring(0, returnvalue.replaceAll("[^a-zA-Z0-9]*$", "").length() - 1);
             }
+            TensorLock.releaseLock();
             return returnvalue;
-            // .replaceAll("\n", "\\. ").replaceAll("\\?\\.", "\\?").replaceAll("!\\.",
-            // "!");
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            TensorLock.releaseLock();
             e.printStackTrace();
         }
 

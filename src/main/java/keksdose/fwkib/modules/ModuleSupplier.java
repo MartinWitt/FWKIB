@@ -24,14 +24,16 @@ import keksdose.fwkib.modules.commands.NNDose;
 import keksdose.fwkib.modules.commands.OCR;
 import keksdose.fwkib.modules.commands.PrintScrOCr;
 import keksdose.fwkib.modules.commands.Pwgen;
+import keksdose.fwkib.modules.commands.Qualitaet;
 import keksdose.fwkib.modules.commands.QuizStats;
 import keksdose.fwkib.modules.commands.Quote;
 import keksdose.fwkib.modules.commands.Rage;
 import keksdose.fwkib.modules.commands.RandomBrati;
-import keksdose.fwkib.modules.commands.Revert;
+import keksdose.fwkib.modules.commands.Reverse;
 import keksdose.fwkib.modules.commands.RsaGenPri;
 import keksdose.fwkib.modules.commands.RsaGenPub;
 import keksdose.fwkib.modules.commands.Security;
+import keksdose.fwkib.modules.commands.Shuffle;
 import keksdose.fwkib.modules.commands.Sleepdose;
 import keksdose.fwkib.modules.commands.SmartAllah;
 import keksdose.fwkib.modules.commands.SmartBrati;
@@ -48,7 +50,7 @@ public class ModuleSupplier {
    private static final NavigableMap<String, Supplier<Command>> COMMAND_SUPPLIER;
 
    static {
-      final NavigableMap<String, Supplier<Command>> commands = new TreeMap<>(Comparator.comparing(Object::toString));
+      final NavigableMap<String, Supplier<Command>> commands = new TreeMap<>();
       commands.put("#tv-nau", TvProgramm::new);
       commands.put("#spellcheck", Spellcheck::new);
       commands.put("#spelluncheck", Spelluncheck::new);
@@ -84,30 +86,42 @@ public class ModuleSupplier {
       commands.put("#dummbrati", SmartBrati::new);
       commands.put("#quote", Quote::new);
       commands.put("#mensa", SmartMensa::new);
-      commands.put("#revert", Revert::new);
+      commands.put("#reverse", Reverse::new);
+      commands.put("#shuffle", Shuffle::new);
+      commands.put("#qualität", Qualitaet::new);
 
       COMMAND_SUPPLIER = Collections.unmodifiableNavigableMap(commands);
    }
 
    public Command supplyCommand(String commandString) {
 
-      System.out.println("fange supply an");
-      String above = Strings.nullToEmpty(COMMAND_SUPPLIER.ceilingKey(commandString.toLowerCase()));
-      String below = Strings.nullToEmpty(COMMAND_SUPPLIER.floorKey(commandString.toLowerCase()));
-      System.out.println(above);
-      System.out.println(below);
-      int distLow = LevenshteinDistance.getDefaultInstance().apply(commandString, below);
-      int distHigh = LevenshteinDistance.getDefaultInstance().apply(commandString, above);
-      Supplier<Command> command;
-      if (distHigh > 3 && distLow > 3) {
-         return new EmptyCommand();
-      }
-      command = (distLow > distHigh) ? COMMAND_SUPPLIER.get(above) : COMMAND_SUPPLIER.get(below);
+      String s = COMMAND_SUPPLIER.keySet().stream().parallel()
+            .min((o1, o2) -> Integer.compare((LevenshteinDistance.getDefaultInstance().apply(commandString, o1)),
+                  (LevenshteinDistance.getDefaultInstance().apply(commandString, o2))))
+            .get();
+      Command c = COMMAND_SUPPLIER.get(s).get();
 
-      if (command == null) {
+      // System.out.println("fange supply an " + commandString);
+      // String above =
+      // Strings.nullToEmpty(COMMAND_SUPPLIER.ceilingKey(commandString.toLowerCase()));
+      // String below =
+      // Strings.nullToEmpty(COMMAND_SUPPLIER.floorKey(commandString.toLowerCase()));
+      // System.out.println(above);
+      // System.out.println(below);
+      // int distLow = LevenshteinDistance.getDefaultInstance().apply(commandString,
+      // below);
+      // int distHigh = LevenshteinDistance.getDefaultInstance().apply(commandString,
+      // above);
+      // Supplier<Command> command;
+      // if (distHigh > 3 && distLow > 3) {
+      // return new EmptyCommand();
+      // }
+      // command = (distLow > distHigh) ? COMMAND_SUPPLIER.get(above) :
+      // COMMAND_SUPPLIER.get(below);
+      //
+      if (c == null) {
          return new EmptyCommand();
       }
-      System.out.println(command.get().toString());
-      return command.get();
+      return c;
    }
 }
