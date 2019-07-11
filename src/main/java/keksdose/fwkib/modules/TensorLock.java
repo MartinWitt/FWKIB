@@ -3,9 +3,9 @@ package keksdose.fwkib.modules;
 import java.util.concurrent.Semaphore;
 
 public class TensorLock {
-    static final Semaphore lock = new Semaphore(2, true);
+    static final Semaphore lock = new Semaphore(2);
 
-    public static synchronized void getLock() {
+    public static void getLock() {
         try {
             lock.acquire();
         } catch (InterruptedException e) {
@@ -13,7 +13,7 @@ public class TensorLock {
         }
     }
 
-    public static synchronized void releaseLock() {
+    public static void releaseLock() {
         lock.release();
     }
 }

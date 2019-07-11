@@ -33,7 +33,7 @@ public class SmartMensa implements Command {
             List<String> returnvalue = (reader.lines()).filter(v -> !v.isBlank()).map(v -> v.replaceAll("\"", ""))
                     .collect(Collectors.toList());
 
-            if (returnvalue.size() != 4) {
+            if (returnvalue.size() != 8) {
                 System.out.println(returnvalue.toString());
                 return "";
 
@@ -48,12 +48,17 @@ public class SmartMensa implements Command {
             }
             StringBuilder mensa = new StringBuilder();
             DecimalFormat df = new DecimalFormat("#.0");
+            Iterator<String> foodStream = returnvalue.iterator();
             Iterator<Double> doubleStream = new SecureRandom().doubles(2, 6).distinct().boxed().iterator();
             mensa.append(date + " ");
-            mensa.append("Linie 1: " + returnvalue.get(0) + " " + df.format(doubleStream.next()) + "0 " + "\u20ac ");
-            mensa.append("Linie 2: " + returnvalue.get(1) + " " + df.format(doubleStream.next()) + "0 " + "\u20ac ");
-            mensa.append("Linie 3: " + returnvalue.get(2) + " " + df.format(doubleStream.next()) + "0 " + "\u20ac ");
-            mensa.append("Linie 4/5: " + returnvalue.get(3) + " " + df.format(doubleStream.next()) + "0 " + "\u20ac ");
+            mensa.append("Linie 1: " + foodStream.next() + " " + df.format(doubleStream.next()) + "0 " + "\u20ac, "
+                    + foodStream.next() + " " + df.format(doubleStream.next()) + "0 " + "\u20ac ");
+            mensa.append("Linie 2: " + foodStream.next() + " " + df.format(doubleStream.next()) + "0 " + "\u20ac, "
+                    + foodStream.next() + " " + df.format(doubleStream.next()) + "0 " + "\u20ac ");
+            mensa.append("Linie 3: " + foodStream.next() + " " + df.format(doubleStream.next()) + "0 " + "\u20ac, "
+                    + foodStream.next() + " " + df.format(doubleStream.next()) + "0 " + "\u20ac ");
+            mensa.append("Linie 4/5: " + foodStream.next() + " " + df.format(doubleStream.next()) + "0 " + "\u20ac, "
+                    + foodStream.next() + " " + df.format(doubleStream.next()) + "0 " + "\u20ac ");
             TensorLock.releaseLock();
             return StringUtils.normalizeSpace(mensa.toString());
 
