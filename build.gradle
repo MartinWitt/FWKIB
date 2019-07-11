@@ -15,7 +15,9 @@ dependencies {
 
     //implementation 'org.mongodb:mongodb-driver-async:3.8.2'
     compile 'org.mongodb:mongo-java-driver:3.8.2'
+    implementation name:"KeksIRC",version:"+"
     compile name:"KeksIRC",version:"+"
+
         // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
 

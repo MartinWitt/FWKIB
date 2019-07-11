@@ -48,3 +48,4 @@ settings.gradle
 .settings
 .project
 .vscode/launch.json
+.vscode/settings.json
