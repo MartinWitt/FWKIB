@@ -12,14 +12,12 @@ import java.util.regex.*;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-
 import org.bson.Document;
-
 import keksdose.fwkib.modules.BratiSongInsert;
 import keksdose.fwkib.modules.BrotiQuiz;
 import keksdose.fwkib.modules.CommandController;
 import keksdose.fwkib.modules.ReminderKeksdose;
-
+import keksdose.fwkib.modules.commands.FindBrati;
 import keksdose.fwkib.modules.commands.Youtube;
 import keksdose.fwkib.mongo.MongoDB;
 import keksdose.keksIrc.Message.Message;
@@ -64,13 +62,17 @@ public class FWKIB {
     private List<String> optionList = null;
     private CommandController controller = new CommandController();
 
+
     // TODO Quiz etc. In Klassen machen und in ne Map putten. CleanUp das hier nur
     // noch einzelne Methoden mit if stehen und nicht mehr der Code.
     public void onMessage(Message event) throws Exception {
+
         if (ignore.contains(event.getNick())) {
             return;
             // stops bots
         }
+        checkForBrati(event.getHostName(), event.getNick());
+
         if (event.getContent().startsWith("#quiz")) {
             if (bool.get()) {
                 event.answer("quiz running");
@@ -111,8 +113,8 @@ public class FWKIB {
                         }
                         event.answer("richtig ist: " + answersString);
                         List<String> correctPersons = new ArrayList<>();
-                        question.getAnswerList()
-                                .forEach((element) -> correctPersons.addAll(answers.get(element.toLowerCase())));
+                        question.getAnswerList().forEach((element) -> correctPersons
+                                .addAll(answers.get(element.toLowerCase())));
                         correctPersons.forEach(v -> System.out.println(v));
                         new MongoDB().updateStats(correctPersons);
                         event.answer(correctPersons.size() + " were correct of " + answers.size());
@@ -129,18 +131,28 @@ public class FWKIB {
             return;
 
         }
-        if (event.getHostName().equals("2a01:4f8:1c1c:11a7::1") && event.getContent().equals("#restart")) {
+        if (event.getHostName().equals("195.201.137.123")
+                && event.getContent().equals("#restart")) {
             new ProcessBuilder("./restart.sh").start();
             return;
         }
-        if (event.getHostName().equals("2a01:4f8:1c1c:11a7::1") && event.getContent().startsWith("#addBrati")) {
-            event.answer(new MongoDB().insertBrati(event.getContent().replaceFirst("#addBrati", "").trim(), false,
-                    "SleepDose"));
+        if (event.getHostName().equals("195.201.137.123")
+                && event.getContent().startsWith("#addBrati")) {
+            event.answer(new MongoDB().insertBrati(
+                    event.getContent().replaceFirst("#addBrati", "").trim(), false, "SleepDose"));
             return;
         }
-        if (event.getContent().startsWith("#addQuote") || event.getContent().startsWith("#addquote")) {
-            event.answer(new MongoDB().insertQuote(event.getContent().replaceFirst("(?i)#addQuote", "").trim(),
-                    event.getNick()));
+        if (event.getHostName().equals("unaffiliated/chrisliebaer")
+                && event.getContent().startsWith("#addBrati")) {
+            event.answer(new MongoDB().insertBrati(
+                    event.getContent().replaceFirst("#addBrati", "").trim(), false,
+                    "Chrisliebaer"));
+            return;
+        }
+        if (event.getContent().startsWith("#addQuote")
+                || event.getContent().startsWith("#addquote")) {
+            event.answer(new MongoDB().insertQuote(
+                    event.getContent().replaceFirst("(?i)#addQuote", "").trim(), event.getNick()));
             return;
         }
         if (event.getContent().startsWith("#") && !event.getContent().startsWith("#!"))
@@ -156,12 +168,12 @@ public class FWKIB {
             return;
         }
 
-        if (event.getContent().contains("secs") && event.getNick().equals("broti")
+        if (event.getContent().contains("secs") && event.getNick().equals("fakebroti")
                 || event.getNick().equals("fwkib") && event.getContent().contains("zeit: ")) {
             new BrotiQuiz().apply(event);
             return;
         }
-        if (event.getHostName().equals("2a01:4f8:1c1c:11a7::1")) {
+        if (event.getHostName().equals("195.201.137.123")) {
             if (!(event.getContent().startsWith(">") || event.getContent().startsWith("\""))) {
 
                 new MongoDB().insertKeksdose(event.getContent());
@@ -172,8 +184,7 @@ public class FWKIB {
          * if (event.getContent().contains("#nick") &&
          * event.getUser().getLogin().equals("~Keksdose") &&
          * event.getUser().getHostmask().equals("2a01:4f8:1c1c:11a7::1")) {
-         * event.getBot().sendRaw().rawLine("nick " + event.getContent().split(" ")[1]);
-         * return; }
+         * event.getBot().sendRaw().rawLine("nick " + event.getContent().split(" ")[1]); return; }
          */
         if (event.getContent().trim().startsWith("~") && event.getNick().contains("brati")
                 && event.getContent().trim().endsWith("~")) {
@@ -186,15 +197,15 @@ public class FWKIB {
 
         if (matcher.find()) {
             System.out.println(matcher.group(0).split(" ")[0]);
-            event.answer(
-                    new Youtube().apply("https://www.youtube.com/watch?v=" + matcher.group(0).split(" ")[0].trim()));
+            event.answer(new Youtube().apply(
+                    "https://www.youtube.com/watch?v=" + matcher.group(0).split(" ")[0].trim()));
             return;
         }
 
         if (bool.get() && !event.getNick().equals("fwkib")) {
             System.out.println(String.valueOf(answerList));
-            if (optionList != null
-                    && (optionList.contains(event.getContent().toLowerCase()) || optionList.size() == 0)) {
+            if (optionList != null && (optionList.contains(event.getContent().toLowerCase())
+                    || optionList.size() == 0)) {
 
                 answers.entries().removeIf(v -> v.getValue().equals(event.getNick()));
 
@@ -203,5 +214,12 @@ public class FWKIB {
 
         }
 
+    }
+
+    private void checkForBrati(String hostname, String username) {
+        if (hostname.contains("static.48.166.76.144.clients.your-server.de")) {
+            FindBrati.nick = username;
+            System.out.println("set username: " + username);
+        }
     }
 }

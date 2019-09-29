@@ -18,7 +18,8 @@ public class RsaGenPri implements Command {
 
             PrivateKey priv = kp.getPrivate();
             byte[] privBytes = priv.getEncoded();
-            return "-----BEGIN RSA PRIVATE KEY-----" + "\n" + Base64.getEncoder().encodeToString(privBytes) + "\n"
+            return "-----BEGIN RSA PRIVATE KEY-----" + "\n"
+                    + Base64.getEncoder().encodeToString(privBytes) + "\n"
                     + "-----END RSA PRIVATE KEY-----";
 
         } catch (NoSuchAlgorithmException e) {
@@ -27,4 +28,10 @@ public class RsaGenPri implements Command {
 
         return " wohl kein key für dich";
     }
+
+    @Override
+    public String help(String message) {
+        return "Erzeugt dir einen Private key für den login auf jedem Server, wo du willst. Der Key ist manchmal gültig, aber immer nur für DICH erstellt";
+    }
+
 }

@@ -77,7 +77,13 @@ public class SmartDose implements Command {
             if (output.size() >= outputSize)
                 return output.stream().limit(outputSize).reduce("", (a, b) -> a + " " + b);
             n++;
-            prefix = output.stream().skip(n).limit(keySize).reduce("", (a, b) -> a + " " + b).trim();
+            prefix = output.stream().skip(n).limit(keySize).reduce("", (a, b) -> a + " " + b)
+                    .trim();
         }
+    }
+
+    @Override
+    public String help(String message) {
+        return "$Magie $Matrixrechnung $Spitze Pfeile(Vektoren). Falls Markov und Keksdose dir fehlen kannst du damit kluge Sätze von Keksdose mit ihm erzeugen.";
     }
 }

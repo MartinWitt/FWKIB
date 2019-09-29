@@ -3,7 +3,6 @@ package keksdose.fwkib.modules.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 import keksdose.fwkib.modules.Command;
 
 public class Satanist implements Command {
@@ -19,10 +18,17 @@ public class Satanist implements Command {
 
     @Override
     public String apply(String message) {
-        return ("sat" + "\uFEFF" + "anist fragt ")
-                + words.stream().filter(v -> v.toLowerCase().contains(message.toLowerCase())).findAny()
-                        .orElse(words.get(new Random().ints(0, words.size()).findAny().getAsInt()));
+        return ("sat" + "\uFEFF" + "anist fragt ") + words.stream()
+                .filter(v -> v.toLowerCase().contains(message.toLowerCase())).findAny()
+                .orElse(words.get(new Random().ints(0, words.size()).findAny().getAsInt()));
 
     }
+
+    @Override
+    public String help(String message) {
+        return "Fragen welche dir helfen können dein Problem zu lösen (präsentiert von sat"
+                + "\uFEFF" + "anist)";
+    }
+
 
 }

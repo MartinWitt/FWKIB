@@ -17,18 +17,21 @@ public class SmartAllah implements Command {
 
         try {
             TensorLock.getLock();
-            String[] command = { "./smartAllahNNscript.sh" };
+            String[] command = {"./smartAllahNNscript.sh"};
             Process process;
             process = Runtime.getRuntime().exec(command);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader reader =
+                    new BufferedReader(new InputStreamReader(process.getInputStream()));
             String s;
             String returnvalue = "";
             while ((s = reader.readLine()) != null) {
                 if (s.equals("\n")) {
                     continue;
                 }
-                returnvalue = returnvalue.concat(StringUtils.capitalize((s + ". ").replaceAll("(\\t|\\r?\\n)+", " ")));
-                returnvalue = returnvalue.substring(0, returnvalue.replaceAll("[^a-zA-Z0-9]*$", "").length() - 1);
+                returnvalue = returnvalue.concat(
+                        StringUtils.capitalize((s + ". ").replaceAll("(\\t|\\r?\\n)+", " ")));
+                returnvalue = returnvalue.substring(0,
+                        returnvalue.replaceAll("[^a-zA-Z0-9]*$", "").length() - 1);
             }
             TensorLock.releaseLock();
             return returnvalue;
@@ -38,6 +41,11 @@ public class SmartAllah implements Command {
         }
 
         return "";
+    }
+
+    @Override
+    public String help(String message) {
+        return "$Magie $Matrixrechnung $Spitze Pfeile(Vektoren). Falls der Koran fehlt kannst du damit kluge Sätze daraus erzeugen.";
     }
 
 }

@@ -15,4 +15,9 @@ public class Brati implements Command {
 
     }
 
+    @Override
+    public String help(String message) {
+        return "irgendwelche komischen Sätze von Brati. Nutzung #brati $regex";
+    }
+
 }

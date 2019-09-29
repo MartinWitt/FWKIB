@@ -9,7 +9,10 @@ public class Home implements Command {
     @Override
     public String apply(String message) {
         return quote + gitHubhome;
-
     }
 
+    @Override
+    public String help(String message) {
+        return "eine traurige Bautstelle bis *DU* die neuschreibst. (Schau es lieber nicht an)";
+    }
 }

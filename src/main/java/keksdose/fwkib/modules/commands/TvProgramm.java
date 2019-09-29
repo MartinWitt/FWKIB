@@ -25,7 +25,8 @@ public class TvProgramm implements Command {
 
     @Override
     public String apply(String message) {
-        return message.equals("now") ? getContent(linkNow) : getContent(link2015);
+        return message.equals("now") || message.equals("nau") ? getContent(linkNow)
+                : getContent(link2015);
 
     }
 
@@ -52,8 +53,9 @@ public class TvProgramm implements Command {
                 channel.add(String.valueOf(element.getTextContent().toString()));
             }
             return channel.stream()
-                    .filter(v -> v.contains("| Das Erste |") || v.contains("| ZDF |") || v.contains("| RTL |")
-                            || v.contains("| SAT.1 |") || v.contains("| ProSieben |") || v.contains("| kabel eins |")
+                    .filter(v -> v.contains("| Das Erste |") || v.contains("| ZDF |")
+                            || v.contains("| RTL |") || v.contains("| SAT.1 |")
+                            || v.contains("| ProSieben |") || v.contains("| kabel eins |")
                             || v.contains("| RTL II |") || v.contains("| VOX |"))
                     .collect(Collectors.joining(" || ")).replace("&amp;", "");
 
@@ -69,5 +71,10 @@ public class TvProgramm implements Command {
         }
 
         return "";
+    }
+
+    @Override
+    public String help(String message) {
+        return "Zeigt dir das aktuell TV Programm bei #tv now und das um 20:15 bei #tv";
     }
 }

@@ -14,4 +14,10 @@ public class BratiSong implements Command {
             return String.valueOf(new MongoDB().getBratiSong(message));
         }
     }
+
+    @Override
+    public String help(String message) {
+        return "irgendwelche komischen Lieder von Brati. Nutzung #bratiSong $regex";
+    }
+
 }

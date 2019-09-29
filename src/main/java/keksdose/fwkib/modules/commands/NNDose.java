@@ -19,10 +19,11 @@ public class NNDose implements Command {
 
         try {
             TensorLock.getLock();
-            String[] command = { "./smartDoseNNscript.sh" };
+            String[] command = {"./smartDoseNNscript.sh"};
             ProcessBuilder builder;
             builder = new ProcessBuilder(command);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(builder.start().getInputStream()));
+            BufferedReader reader =
+                    new BufferedReader(new InputStreamReader(builder.start().getInputStream()));
             List<String> returnvalue = (reader.lines()).filter(v -> !v.isBlank())
                     .map(v -> v.replaceAll("(\\t|\\r?\\n)+", "")).map(v -> v.replaceAll("\"", ""))
                     .map(v -> StringUtils.capitalize(v)).collect(Collectors.toList());
@@ -36,4 +37,8 @@ public class NNDose implements Command {
 
     }
 
+    @Override
+    public String help(String message) {
+        return "Komische Sätze deren Ursprung nicht ganz geklärt ist. Aber auf jedenfall ist der Ursprung kluk";
+    }
 }

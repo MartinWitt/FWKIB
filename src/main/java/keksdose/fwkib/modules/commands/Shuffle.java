@@ -17,4 +17,9 @@ public class Shuffle implements Command {
         Collections.shuffle(chars);
         return StringUtils.join(chars.stream().toArray());
     }
+
+    @Override
+    public String help(String message) {
+        return "tauscht die Position aller Zeichen in deiner Zeichenkette. Nutzung #shuffle $Zeichenkette";
+    }
 }

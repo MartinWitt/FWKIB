@@ -3,6 +3,7 @@ package keksdose.fwkib.modules.commands;
 import java.io.IOException;
 import java.util.List;
 import keksdose.fwkib.modules.Command;
+import keksdose.fwkib.modules.ModuleSupplier;
 import keksdose.fwkib.mongo.MongoDB;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -28,7 +29,7 @@ public class Help implements Command {
                 e.printStackTrace();
             }
         } else {
-            return new MongoDB().getHelp(message);
+            return new ModuleSupplier().supplyCommand(message).help("");
         }
 
         return "";

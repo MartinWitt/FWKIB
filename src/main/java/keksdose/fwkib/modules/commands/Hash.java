@@ -13,4 +13,8 @@ public class Hash implements Command {
         return hf.newHasher().putString(message, Charsets.UTF_8).hash().toString();
     }
 
+    @Override
+    public String help(String message) {
+        return "Wer kennt es nicht: Man muss dringend sein Passwort hashen und hat dafür gerade kein hasher zu Hand?";
+    }
 }

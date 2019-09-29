@@ -38,7 +38,8 @@ public class OCR implements Command {
                 System.out.println("File too big");
             }
             IOUtils.write(outBytes, new FileOutputStream("200MB.jpg"));
-            ProcessBuilder pb = new ProcessBuilder("tesseract", "200MB.jpg", "stdout", "-l", "deu+eng", "--oem", "1");
+            ProcessBuilder pb = new ProcessBuilder("tesseract", "200MB.jpg", "stdout", "-l",
+                    "deu+eng", "--oem", "1");
             String output = IOUtils.toString(pb.start().getInputStream());
             output = output.replaceAll("\n", " ");
             output = StringUtils.substring(StringUtils.normalizeSpace(output), 0, 510);
@@ -50,6 +51,11 @@ public class OCR implements Command {
             return "naja wohl mal nachfragen";
         }
 
+    }
+
+    @Override
+    public String help(String message) {
+        return "$Texterkennung $Magie $Matrixrechnung $Spitze Pfeile(Vektoren). Nutzung #ocr $eingabelink.$Eingabelink muss zu einem Bild kleiner 200mb sein";
     }
 
 }

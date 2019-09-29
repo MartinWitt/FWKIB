@@ -1,18 +1,17 @@
 package keksdose.fwkib.modules;
 
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.Locale;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 import java.util.function.Supplier;
-
-import com.google.common.base.Strings;
-
+import org.apache.commons.text.similarity.FuzzyScore;
 import org.apache.commons.text.similarity.LevenshteinDistance;
-
 import keksdose.fwkib.modules.commands.Brati;
 import keksdose.fwkib.modules.commands.BratiSong;
 import keksdose.fwkib.modules.commands.EmptyCommand;
+import keksdose.fwkib.modules.commands.FastVectorDose;
+import keksdose.fwkib.modules.commands.FindBrati;
 import keksdose.fwkib.modules.commands.FlipRage;
 import keksdose.fwkib.modules.commands.Hash;
 import keksdose.fwkib.modules.commands.Help;
@@ -32,6 +31,7 @@ import keksdose.fwkib.modules.commands.RandomBrati;
 import keksdose.fwkib.modules.commands.Reverse;
 import keksdose.fwkib.modules.commands.RsaGenPri;
 import keksdose.fwkib.modules.commands.RsaGenPub;
+import keksdose.fwkib.modules.commands.Satanist;
 import keksdose.fwkib.modules.commands.Security;
 import keksdose.fwkib.modules.commands.Shuffle;
 import keksdose.fwkib.modules.commands.Sleepdose;
@@ -44,14 +44,16 @@ import keksdose.fwkib.modules.commands.Spellcheck;
 import keksdose.fwkib.modules.commands.Spelluncheck;
 import keksdose.fwkib.modules.commands.TvProgramm;
 import keksdose.fwkib.modules.commands.Uuid;
+import keksdose.fwkib.modules.commands.VectorDose;
+import keksdose.fwkib.modules.commands.WeebFilter;
 import keksdose.fwkib.modules.commands.Youtube;
 
 public class ModuleSupplier {
    private static final NavigableMap<String, Supplier<Command>> COMMAND_SUPPLIER;
-
+   private static final StringAlgorithmSupplier supplier = new StringAlgorithmSupplier();
+   private String state = "leven";
    static {
       final NavigableMap<String, Supplier<Command>> commands = new TreeMap<>();
-      commands.put("#tv-nau", TvProgramm::new);
       commands.put("#spellcheck", Spellcheck::new);
       commands.put("#spelluncheck", Spelluncheck::new);
       commands.put("#fehler", Misspell::new);
@@ -89,39 +91,58 @@ public class ModuleSupplier {
       commands.put("#reverse", Reverse::new);
       commands.put("#shuffle", Shuffle::new);
       commands.put("#qualität", Qualitaet::new);
+      commands.put("#weeb", WeebFilter::new);
+      commands.put("#satanist", Satanist::new);
+      commands.put("#findbrati", FindBrati::new);
+      commands.put("#vectordose", VectorDose::new);
+      commands.put("#fastvectordose", FastVectorDose::new);
 
       COMMAND_SUPPLIER = Collections.unmodifiableNavigableMap(commands);
    }
 
    public Command supplyCommand(String commandString) {
-
+      if (checkForChangeOfAlgo(commandString)) {
+         return new EmptyCommand();
+      }
+      String replaced = commandString.replace("#" + FindBrati.nick, "#brati");
       String s = COMMAND_SUPPLIER.keySet().stream().parallel()
-            .min((o1, o2) -> Integer.compare((LevenshteinDistance.getDefaultInstance().apply(commandString, o1)),
-                  (LevenshteinDistance.getDefaultInstance().apply(commandString, o2))))
+            .min((o1, o2) -> Double.compare((supplier.similarity(state, replaced, o1)),
+                  (supplier.similarity(state, replaced, o2))))
             .get();
+      System.out.println(s);
       Command c = COMMAND_SUPPLIER.get(s).get();
 
-      // System.out.println("fange supply an " + commandString);
-      // String above =
-      // Strings.nullToEmpty(COMMAND_SUPPLIER.ceilingKey(commandString.toLowerCase()));
-      // String below =
-      // Strings.nullToEmpty(COMMAND_SUPPLIER.floorKey(commandString.toLowerCase()));
-      // System.out.println(above);
-      // System.out.println(below);
-      // int distLow = LevenshteinDistance.getDefaultInstance().apply(commandString,
-      // below);
-      // int distHigh = LevenshteinDistance.getDefaultInstance().apply(commandString,
-      // above);
-      // Supplier<Command> command;
-      // if (distHigh > 3 && distLow > 3) {
-      // return new EmptyCommand();
-      // }
-      // command = (distLow > distHigh) ? COMMAND_SUPPLIER.get(above) :
-      // COMMAND_SUPPLIER.get(below);
-      //
       if (c == null) {
          return new EmptyCommand();
       }
       return c;
+   }
+
+   private boolean checkForChangeOfAlgo(String commandString) {
+      if (commandString.equals("#fuzzy")) {
+         state = "fuzzy";
+         System.out.println("Habe den Zustand zu : " + state + " gewechselt");
+         return true;
+
+      }
+      if (commandString.equals("#leven")) {
+         state = "leven";
+         System.out.println("Habe den Zustand zu : " + state + " gewechselt");
+         return true;
+
+
+      }
+      if (commandString.equals("#cosine")) {
+         state = "cosine";
+         System.out.println("Habe den Zustand zu : " + state + " gewechselt");
+         return true;
+
+      }
+      if (commandString.equals("#jaro")) {
+         state = "jaro";
+         System.out.println("Habe den Zustand zu : " + state + " gewechselt");
+         return true;
+      }
+      return false;
    }
 }

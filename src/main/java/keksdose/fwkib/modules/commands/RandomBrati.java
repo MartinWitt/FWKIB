@@ -15,10 +15,11 @@ public class RandomBrati implements Command {
 
         try {
             TensorLock.getLock();
-            String[] command = { "./randomBratiNNscript.sh" };
+            String[] command = {"./randomBratiNNscript.sh"};
             Process process;
             process = Runtime.getRuntime().exec(command);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader reader =
+                    new BufferedReader(new InputStreamReader(process.getInputStream()));
             String s;
             String returnvalue = "";
             while ((s = reader.readLine()) != null) {
@@ -33,5 +34,11 @@ public class RandomBrati implements Command {
 
         return "";
     }
+
+    @Override
+    public String help(String message) {
+        return "$Magie $Matrixrechnung $Spitze Pfeile(Vektoren). Falls brati fehlt kannst du damit kluge Sätze von ihm erzeugen.";
+    }
+
 
 }

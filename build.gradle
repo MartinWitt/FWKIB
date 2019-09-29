@@ -1,12 +1,20 @@
 plugins {
     id 'java'
     id 'application'
-
-
     
 }
-// Define the main class for the application
+tasks.distZip.enabled = false
+tasks.distTar.enabled = false
 
+
+
+
+
+compileJava.options.encoding = 'UTF-8'
+
+
+sourceCompatibility = 11
+targetCompatibility = 11
 dependencies {
 
     testImplementation 'junit:junit:4.12'
@@ -21,7 +29,7 @@ dependencies {
         // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
 
-    compile 'com.google.guava:guava:25.0-jre'
+    compile 'com.google.guava:guava:28.0-jre'
     // https://mvnrepository.com/artifact/org.pircbotx/pircbotx
     //compile group: 'org.pircbotx', name: 'pircbotx', version: '2.0.1'
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
@@ -31,14 +39,9 @@ dependencies {
     compile group: 'org.json', name: 'json', version: '20180813'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
     compile group: 'org.apache.commons', name: 'commons-text', version: '1.6'
-
-
-
-
-
-
-
-
+    //compile "org.deeplearning4j:deeplearning4j-core:1.0.0-beta5"
+    //compile "org.nd4j:nd4j-native-platform:1.0.0-beta5"
+    //compile group: 'org.deeplearning4j', name: 'deeplearning4j-nlp-uima', version: '1.0.0-beta5'
 }
 
 
@@ -53,7 +56,6 @@ repositories {
     }
     
 }
-
 
 
 

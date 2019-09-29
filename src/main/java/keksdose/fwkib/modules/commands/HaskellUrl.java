@@ -16,16 +16,19 @@ public class HaskellUrl implements Command {
     public String apply(String message) {
         return "";
         /*
-         * String url = message.length() > 12 ? message.substring(12) : ""; if
-         * (url.isEmpty()) { return ""; } String haskellString = getContent(url);
-         * String[] args = { "mueval", "-E", "-e", haskellString }; java.util.Scanner s;
-         * try { s = new
-         * java.util.Scanner(Runtime.getRuntime().exec(args).getInputStream()).
-         * useDelimiter("\\A");
+         * String url = message.length() > 12 ? message.substring(12) : ""; if (url.isEmpty()) {
+         * return ""; } String haskellString = getContent(url); String[] args = { "mueval", "-E",
+         * "-e", haskellString }; java.util.Scanner s; try { s = new
+         * java.util.Scanner(Runtime.getRuntime().exec(args).getInputStream()). useDelimiter("\\A");
          * 
-         * String output = s.hasNext() ? s.next() : ""; s.close(); return output; }
-         * catch (IOException e) { } return "";
+         * String output = s.hasNext() ? s.next() : ""; s.close(); return output; } catch
+         * (IOException e) { } return "";
          */
+    }
+
+    @Override
+    public String help(String message) {
+        return "sudo dnf kill fedora";
     }
 
     private String getContent(String adress) {
@@ -38,7 +41,8 @@ public class HaskellUrl implements Command {
                 adress = adress.substring(7);
             }
 
-            if (!InternetDomainName.from(adress.trim()).topPrivateDomain().toString().equals("pastebin.com")) {
+            if (!InternetDomainName.from(adress.trim()).topPrivateDomain().toString()
+                    .equals("pastebin.com")) {
                 return "";
             }
             try {
@@ -50,7 +54,8 @@ public class HaskellUrl implements Command {
                 conn.setReadTimeout(5000);
 
                 // open the stream and put it into BufferedReader
-                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                BufferedReader br =
+                        new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
                 String inputLine;
                 String haskell = "";

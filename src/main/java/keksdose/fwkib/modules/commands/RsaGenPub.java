@@ -36,4 +36,9 @@ public class RsaGenPub implements Command {
         }
         return "wohl kein key für dich";
     }
+
+    @Override
+    public String help(String message) {
+        return "Erzeugt dir einen public key für den login auf jedem Server, wo du willst. Der Key ist manchmal gültig, aber immer nur für DICH erstellt";
+    }
 }

@@ -30,12 +30,17 @@ public class Misspell implements Command {
             return "furchtbar du monster";
         }
 
-        String var = "\"" + wordWrong + "\"" + " schreibt sich eigentlich " + "\"" + wordCorrect + "\""
-                + ", du kannst es dir merken mit " + "\"" + wordCorrect + "\"" + " wie " + "\"" + wordRemember + "\".";
+        String var = "\"" + wordWrong + "\"" + " schreibt sich eigentlich " + "\"" + wordCorrect
+                + "\"" + ", du kannst es dir merken mit " + "\"" + wordCorrect + "\"" + " wie "
+                + "\"" + wordRemember + "\".";
 
         new MongoDB().insertMistake(wordWrong, wordCorrect, wordRemember);
 
         return var;
     }
 
+    @Override
+    public String help(String message) {
+        return "Falls Leute Fehler machen würden könntest du diese ungemein höfflich darauf hinweisen. Nutzung: Suche: #fehler $word1, Einfügen:#fehler $word1 $word2 $word3. ";
+    }
 }

@@ -13,4 +13,9 @@ public class Sleepdose implements Command {
             return String.valueOf(new MongoDB().getkeksdose(message));
         }
     }
+
+    @Override
+    public String help(String message) {
+        return "irgendwelche komischen Sätze von Sleepdose. Davon ist KEINER wahr. Nutzung #sleepdose $regex";
+    }
 }

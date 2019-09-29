@@ -8,4 +8,5 @@ public class EmptyCommand implements Command {
     public String apply(String message) {
         return "";
     }
+
 }

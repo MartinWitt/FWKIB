@@ -12,7 +12,11 @@ public class Rage implements Command {
         } else {
             return String.valueOf(new MongoDB().getRage(message));
         }
+    }
 
+    @Override
+    public String help(String message) {
+        return "ALTER MANN WILL UT ÄÄHH DOTO SPIELEN. DOOOOTTOOOOO SPIELEN!!!";
     }
 
 }

@@ -19,10 +19,11 @@ public class SmartBrati implements Command {
 
         try {
             TensorLock.getLock();
-            String[] command = { "./smartBratiNNscript.sh" };
+            String[] command = {"./smartBratiNNscript.sh"};
             ProcessBuilder builder;
             builder = new ProcessBuilder(command);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(builder.start().getInputStream()));
+            BufferedReader reader =
+                    new BufferedReader(new InputStreamReader(builder.start().getInputStream()));
             List<String> returnvalue = (reader.lines()).filter(v -> !v.isBlank())
                     .map(v -> v.replaceAll("(\\t|\\r?\\n)+", "")).map(v -> v.replaceAll("\"", ""))
                     .map(v -> StringUtils.capitalize(v)).collect(Collectors.toList());
@@ -34,6 +35,11 @@ public class SmartBrati implements Command {
             return "da ist tf wohl exlodiert";
         }
 
+    }
+
+    @Override
+    public String help(String message) {
+        return "$Magie $Matrixrechnung $Spitze Pfeile(Vektoren). Falls brati fehlt kannst du damit kluge Sätze von ihm erzeugen.";
     }
 
 }

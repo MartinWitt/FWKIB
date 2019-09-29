@@ -24,7 +24,8 @@ public class Youtube implements Command {
                 return NBSP + new MongoDB().getYtLink(Integer.parseInt(title));
             }
             if (title != null) {
-                URL embededURL = new URL("http://www.youtube.com/oembed?url=" + title + "&format=json");
+                URL embededURL =
+                        new URL("http://www.youtube.com/oembed?url=" + title + "&format=json");
                 String var = new JSONObject(IOUtils.toString(embededURL)).getString("title");
                 new MongoDB().insertLink(var + " Link: " + title);
                 return NBSP + var;
@@ -39,4 +40,8 @@ public class Youtube implements Command {
 
     }
 
+    @Override
+    public String help(String message) {
+        return "was das exakt tut weiß keiner so genau aber passiv gibt das infos über yt Links";
+    }
 }

@@ -1,5 +1,6 @@
 package keksdose.fwkib.mongo;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,9 +22,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import com.mongodb.internal.connection.Time;
-
 import org.bson.Document;
-
 import keksdose.fwkib.bot.model.User;
 
 public class MongoDB {
@@ -139,9 +138,9 @@ public class MongoDB {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("brati");
 
-        Document brati = collection
-                .aggregate(Arrays.asList(Aggregates.match(Filters.regex("brati", regex)), Aggregates.sample(1)))
-                .first();
+        Document brati =
+                collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("brati", regex)),
+                        Aggregates.sample(1))).first();
         return String.valueOf(brati.get("brati"));
 
     }
@@ -150,8 +149,9 @@ public class MongoDB {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("brati");
 
-        Document brati = collection
-                .aggregate(Arrays.asList(Aggregates.match(Filters.eq("rage", true)), Aggregates.sample(1))).first();
+        Document brati = collection.aggregate(
+                Arrays.asList(Aggregates.match(Filters.eq("rage", true)), Aggregates.sample(1)))
+                .first();
         return String.valueOf(brati.get("brati"));
 
     }
@@ -160,8 +160,10 @@ public class MongoDB {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("brati");
 
-        Document brati = collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("rage", true)),
-                Aggregates.match(Filters.regex("brati", regex)), Aggregates.sample(1))).first();
+        Document brati = collection
+                .aggregate(Arrays.asList(Aggregates.match(Filters.eq("rage", true)),
+                        Aggregates.match(Filters.regex("brati", regex)), Aggregates.sample(1)))
+                .first();
         if (brati == null) {
             return "";
         }
@@ -170,7 +172,8 @@ public class MongoDB {
     }
 
     public String getKeksdose() {
-        MongoCollection<Document> keksdose = mongoClient.getDatabase(dbName).getCollection("keksdose");
+        MongoCollection<Document> keksdose =
+                mongoClient.getDatabase(dbName).getCollection("keksdose");
         Document json = keksdose.aggregate(Arrays.asList((Aggregates.sample(1)))).first();
         String s = (String) json.get("text");
         return String.valueOf(s);
@@ -181,8 +184,9 @@ public class MongoDB {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("keksdose");
 
-        Document brati = collection
-                .aggregate(Arrays.asList(Aggregates.match(Filters.regex("text", regex)), Aggregates.sample(1))).first();
+        Document brati = collection.aggregate(
+                Arrays.asList(Aggregates.match(Filters.regex("text", regex)), Aggregates.sample(1)))
+                .first();
 
         return String.valueOf(brati.get("text"));
     }
@@ -191,8 +195,9 @@ public class MongoDB {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("bratiSong");
 
-        Document bratiSong = collection
-                .aggregate(Arrays.asList(Aggregates.match(Filters.regex("text", regex)), Aggregates.sample(1))).first();
+        Document bratiSong = collection.aggregate(
+                Arrays.asList(Aggregates.match(Filters.regex("text", regex)), Aggregates.sample(1)))
+                .first();
         return String.valueOf(bratiSong.get("text"));
 
     }
@@ -204,7 +209,8 @@ public class MongoDB {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("bratiSong");
         Document o = new Document();
-        o.append("text", "~~~" + song + "~~~").append("time", Time.nanoTime()).append("user", user);
+        o.append("text", "~~~" + song + "~~~").append("time", LocalDateTime.now()).append("user",
+                user);
         collection.insertOne(o);
 
     }
@@ -216,7 +222,8 @@ public class MongoDB {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("brati");
         Document o = new Document();
-        o.append("rage", rage).append("brati", brati).append("time", Time.nanoTime()).append("user", user);
+        o.append("rage", rage).append("brati", brati).append("time", LocalDateTime.now())
+                .append("user", user);
         collection.insertOne(o);
         return "\\o/ webscale";
     }
@@ -228,11 +235,12 @@ public class MongoDB {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("brati");
 
-        Document brati = collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("brati", regex)))).first();
+        Document brati = collection
+                .aggregate(Arrays.asList(Aggregates.match(Filters.regex("brati", regex)))).first();
 
         Document toFlip = brati;
-        collection.deleteOne(
-                collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("brati", regex)))).first());
+        collection.deleteOne(collection
+                .aggregate(Arrays.asList(Aggregates.match(Filters.regex("brati", regex)))).first());
         if ((Boolean) toFlip.get("rage")) {
             System.out.println("war true");
             toFlip.replace("rage", false);
@@ -265,18 +273,20 @@ public class MongoDB {
     }
 
     public void insertMistake(String wordWrong, String wordCorrect, String wordRemeber) {
-        MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("mistake");
+        MongoCollection<Document> collection =
+                mongoClient.getDatabase(dbName).getCollection("mistake");
         if (collection.countDocuments() > 10000) {
             collection.findOneAndDelete(collection.find().first());
         }
-        Document toInsert = new Document().append("wordWrong", wordWrong).append("wordCorrect", wordCorrect)
-                .append("wordRemember", wordRemeber);
+        Document toInsert = new Document().append("wordWrong", wordWrong)
+                .append("wordCorrect", wordCorrect).append("wordRemember", wordRemeber);
         collection.insertOne(toInsert);
 
     }
 
     public void removeMistake(String mistake) {
-        MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("mistake");
+        MongoCollection<Document> collection =
+                mongoClient.getDatabase(dbName).getCollection("mistake");
 
         Document toInsert = new Document().append("mistake", mistake);
         collection.findOneAndDelete(toInsert);
@@ -287,16 +297,18 @@ public class MongoDB {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("mistake");
 
-        collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("wordWrong", wordWrong)))).forEach(printBlock);
+        collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("wordWrong", wordWrong))))
+                .forEach(printBlock);
 
-        Document output = collection
-                .aggregate(Arrays.asList(Aggregates.match(Filters.eq("wordWrong", wordWrong)), Aggregates.sample(1)))
+        Document output = collection.aggregate(Arrays
+                .asList(Aggregates.match(Filters.eq("wordWrong", wordWrong)), Aggregates.sample(1)))
                 .first();
         if (output == null) {
             return "";
         }
-        String var = "\"" + String.valueOf(output.get("wordWrong")) + "\"" + " schreibt sich eigentlich " + "\""
-                + String.valueOf(output.get("wordCorrect")) + "\"" + ", kannst es dir merken mit " + "\""
+        String var = "\"" + String.valueOf(output.get("wordWrong")) + "\""
+                + " schreibt sich eigentlich " + "\"" + String.valueOf(output.get("wordCorrect"))
+                + "\"" + ", kannst es dir merken mit " + "\""
                 + String.valueOf(output.get("wordCorrect")) + "\"" + " wie " + "\""
                 + String.valueOf(output.get("wordRemember")) + "\"" + ".";
         return String.valueOf(var);
@@ -308,8 +320,8 @@ public class MongoDB {
         MongoCollection<Document> collection = database.getCollection("mistake");
 
         Document output = collection
-                .aggregate(
-                        Arrays.asList(Aggregates.match(Filters.eq("wordCorrect", wordCorrect)), Aggregates.sample(1)))
+                .aggregate(Arrays.asList(Aggregates.match(Filters.eq("wordCorrect", wordCorrect)),
+                        Aggregates.sample(1)))
                 .first();
         if (output == null) {
             return "";
@@ -323,10 +335,11 @@ public class MongoDB {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("mistake");
 
-        collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("wordWrong", wordWrong)))).forEach(printBlock);
+        collection.aggregate(Arrays.asList(Aggregates.match(Filters.eq("wordWrong", wordWrong))))
+                .forEach(printBlock);
 
-        Document output = collection
-                .aggregate(Arrays.asList(Aggregates.match(Filters.eq("wordWrong", wordWrong)), Aggregates.sample(1)))
+        Document output = collection.aggregate(Arrays
+                .asList(Aggregates.match(Filters.eq("wordWrong", wordWrong)), Aggregates.sample(1)))
                 .first();
         if (output == null) {
             return "";
@@ -350,23 +363,26 @@ public class MongoDB {
             }
 
         } else {
-            Document doc = collection.find().sort(new BasicDBObject().append("time", -1)).skip(n).first();
+            Document doc =
+                    collection.find().sort(new BasicDBObject().append("time", -1)).skip(n).first();
             if (doc != null) {
                 return String.valueOf(doc.get("link"));
 
             } else {
-                return "nicht im stack vorhanden.Vorhanden : " + collection.estimatedDocumentCount();
+                return "nicht im stack vorhanden.Vorhanden : "
+                        + collection.estimatedDocumentCount();
             }
         }
     }
 
     public void insertLink(String link) {
-        MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("youtube");
+        MongoCollection<Document> collection =
+                mongoClient.getDatabase(dbName).getCollection("youtube");
         if (collection.countDocuments() > 1000) {
             collection.findOneAndDelete(collection.find().first());
         }
-        Document toInsert = new Document().append("link", link).append("uuid", UUID.randomUUID()).append("time",
-                LocalTime.now());
+        Document toInsert = new Document().append("link", link).append("uuid", UUID.randomUUID())
+                .append("time", LocalTime.now());
         collection.insertOne(toInsert);
     }
 
@@ -375,7 +391,8 @@ public class MongoDB {
             input = "FWKIB glaubt Sleepdose: " + input.replaceAll("\u0001ACTION", "");
             input = input.replaceAll("\u0001", "");
         }
-        MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("keksdose");
+        MongoCollection<Document> collection =
+                mongoClient.getDatabase(dbName).getCollection("keksdose");
         Document toInsert = new Document().append("text", input).append("time", LocalTime.now());
         collection.insertOne(toInsert);
     }
@@ -400,17 +417,18 @@ public class MongoDB {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = database.getCollection("quote");
 
-        Document quote = collection
-                .aggregate(Arrays.asList(Aggregates.match(Filters.regex("quote", regex)), Aggregates.sample(1)))
-                .first();
+        Document quote =
+                collection.aggregate(Arrays.asList(Aggregates.match(Filters.regex("quote", regex)),
+                        Aggregates.sample(1))).first();
         return String.valueOf(quote.get("quote"));
 
     }
 
     public String insertQuote(String input, String inserter) {
-        MongoCollection<Document> collection = mongoClient.getDatabase(dbName).getCollection("quote");
-        Document toInsert = new Document().append("quote", input).append("time", LocalTime.now()).append("inserter",
-                inserter);
+        MongoCollection<Document> collection =
+                mongoClient.getDatabase(dbName).getCollection("quote");
+        Document toInsert = new Document().append("quote", input).append("time", LocalTime.now())
+                .append("inserter", inserter);
         collection.insertOne(toInsert);
         return "webscale?";
     }

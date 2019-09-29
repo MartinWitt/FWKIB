@@ -42,4 +42,9 @@ public class PrintScrOCr implements Command {
         return "bug?";
     }
 
+    @Override
+    public String help(String message) {
+        return "$Texterkennung $Magie $Matrixrechnung $Spitze Pfeile(Vektoren). Nutzung #ocr $eingabelink.$Eingabelink muss ein PrntScr link sein";
+    }
+
 }

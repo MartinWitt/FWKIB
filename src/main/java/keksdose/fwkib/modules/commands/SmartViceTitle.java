@@ -15,10 +15,11 @@ public class SmartViceTitle implements Command {
 
         try {
             TensorLock.getLock();
-            String[] command = { "./smartViceTitleNNscript.sh" };
+            String[] command = {"./smartViceTitleNNscript.sh"};
             Process process;
             process = Runtime.getRuntime().exec(command);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader reader =
+                    new BufferedReader(new InputStreamReader(process.getInputStream()));
             String s;
             String returnvalue = "";
             while ((s = reader.readLine()) != null) {
@@ -32,6 +33,11 @@ public class SmartViceTitle implements Command {
         }
 
         return "";
+    }
+
+    @Override
+    public String help(String message) {
+        return "$Magie $Matrixrechnung $Spitze Pfeile(Vektoren). Falls dein Artikel eine kluge Überschrift braucht hat Fwkib etwas für dich";
     }
 
 }

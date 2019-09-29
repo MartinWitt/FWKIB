@@ -10,4 +10,9 @@ public class Security implements Command {
     public String apply(String message) {
         return securityFeatures;
     }
+
+    @Override
+    public String help(String message) {
+        return "zeigt dir welche tollen Cryptofeature fwkib bugfrei/bugvoll implementiert hat.";
+    }
 }

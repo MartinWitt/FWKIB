@@ -15,4 +15,10 @@ public class QuizStats implements Command {
 
         }
     }
+
+    @Override
+    public String help(String message) {
+        return "Zeigt dir wie klug Leute sind. Nutzung: #quizstats oder #quizstats $username";
+    }
+
 }
