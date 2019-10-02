@@ -52,12 +52,18 @@ public class TvProgramm implements Command {
                 Element element = (Element) list.item(i);
                 channel.add(String.valueOf(element.getTextContent().toString()));
             }
-            return channel.stream()
-                    .filter(v -> v.contains("| Das Erste |") || v.contains("| ZDF |")
-                            || v.contains("| RTL |") || v.contains("| SAT.1 |")
-                            || v.contains("| ProSieben |") || v.contains("| kabel eins |")
-                            || v.contains("| RTL II |") || v.contains("| VOX |"))
-                    .collect(Collectors.joining(" || ")).replace("&amp;", "");
+            // System.out.println(channel.toString());
+            channel.forEach(v -> System.out.println(
+                    v.replaceFirst("^\\d+:\\d+\\s\\|\\s", "").replaceFirst("\\s|\\s.*$", "")));
+            return channel.stream().filter(v -> v.contains("| Das Erste |") || v.contains("| ZDF |")
+                    || v.contains("| RTL |") || v.contains("| SAT.1 |")
+                    || v.contains("| ProSieben |") || v.contains("| kabel eins |")
+                    || v.contains("| RTL II |") || v.contains("| VOX |") || v.contains("| sixx |"))
+                    .sorted((o1, o2) -> o1.replaceFirst("^\\d+:\\d+\\s\\|\\s", "")
+                            .replaceFirst("\\s|\\s.*$", "").toLowerCase()
+                            .compareTo(o2.replaceFirst("^\\d+:\\d+\\s\\|\\s", "")
+                                    .replaceFirst("\\s\\|\\s.*$", "").toLowerCase()))
+                    .collect(Collectors.joining(" || "));
 
             // return String.join(",", channel);
         } catch (MalformedURLException e) {

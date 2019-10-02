@@ -104,6 +104,9 @@ public class ModuleSupplier {
       if (checkForChangeOfAlgo(commandString)) {
          return new EmptyCommand();
       }
+      if (commandString.equalsIgnoreCase("#help")) {
+         return COMMAND_SUPPLIER.get("#help").get();
+      }
       String replaced = commandString.replace("#" + FindBrati.nick, "#brati");
       String s = COMMAND_SUPPLIER.keySet().stream().parallel()
             .min((o1, o2) -> Double.compare((supplier.similarity(state, replaced, o1)),
