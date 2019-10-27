@@ -2,27 +2,34 @@ package keksdose.fwkib.bot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.bson.Document;
+import org.nibor.autolink.LinkExtractor;
+import org.nibor.autolink.LinkSpan;
+import org.nibor.autolink.LinkType;
+import keksdose.fwkib.bot.model.Question;
+import keksdose.fwkib.bot.model.QuestionWithAnswer;
 import keksdose.fwkib.modules.BratiSongInsert;
 import keksdose.fwkib.modules.BrotiQuiz;
 import keksdose.fwkib.modules.CommandController;
 import keksdose.fwkib.modules.ReminderKeksdose;
 import keksdose.fwkib.modules.commands.FindBrati;
+import keksdose.fwkib.modules.commands.OCR;
 import keksdose.fwkib.modules.commands.Youtube;
 import keksdose.fwkib.mongo.MongoDB;
 import keksdose.keksIrc.Message.Message;
-import keksdose.fwkib.bot.model.Question;
-import keksdose.fwkib.bot.model.QuestionWithAnswer;
 
 public class FWKIB {
     public FWKIB(ArrayBlockingQueue<Message> queue) {
@@ -113,8 +120,9 @@ public class FWKIB {
                         }
                         event.answer("richtig ist: " + answersString);
                         List<String> correctPersons = new ArrayList<>();
-                        question.getAnswerList().forEach((element) -> correctPersons
-                                .addAll(answers.get(element.toLowerCase())));
+                        question.getAnswerList()
+                                .forEach((element) -> correctPersons
+                                        .addAll(answers.get(element.toLowerCase())));
                         correctPersons.forEach(v -> System.out.println(v));
                         new MongoDB().updateStats(correctPersons);
                         event.answer(correctPersons.size() + " were correct of " + answers.size());
@@ -161,7 +169,7 @@ public class FWKIB {
             event.answer(controller.executeInput(event.getContent()));
             return;
         }
-
+        extractUrl(event.getContent());
         if (event.getContent().toLowerCase().startsWith("keksbot,")
                 || event.getContent().toLowerCase().startsWith("keksbot:")) {
             event.answer(new ReminderKeksdose().apply(event.getContent()));
@@ -222,4 +230,19 @@ public class FWKIB {
             System.out.println("set username: " + username);
         }
     }
+
+    private void extractUrl(String args) {
+        LinkExtractor linkExtractor =
+                LinkExtractor.builder().linkTypes(EnumSet.of(LinkType.URL, LinkType.WWW)).build();
+        Iterable<LinkSpan> links = linkExtractor.extractLinks(args);
+
+        Iterator<LinkSpan> it = links.iterator();
+        if (it.hasNext()) {
+            LinkSpan link = it.next();
+            OCR.LAST_URL = args.substring(link.getBeginIndex(), link.getEndIndex());
+            System.out.println("link gesetzt: " + OCR.LAST_URL);
+        }
+
+    }
+
 }

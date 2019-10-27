@@ -18,9 +18,15 @@ import keksdose.fwkib.modules.Command;
 
 public class OCR implements Command {
     private static Pattern printScrn = Pattern.compile("http://prntscr.com/[\\w]*");
+    public static String LAST_URL = "";
 
     @Override
     public String apply(String message) {
+        if (message.isBlank()) {
+            message = new String(LAST_URL);
+            LAST_URL = "";
+            System.out.println(LAST_URL);
+        }
         Matcher m = printScrn.matcher(message);
         if (m.find()) {
             return new PrintScrOCr().apply(message);
