@@ -19,7 +19,8 @@ public class Satanist implements Command {
     @Override
     public String apply(String message) {
         return ("sat" + "\uFEFF" + "anist fragt ") + words.stream()
-                .filter(v -> v.toLowerCase().contains(message.toLowerCase())).findAny()
+                .filter(v -> v.toLowerCase().contains(message.toLowerCase()))
+                .findAny()
                 .orElse(words.get(new Random().ints(0, words.size()).findAny().getAsInt()));
 
     }

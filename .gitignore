@@ -49,3 +49,6 @@ settings.gradle
 .project
 .vscode/launch.json
 .vscode/settings.json
+bin/main/version
+src/main/resources/version
+src/.vscode/launch.json

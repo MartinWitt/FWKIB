@@ -77,7 +77,10 @@ public class SmartDose implements Command {
             if (output.size() >= outputSize)
                 return output.stream().limit(outputSize).reduce("", (a, b) -> a + " " + b);
             n++;
-            prefix = output.stream().skip(n).limit(keySize).reduce("", (a, b) -> a + " " + b)
+            prefix = output.stream()
+                    .skip(n)
+                    .limit(keySize)
+                    .reduce("", (a, b) -> a + " " + b)
                     .trim();
         }
     }
