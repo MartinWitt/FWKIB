@@ -21,6 +21,7 @@ import keksdose.fwkib.modules.commands.Misspell;
 import keksdose.fwkib.modules.commands.MongoStats;
 import keksdose.fwkib.modules.commands.NNDose;
 import keksdose.fwkib.modules.commands.OCR;
+import keksdose.fwkib.modules.commands.ParseDate;
 import keksdose.fwkib.modules.commands.PrintScrOCr;
 import keksdose.fwkib.modules.commands.Pwgen;
 import keksdose.fwkib.modules.commands.Qualitaet;
@@ -45,6 +46,7 @@ import keksdose.fwkib.modules.commands.Spelluncheck;
 import keksdose.fwkib.modules.commands.TvProgramm;
 import keksdose.fwkib.modules.commands.Uuid;
 import keksdose.fwkib.modules.commands.VectorDose;
+import keksdose.fwkib.modules.commands.Version;
 import keksdose.fwkib.modules.commands.WeebFilter;
 import keksdose.fwkib.modules.commands.Youtube;
 
@@ -96,6 +98,8 @@ public class ModuleSupplier {
       commands.put("#findbrati", FindBrati::new);
       commands.put("#vectordose", VectorDose::new);
       commands.put("#fastvectordose", FastVectorDose::new);
+      commands.put("#parseDate", ParseDate::new);
+      commands.put("#version", Version::new);
 
       COMMAND_SUPPLIER = Collections.unmodifiableNavigableMap(commands);
    }
@@ -108,7 +112,9 @@ public class ModuleSupplier {
          return COMMAND_SUPPLIER.get("#help").get();
       }
       String replaced = commandString.replace("#" + FindBrati.nick, "#brati");
-      String s = COMMAND_SUPPLIER.keySet().stream().parallel()
+      String s = COMMAND_SUPPLIER.keySet()
+            .stream()
+            .parallel()
             .min((o1, o2) -> Double.compare((supplier.similarity(state, replaced, o1)),
                   (supplier.similarity(state, replaced, o2))))
             .get();
@@ -132,7 +138,6 @@ public class ModuleSupplier {
          state = "leven";
          System.out.println("Habe den Zustand zu : " + state + " gewechselt");
          return true;
-
 
       }
       if (commandString.equals("#cosine")) {
