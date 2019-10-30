@@ -23,6 +23,7 @@ public class BotStart implements Runnable {
         start.addChannel("#kitinfo-botnet");
         start.addChannel("#kitinfo-test");
         start.addChannel("#kitinfo");
+        start.addChannel("##fwkib");
         // try {
         // FastVectorDose.loadModell();
         // } catch (ResourceInitializationException e1) {
