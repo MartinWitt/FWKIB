@@ -36,7 +36,6 @@ public class PrintScrOCr implements Command {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                // TODO: handle exception
             }
         }
         return "bug?";

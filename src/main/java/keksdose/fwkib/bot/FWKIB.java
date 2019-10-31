@@ -40,21 +40,17 @@ public class FWKIB {
                 if (m == null) {
                     continue;
                 }
-                pool.execute(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            onMessage(m);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                pool.execute(() -> {
+                    try {
+                        onMessage(m);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
+                }
 
-                });
+                );
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -70,8 +66,7 @@ public class FWKIB {
     private CommandController controller = new CommandController();
 
 
-    // TODO Quiz etc. In Klassen machen und in ne Map putten. CleanUp das hier nur
-    // noch einzelne Methoden mit if stehen und nicht mehr der Code.
+
     public void onMessage(Message event) throws Exception {
 
         if (ignore.contains(event.getNick())) {

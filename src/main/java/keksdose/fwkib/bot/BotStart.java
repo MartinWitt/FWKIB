@@ -24,15 +24,6 @@ public class BotStart implements Runnable {
         start.addChannel("#kitinfo-test");
         start.addChannel("#kitinfo");
         start.addChannel("##fwkib");
-        // try {
-        // FastVectorDose.loadModell();
-        // } catch (ResourceInitializationException e1) {
-        // // TODO Auto-generated catch block
-        // e1.printStackTrace();
-        // } catch (IOException e1) {
-        // // TODO Auto-generated catch block
-        // e1.printStackTrace();
-        // }
         Executors.newSingleThreadExecutor().submit(new Runnable() {
 
             @Override
@@ -45,7 +36,6 @@ public class BotStart implements Runnable {
             start.start();
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

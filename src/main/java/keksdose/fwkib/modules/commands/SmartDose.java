@@ -24,8 +24,6 @@ public class SmartDose implements Command {
             return returnvalue.replaceAll("\n", "");
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             return "wohl kein smart :(";
 
         }
