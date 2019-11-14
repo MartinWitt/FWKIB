@@ -5,8 +5,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import keksdose.fwkib.modules.commands.EmptyCommand;
+import keksdose.fwkib.modules.commands.Util.EmptyCommand;
 
 public class CommandController {
     private ModuleSupplier supplier = new ModuleSupplier();

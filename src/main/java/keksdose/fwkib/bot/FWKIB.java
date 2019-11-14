@@ -21,13 +21,13 @@ import org.nibor.autolink.LinkSpan;
 import org.nibor.autolink.LinkType;
 import keksdose.fwkib.bot.model.Question;
 import keksdose.fwkib.bot.model.QuestionWithAnswer;
-import keksdose.fwkib.modules.BratiSongInsert;
-import keksdose.fwkib.modules.BrotiQuiz;
 import keksdose.fwkib.modules.CommandController;
 import keksdose.fwkib.modules.ReminderKeksdose;
-import keksdose.fwkib.modules.commands.FindBrati;
-import keksdose.fwkib.modules.commands.OCR;
-import keksdose.fwkib.modules.commands.Youtube;
+import keksdose.fwkib.modules.commands.Database.BratiSongInsert;
+import keksdose.fwkib.modules.commands.KI.OCR;
+import keksdose.fwkib.modules.commands.Misc.Youtube;
+import keksdose.fwkib.modules.commands.Util.BrotiQuiz;
+import keksdose.fwkib.modules.commands.Util.FindBrati;
 import keksdose.fwkib.mongo.MongoDB;
 import keksdose.keksIrc.Message.Message;
 
@@ -178,7 +178,6 @@ public class FWKIB {
         }
         if (event.getHostName().equals("195.201.137.123")) {
             if (!(event.getContent().startsWith(">") || event.getContent().startsWith("\""))) {
-
                 new MongoDB().insertKeksdose(event.getContent());
             }
         }
