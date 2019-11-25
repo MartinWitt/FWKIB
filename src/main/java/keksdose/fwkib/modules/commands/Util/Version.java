@@ -12,9 +12,8 @@ public class Version implements Command {
     @Override
     public String apply(String message) {
         try {
-            return (IOUtils
-                    .toString(this.getClass().getClassLoader().getResourceAsStream("version"))
-                    .replaceAll("\n", " ") + " " + date.toString()).trim();
+            return (IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("version"))
+                    .replaceAll("\n", " ") + " " + "runs since:" + date.toString()).trim();
         } catch (IOException e) {
             e.printStackTrace();
         }

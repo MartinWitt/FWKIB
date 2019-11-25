@@ -32,7 +32,7 @@ public class BotStart implements Runnable {
         ArrayBlockingQueue<Message> container = new ArrayBlockingQueue<>(100);
         IRCStart start = new IRCStart(container);
         start.setUseCapHandler(true);
-        start.setNickname("fwkibLokal");
+        start.setNickname("fwkib");
         start.addChannel("#kitinfo-botnet");
         start.addChannel("#kitinfo-test");
         start.addChannel("#kitinfo");
