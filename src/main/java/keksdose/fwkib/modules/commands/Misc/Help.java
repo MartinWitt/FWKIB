@@ -2,6 +2,7 @@ package keksdose.fwkib.modules.commands.Misc;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import keksdose.fwkib.modules.Command;
 import keksdose.fwkib.modules.ModuleSupplier;

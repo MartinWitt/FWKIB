@@ -45,6 +45,7 @@ import keksdose.fwkib.modules.commands.Security.Hash;
 import keksdose.fwkib.modules.commands.Security.Pwgen;
 import keksdose.fwkib.modules.commands.Security.RsaGenPri;
 import keksdose.fwkib.modules.commands.Security.RsaGenPub;
+import keksdose.fwkib.modules.commands.Security.SecureChoice;
 import keksdose.fwkib.modules.commands.Util.EmptyCommand;
 import keksdose.fwkib.modules.commands.Util.FindBrati;
 import keksdose.fwkib.modules.commands.Util.MongoStats;
@@ -102,6 +103,7 @@ public class ModuleSupplier {
       commands.put("#parseDate", ParseDate::new);
       commands.put("#version", Version::new);
       commands.put("#moodcheck", MoodCheck::new);
+      commands.put("#securechoice", SecureChoice::new);
 
       COMMAND_SUPPLIER = Collections.unmodifiableNavigableMap(commands);
    }
