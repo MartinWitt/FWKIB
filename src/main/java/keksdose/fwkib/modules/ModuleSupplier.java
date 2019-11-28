@@ -28,6 +28,7 @@ import keksdose.fwkib.modules.commands.KI.SmartBrati;
 import keksdose.fwkib.modules.commands.KI.SmartDose;
 import keksdose.fwkib.modules.commands.KI.SmartMensa;
 import keksdose.fwkib.modules.commands.KI.SmartViceTitle;
+import keksdose.fwkib.modules.commands.KI.SpamClassification;
 import keksdose.fwkib.modules.commands.KI.VectorDose;
 import keksdose.fwkib.modules.commands.KI.WeebFilter;
 import keksdose.fwkib.modules.commands.Misc.Help;
@@ -55,7 +56,7 @@ import keksdose.fwkib.modules.commands.Util.Version;
 public class ModuleSupplier {
    private static final NavigableMap<String, Supplier<Command>> COMMAND_SUPPLIER;
    private static final StringAlgorithmSupplier supplier = new StringAlgorithmSupplier();
-   private String state = "leven";
+   private static String state = "leven";
    static {
       final NavigableMap<String, Supplier<Command>> commands = new TreeMap<>();
       commands.put("#spellcheck", Spellcheck::new);
@@ -104,6 +105,7 @@ public class ModuleSupplier {
       commands.put("#version", Version::new);
       commands.put("#moodcheck", MoodCheck::new);
       commands.put("#securechoice", SecureChoice::new);
+      commands.put("#isitspam", SpamClassification::new);
 
       COMMAND_SUPPLIER = Collections.unmodifiableNavigableMap(commands);
    }
