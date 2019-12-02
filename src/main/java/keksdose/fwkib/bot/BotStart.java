@@ -13,8 +13,8 @@ import java.util.concurrent.Executors;
 import java.util.prefs.Preferences;
 import keksdose.fwkib.modules.commands.KI.FastVectorDose;
 import keksdose.fwkib.modules.commands.Util.Version;
-import keksdose.keksIrc.IRCStart;
-import keksdose.keksIrc.Message.Message;
+import keksdose.keksirc.IRCStart;
+import keksdose.keksirc.message.Message;
 
 public class BotStart implements Runnable {
 
@@ -32,10 +32,12 @@ public class BotStart implements Runnable {
         ArrayBlockingQueue<Message> container = new ArrayBlockingQueue<>(100);
         IRCStart start = new IRCStart(container);
         start.setUseCapHandler(true);
-        start.setNickname("fwkib");
+        IRCStart.setNickname("fwkib|lokal");
         start.addChannel("#kitinfo-botnet");
         start.addChannel("#kitinfo-test");
         start.addChannel("#kitinfo");
+        start.addChannel("#Kitmathe");
+
         start.addChannel("##fwkib");
         Executors.newSingleThreadExecutor().submit(new Runnable() {
 

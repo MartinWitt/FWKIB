@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import keksdose.keksIrc.Message.Message;
+import keksdose.keksirc.message.Message;
 
 public class BrotiQuiz implements Function<Message, String> {
 

@@ -36,7 +36,11 @@ dependencies {
     compile 'org.mongodb:mongo-java-driver:+'
     implementation name:"KeksIRC",version:"+"
     compile name:"KeksIRC",version:"+"
+    compile name:"SpamClassifier",version:"+"
     implementation name:"SpamClassifier",version:"+"
+    implementation name:"KeywordExtraction",version:"+"
+    compile name:"KeywordExtraction",version:"+"
+
         // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
 
@@ -89,6 +93,13 @@ build{
     dependsOn versionTxt
 }
 
+tasks.withType(JavaCompile) {
+  options.encoding = 'UTF-8'
+  options.compilerArgs = [
+    '-Xlint:all',
+    //'-Werror'
+  ]
+}
 
 
 mainClassName = 'keksdose.fwkib.Main'
