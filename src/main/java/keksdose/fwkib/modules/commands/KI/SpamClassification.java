@@ -9,7 +9,7 @@ public class SpamClassification implements Command {
   @Override
   public String apply(String message) {
     TensorLock.getLock();
-    String s = LookUp.lookUpSentence(message);
+    String s = new LookUp().lookUpSentence(message);
     TensorLock.releaseLock();
     return s;
   }
