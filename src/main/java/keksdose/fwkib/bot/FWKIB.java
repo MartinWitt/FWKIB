@@ -29,7 +29,7 @@ import keksdose.fwkib.modules.commands.Misc.Youtube;
 import keksdose.fwkib.modules.commands.Util.BrotiQuiz;
 import keksdose.fwkib.modules.commands.Util.FindBrati;
 import keksdose.fwkib.mongo.MongoDB;
-import keksdose.keksIrc.Message.Message;
+import keksdose.keksirc.message.Message;
 
 public class FWKIB {
     public FWKIB(ArrayBlockingQueue<Message> queue) {
@@ -59,7 +59,7 @@ public class FWKIB {
     private ExecutorService pool = Executors.newCachedThreadPool();
     private AtomicBoolean bool = new AtomicBoolean(false);
     private Multimap<String, String> answers = ArrayListMultimap.create();
-    private List<String> ignore = Arrays.asList("Keksbot", "Chrisliebot");
+    private List<String> ignore = Arrays.asList("Keksbot", "Chrisliebot", "keldu[m]");
     private List<String> answerList = null;
     private String pattern = "(?<=youtu.be/|watch\\?v=|/videos/|embed\\/)[^#\\&\\?]*";
     private List<String> optionList = null;
