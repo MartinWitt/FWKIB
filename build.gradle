@@ -1,7 +1,8 @@
 plugins {
     id 'java'
     id 'application'
-        id "org.ajoberstar.grgit" version "1.7.2"
+    id "org.ajoberstar.grgit" version "1.7.2"
+    id "com.github.spotbugs" version "3.0.0"
 
     
 }
@@ -18,8 +19,19 @@ sourceSets {
                 }
         }
 }
+spotbugs {
+    effort = "max"
+    reportLevel = "low"
+    reportsDir = file("$project.buildDir/findbugsReports")
+    ignoreFailures = "true"
 
-
+}
+tasks.withType(com.github.spotbugs.SpotBugsTask) {
+reports {
+    html.enabled true
+    xml.enabled false
+    }
+}
 
 compileJava.options.encoding = 'UTF-8'
 
@@ -29,38 +41,29 @@ targetCompatibility = 11
 dependencies {
 
     testImplementation 'junit:junit:4.12'
-    // https://mvnrepository.com/artifact/org.pircbotx/pircbotx
-    //implementation group: 'org.pircbotx', name: 'pircbotx', version: '2.0.1'
-
     //implementation 'org.mongodb:mongodb-driver-async:3.8.2'
     compile 'org.mongodb:mongo-java-driver:+'
     implementation name:"KeksIRC",version:"+"
-    compile name:"KeksIRC",version:"+"
-    compile name:"SpamClassifier",version:"+"
     implementation name:"SpamClassifier",version:"+"
     implementation name:"KeywordExtraction",version:"+"
-    compile name:"KeywordExtraction",version:"+"
-
-        // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
 
-    compile 'com.google.guava:guava:28.0-jre'
+    implementation 'com.google.guava:guava:28.0-jre'
     // https://mvnrepository.com/artifact/org.pircbotx/pircbotx
     //compile group: 'org.pircbotx', name: 'pircbotx', version: '2.0.1'
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
-    compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.60'
-    compile group: 'commons-io', name: 'commons-io', version: '2.4'
-    compile group: 'org.json', name: 'json', version: '20180813'
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
-    compile group: 'org.apache.commons', name: 'commons-text', version: '1.6'
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
+    implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.60'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.4'
+    implementation group: 'org.json', name: 'json', version: '20180813'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
+    implementation group: 'org.apache.commons', name: 'commons-text', version: '1.6'
     //compile "org.deeplearning4j:deeplearning4j-core:1.0.0-beta5"
     //compile "org.nd4j:nd4j-native-platform:1.0.0-beta5"
     //compile group: 'org.deeplearning4j', name: 'deeplearning4j-nlp-uima', version: '1.0.0-beta5'
-    compile group: 'edu.stanford.nlp', name: 'stanford-corenlp', version: '+'
-    compile 'edu.stanford.nlp:stanford-corenlp:+:models'
-    compile "org.nibor.autolink:autolink:+"
-     
+    implementation group: 'edu.stanford.nlp', name: 'stanford-corenlp', version: '+'
+    implementation 'edu.stanford.nlp:stanford-corenlp:+:models'
+    implementation "org.nibor.autolink:autolink:+"
 }
 //https://stackoverflow.com/questions/27337268/how-to-use-heideltime-temporal-tagger-inside-a-java-project einbauen
 
@@ -109,7 +112,9 @@ jar {
         attributes 'Main-Class' : 'keksdose.fwkib.Main'
     }
     doFirst {
-        from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+        //from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+        from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+
         from "src/main/resources"
  
     }
