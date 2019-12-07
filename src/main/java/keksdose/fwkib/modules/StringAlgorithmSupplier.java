@@ -3,6 +3,7 @@ package keksdose.fwkib.modules;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import org.apache.commons.text.similarity.*;
 import xyz.keksdose.keywordextraction.core.wordmetrics.scrabblescore.ScrabbleValue;
@@ -23,6 +24,9 @@ public class StringAlgorithmSupplier {
     }
     if (algo.equals("scrabble")) {
       return scrabbleScore(left, right);
+    }
+    if (algo.equals("random")) {
+      return randomScore(left, right);
     }
     return levenshteinMatch(left, right);
 
@@ -56,5 +60,9 @@ public class StringAlgorithmSupplier {
         - Math.abs(ScrabbleValue.getValueForLetter(right))));
     System.out.println(d);
     return d;
+  }
+  
+  private Double randomScore(String left, String right) {
+    return ThreadLocalRandom.current().nextDouble();
   }
 }

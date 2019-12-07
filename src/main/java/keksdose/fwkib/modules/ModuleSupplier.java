@@ -159,6 +159,11 @@ public class ModuleSupplier {
       System.out.println("Habe den Zustand zu : " + state + " gewechselt");
       return true;
     }
+    if (commandString.equals("#random")) {
+      state = "random";
+      System.out.println("Habe den Zustand zu : " + state + " gewechselt");
+      return true;
+    }
     return false;
   }
 }
