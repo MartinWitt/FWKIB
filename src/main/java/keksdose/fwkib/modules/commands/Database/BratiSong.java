@@ -9,9 +9,9 @@ public class BratiSong implements Command {
     public String apply(String message) {
         System.out.println(message);
         if (message.trim().isEmpty()) {
-            return String.valueOf(new MongoDB().getBratiSong(""));
+            return String.valueOf(MongoDB.MongoDB.getBratiSong(""));
         } else {
-            return String.valueOf(new MongoDB().getBratiSong(message));
+            return String.valueOf(MongoDB.MongoDB.getBratiSong(message));
         }
     }
 

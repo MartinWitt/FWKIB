@@ -8,9 +8,9 @@ public class Sleepdose implements Command {
     @Override
     public String apply(String message) {
         if (message.isBlank()) {
-            return String.valueOf(new MongoDB().getKeksdose());
+            return String.valueOf(MongoDB.MongoDB.getKeksdose());
         } else {
-            return String.valueOf(new MongoDB().getkeksdose(message));
+            return String.valueOf(MongoDB.MongoDB.getkeksdose(message));
         }
     }
 

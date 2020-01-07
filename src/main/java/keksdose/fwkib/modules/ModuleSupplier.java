@@ -2,6 +2,7 @@ package keksdose.fwkib.modules;
 
 import java.util.Collections;
 import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 import keksdose.fwkib.modules.commands.Database.Brati;
@@ -54,6 +55,7 @@ public class ModuleSupplier {
   private static final NavigableMap<String, Supplier<Command>> COMMAND_SUPPLIER;
   private static final StringAlgorithmSupplier supplier = new StringAlgorithmSupplier();
   private static String state = "leven";
+
   static {
     final NavigableMap<String, Supplier<Command>> commands = new TreeMap<>();
     commands.put("#spellcheck", Spellcheck::new);
@@ -103,7 +105,6 @@ public class ModuleSupplier {
     commands.put("#moodcheck", MoodCheck::new);
     commands.put("#securechoice", SecureChoice::new);
     commands.put("#isitspam", SpamClassification::new);
-
     COMMAND_SUPPLIER = Collections.unmodifiableNavigableMap(commands);
   }
 
@@ -115,15 +116,15 @@ public class ModuleSupplier {
       return COMMAND_SUPPLIER.get("#help").get();
     }
     String replaced = commandString.replace("#" + FindBrati.nick, "#brati");
-    String s = COMMAND_SUPPLIER.keySet()
-        .stream()
-        .parallel()
-        .min((o1, o2) -> Double.compare((supplier.similarity(state, replaced, o1)),
-            (supplier.similarity(state, replaced, o2))))
-        .get();
-    System.out.println(s);
-    Command c = COMMAND_SUPPLIER.get(s).get();
-
+    Command c =
+        Objects.isNull(COMMAND_SUPPLIER.get(replaced))
+            ? (COMMAND_SUPPLIER.get(COMMAND_SUPPLIER.keySet()
+                .stream()
+                .parallel()
+                .min((o1, o2) -> Double.compare((supplier.similarity(state, replaced, o1)),
+                    (supplier.similarity(state, replaced, o2))))
+                .get()).get())
+            : COMMAND_SUPPLIER.get(replaced).get();
     if (c == null) {
       return new EmptyCommand();
     }

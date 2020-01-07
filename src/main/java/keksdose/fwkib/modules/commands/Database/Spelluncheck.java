@@ -18,7 +18,7 @@ public class Spelluncheck implements Command {
         if (splitter.size() == 0) {
             return "";
         }
-        MongoDB db = new MongoDB();
+        MongoDB db = MongoDB.MongoDB;
         List<String> returnvalue = new ArrayList<>();
         for (String var : splitter) {
 

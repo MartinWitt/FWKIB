@@ -8,9 +8,9 @@ public class Brati implements Command {
     @Override
     public String apply(String message) {
         if (message.trim().isEmpty()) {
-            return String.valueOf(new MongoDB().getBrati());
+            return String.valueOf(MongoDB.MongoDB.getBrati());
         } else {
-            return String.valueOf(new MongoDB().getBrati(message));
+            return String.valueOf(MongoDB.MongoDB.getBrati(message));
         }
 
     }

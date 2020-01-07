@@ -8,9 +8,9 @@ public class Quote implements Command {
     @Override
     public String apply(String message) {
         if (message.trim().isEmpty()) {
-            return String.valueOf(new MongoDB().getQuote());
+            return String.valueOf(MongoDB.MongoDB.getQuote());
         } else {
-            return String.valueOf(new MongoDB().getQuote(message));
+            return String.valueOf(MongoDB.MongoDB.getQuote(message));
         }
 
     }

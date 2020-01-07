@@ -7,7 +7,7 @@ public class FlipRage implements Command {
 
     @Override
     public String apply(String message) {
-        return new MongoDB().flipRage(message);
+        return MongoDB.MongoDB.flipRage(message);
     }
 
     @Override

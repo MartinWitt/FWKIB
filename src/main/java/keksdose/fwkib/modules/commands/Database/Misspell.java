@@ -19,7 +19,7 @@ public class Misspell implements Command {
 
         if (splitter.size() == 1) {
 
-            String var = new MongoDB().getMistake(splitter.get(0));
+            String var = MongoDB.MongoDB.getMistake(splitter.get(0));
 
             if (!var.equalsIgnoreCase("")) {
                 return var;
@@ -34,7 +34,7 @@ public class Misspell implements Command {
                 + "\"" + ", du kannst es dir merken mit " + "\"" + wordCorrect + "\"" + " wie "
                 + "\"" + wordRemember + "\".";
 
-        new MongoDB().insertMistake(wordWrong, wordCorrect, wordRemember);
+        MongoDB.MongoDB.insertMistake(wordWrong, wordCorrect, wordRemember);
 
         return var;
     }

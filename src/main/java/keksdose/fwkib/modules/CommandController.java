@@ -11,7 +11,6 @@ public class CommandController {
     private ModuleSupplier supplier = new ModuleSupplier();
 
     public String executeInput(String message) {
-
         Pattern p = Pattern.compile("#[^\\s]*");
         List<String> matches = new ArrayList<>();
         Matcher m = p.matcher(message);
@@ -27,7 +26,6 @@ public class CommandController {
             return "";
         }
         if (matches.size() == 1) {
-
             return supplier.supplyCommand(matches.get(0)).apply(message);
         } else {
             Function<String, String> c = new EmptyCommand();

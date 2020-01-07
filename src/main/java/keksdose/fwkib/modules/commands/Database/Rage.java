@@ -8,9 +8,9 @@ public class Rage implements Command {
     @Override
     public String apply(String message) {
         if (message.trim().isEmpty()) {
-            return String.valueOf(new MongoDB().getRage());
+            return String.valueOf(MongoDB.MongoDB.getRage());
         } else {
-            return String.valueOf(new MongoDB().getRage(message));
+            return String.valueOf(MongoDB.MongoDB.getRage(message));
         }
     }
 

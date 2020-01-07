@@ -7,7 +7,7 @@ public class BratiSongInsert {
     public String apply(String message, String user) {
         message.replaceAll("~", "");
         message.trim();
-        new MongoDB().insertBratiSong(message, user);
+        MongoDB.MongoDB.insertBratiSong(message, user);
 
         return "";
     }
