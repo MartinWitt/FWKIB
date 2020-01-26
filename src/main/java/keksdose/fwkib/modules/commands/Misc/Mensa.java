@@ -70,8 +70,6 @@ public class Mensa implements Command {
       try {
         var parsed = dateFormatter.parse(message);
         MonthDay md = MonthDay.from(parsed);
-        System.out.println(String.format(LINK_MENSA, String.format("%02d", md.getDayOfMonth()) + "."
-            + String.format("%02d", md.getMonthValue()) + "." + LocalDate.now().getYear()));
         return String.format(LINK_MENSA, String.format("%02d", md.getDayOfMonth()) + "."
             + String.format("%02d", md.getMonthValue()) + "." + LocalDate.now().getYear());
 
