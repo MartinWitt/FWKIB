@@ -7,5 +7,5 @@ public interface Listener {
 
   public void register();
 
-  public void handle(Message message);
+  public boolean handle(Message message);
 }

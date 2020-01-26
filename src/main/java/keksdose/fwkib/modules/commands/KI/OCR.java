@@ -1,5 +1,5 @@
 
-package keksdose.fwkib.modules.commands.KI;
+package keksdose.fwkib.modules.commands.ki;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -17,51 +17,51 @@ import org.apache.commons.lang3.StringUtils;
 import keksdose.fwkib.modules.Command;
 
 public class OCR implements Command {
-    private static Pattern printScrn = Pattern.compile("http://prntscr.com/[\\w]*");
-    public static String LAST_URL = "";
+  private static Pattern printScrn = Pattern.compile("http://prntscr.com/[\\w]*");
+  public static String LAST_URL = "";
 
-    @Override
-    public String apply(String message) {
-        if (message.isBlank()) {
-            message = new String(LAST_URL);
-            LAST_URL = "";
-            System.out.println(LAST_URL);
-        }
-        Matcher m = printScrn.matcher(message);
-        if (m.find()) {
-            return new PrintScrOCr().apply(message);
-        }
-        try {
-            int maxDownload = 1024 * 1024 * 2;
-            URL website = new URL(message);
+  @Override
+  public String apply(String message) {
+    if (message.isBlank()) {
+      message = new String(LAST_URL);
+      LAST_URL = "";
+      System.out.println(LAST_URL);
+    }
+    Matcher m = printScrn.matcher(message);
+    if (m.find()) {
+      return new PrintScrOCr().apply(message);
+    }
+    try {
+      int maxDownload = 1024 * 1024 * 2;
+      URL website = new URL(message);
 
-            byte[] outBytes = new byte[maxDownload];
-            InputStream stream = website.openStream();
+      byte[] outBytes = new byte[maxDownload];
+      InputStream stream = website.openStream();
 
-            IOUtils.read(stream, outBytes, 0, maxDownload);
+      IOUtils.read(stream, outBytes, 0, maxDownload);
 
-            if (stream.read() != -1) {
-                System.out.println("File too big");
-            }
-            IOUtils.write(outBytes, new FileOutputStream("200MB.jpg"));
-            ProcessBuilder pb = new ProcessBuilder("tesseract", "200MB.jpg", "stdout", "-l",
-                    "deu+eng", "--oem", "1");
-            String output = IOUtils.toString(pb.start().getInputStream());
-            output = output.replaceAll("\n", " ");
-            output = StringUtils.substring(StringUtils.normalizeSpace(output), 0, 510);
-            System.out.println(output);
-            return output.isBlank() ? "nix erkannt ;_; " : output;
-        } catch (FileNotFoundException e) {
-            return "naja wohl mal nachfragen";
-        } catch (IOException e) {
-            return "naja wohl mal nachfragen";
-        }
-
+      if (stream.read() != -1) {
+        System.out.println("File too big");
+      }
+      IOUtils.write(outBytes, new FileOutputStream("200MB.png"));
+      ProcessBuilder pb =
+          new ProcessBuilder("tesseract", "200MB.png", "stdout", "-l", "deu+eng", "--oem", "1");
+      String output = IOUtils.toString(pb.start().getInputStream());
+      output = output.replaceAll("\n", " ");
+      output = StringUtils.substring(StringUtils.normalizeSpace(output), 0, 510);
+      System.out.println(output);
+      return output.isBlank() ? "nix erkannt ;_; " : output;
+    } catch (FileNotFoundException e) {
+      return "naja wohl mal nachfragen";
+    } catch (IOException e) {
+      return "naja wohl mal nachfragen " + e.getLocalizedMessage();
     }
 
-    @Override
-    public String help(String message) {
-        return "$Texterkennung $Magie $Matrixrechnung $Spitze Pfeile(Vektoren). Nutzung #ocr $eingabelink.$Eingabelink muss zu einem Bild kleiner 200mb sein";
-    }
+  }
+
+  @Override
+  public String help(String message) {
+    return "$Texterkennung $Magie $Matrixrechnung $Spitze Pfeile(Vektoren). Nutzung #ocr $eingabelink.$Eingabelink muss zu einem Bild kleiner 200mb sein";
+  }
 
 }

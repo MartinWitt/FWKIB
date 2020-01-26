@@ -1,4 +1,4 @@
-package keksdose.fwkib.modules.commands.KI;
+package keksdose.fwkib.modules.commands.ki;
 
 import keksdose.fwkib.modules.Command;
 import keksdose.fwkib.modules.TensorLock;

@@ -14,7 +14,7 @@ import org.bson.Document;
 import keksdose.fwkib.bot.model.Question;
 import keksdose.fwkib.bot.model.QuestionWithAnswer;
 import keksdose.fwkib.modules.CommandController;
-import keksdose.fwkib.modules.commands.Util.FindBrati;
+import keksdose.fwkib.modules.commands.util.FindBrati;
 import keksdose.fwkib.modules.eventbus.Event;
 import keksdose.fwkib.modules.eventbus.ListenerManager;
 import keksdose.fwkib.mongo.MongoDB;

@@ -1,4 +1,4 @@
-package keksdose.fwkib.modules.commands.Util;
+package keksdose.fwkib.modules.commands.util;
 
 import keksdose.fwkib.modules.Command;
 

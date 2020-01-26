@@ -3,6 +3,7 @@ package keksdose.fwkib.modules.listener;
 import java.io.IOException;
 import java.util.logging.Logger;
 import keksdose.fwkib.bot.ConfigReader;
+import keksdose.fwkib.modules.eventbus.ListenerManager;
 import keksdose.keksirc.message.Message;
 
 /**
@@ -10,16 +11,18 @@ import keksdose.keksirc.message.Message;
  */
 public class RestartListener extends AbstractListener {
 
+
   @Override
-  public void handle(final Message message) {
+  public boolean handle(final Message message) {
     if (ConfigReader.getAdmins().contains(message.getHostName())
-        && message.getContent().equals("#restart")) {
+        && message.getContent().startsWith("#restart")) {
       try {
         new ProcessBuilder("./restart.sh").start();
       } catch (final IOException e) {
         Logger.getLogger("fwkib").warning(e.getLocalizedMessage());
       }
     }
+    return false;
   }
 
 }

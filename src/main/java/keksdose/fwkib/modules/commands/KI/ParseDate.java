@@ -1,4 +1,4 @@
-package keksdose.fwkib.modules.commands.KI;
+package keksdose.fwkib.modules.commands.ki;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -21,32 +21,39 @@ import keksdose.fwkib.modules.Command;
 
 public class ParseDate implements Command {
 
-    @Override
-    public String help(String message) {
-        return "findet Zeitpunkte in englischen Texten.#parseDate $Text";
-    }
 
-    @Override
-    public String apply(String message) {
-        String result = "";
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        Properties props = new Properties();
-        AnnotationPipeline pipeline = new AnnotationPipeline();
-        pipeline.addAnnotator(new TokenizerAnnotator(false));
-        pipeline.addAnnotator(new WordsToSentencesAnnotator(false));
-        pipeline.addAnnotator(new POSTaggerAnnotator(false));
-        pipeline.addAnnotator(new TimeAnnotator("sutime", props));
-        Annotation annotation = new Annotation(message);
-        annotation.set(CoreAnnotations.DocDateAnnotation.class, df.format(new Date()));
-        pipeline.annotate(annotation);
-        System.out.println(annotation.get(CoreAnnotations.TextAnnotation.class));
-        List<CoreMap> timexAnnsAll = annotation.get(TimeAnnotations.TimexAnnotations.class);
-        for (CoreMap cm : timexAnnsAll) {
-            List<CoreLabel> tokens = cm.get(CoreAnnotations.TokensAnnotation.class);
-            result += " " + cm.get(TimeExpression.Annotation.class).getTemporal().toString();
-        }
-        // https://nlp.stanford.edu/software/sutime.shtml#Download
-        return result.trim();
+  @Override
+  public String
+
+      help(String message) {
+    return "findet Zeitpunkte in englischen Texten.#parseDate $Text";
+  }
+
+
+
+  @Override
+  public String
+
+      apply(String message) {
+    String result = "";
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    Properties props = new Properties();
+    AnnotationPipeline pipeline = new AnnotationPipeline();
+    pipeline.addAnnotator(new TokenizerAnnotator(false));
+    pipeline.addAnnotator(new WordsToSentencesAnnotator(false));
+    pipeline.addAnnotator(new POSTaggerAnnotator(false));
+    pipeline.addAnnotator(new TimeAnnotator("sutime", props));
+    Annotation annotation = new Annotation(message);
+    annotation.set(CoreAnnotations.DocDateAnnotation.class, df.format(new Date()));
+    pipeline.annotate(annotation);
+    System.out.println(annotation.get(CoreAnnotations.TextAnnotation.class));
+    List<CoreMap> timexAnnsAll = annotation.get(TimeAnnotations.TimexAnnotations.class);
+    for (CoreMap cm : timexAnnsAll) {
+      List<CoreLabel> tokens = cm.get(CoreAnnotations.TokensAnnotation.class);
+      result += " " + cm.get(TimeExpression.Annotation.class).getTemporal().toString();
     }
+    // https://nlp.stanford.edu/software/sutime.shtml#Download
+    return result.trim();
+  }
 
 }

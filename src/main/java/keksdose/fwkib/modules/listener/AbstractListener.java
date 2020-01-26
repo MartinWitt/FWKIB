@@ -12,7 +12,8 @@ public abstract class AbstractListener implements Listener {
   }
 
   @Override
-  public void handle(final Message message) {
+  public boolean handle(final Message message) {
+    return false;
     // default noop
   }
 

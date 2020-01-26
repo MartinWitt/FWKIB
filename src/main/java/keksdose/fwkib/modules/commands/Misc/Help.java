@@ -1,4 +1,4 @@
-package keksdose.fwkib.modules.commands.Misc;
+package keksdose.fwkib.modules.commands.misc;
 
 import java.io.IOException;
 import java.util.Arrays;

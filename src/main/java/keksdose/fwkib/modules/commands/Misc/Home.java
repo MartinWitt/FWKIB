@@ -1,4 +1,4 @@
-package keksdose.fwkib.modules.commands.Misc;
+package keksdose.fwkib.modules.commands.misc;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,7 +47,7 @@ public class Home implements Command {
     URL url = getClass().getResource("/srcFiles");
     final Map<String, String> env = new HashMap<>();
     final String[] array = url.toURI().toString().split("!");
-    final FileSystem fs = FileSystems.newFileSystem(url.toURI().create(array[0]), env);
+    final FileSystem fs = FileSystems.newFileSystem(URI.create(array[0]), env);
     final Path path2 = fs.getPath(array[1]);
     System.out.println(path2);
     Collection<String> result = new HashSet<>();

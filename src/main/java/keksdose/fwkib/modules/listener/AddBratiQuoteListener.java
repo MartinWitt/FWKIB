@@ -1,6 +1,7 @@
 package keksdose.fwkib.modules.listener;
 
 import keksdose.fwkib.bot.ConfigReader;
+import keksdose.fwkib.modules.eventbus.ListenerManager;
 import keksdose.fwkib.mongo.MongoDB;
 import keksdose.keksirc.message.Message;
 
@@ -9,8 +10,9 @@ import keksdose.keksirc.message.Message;
  */
 public class AddBratiQuoteListener extends AbstractListener {
 
+
   @Override
-  public void handle(final Message message) {
+  public boolean handle(final Message message) {
     final String inserter = ConfigReader.getAdmins()
         .stream()
         .filter(v -> v.contains(message.getHostName()))
@@ -20,7 +22,9 @@ public class AddBratiQuoteListener extends AbstractListener {
       message.answer(
           MongoDB.MongoDB.insertBrati(message.getContent().replaceFirst("(?i)#addBrati", "").trim(),
               false, ConfigReader.convertHostnameToString(inserter)));
+      return true;
     }
+    return false;
   }
 
 }

@@ -4,14 +4,14 @@ import java.util.List;
 
 public interface Question {
 
-    public String getQuestion();
+  public String getQuestion();
 
-    public List<String> getOptions();
+  public List<String> getOptions();
 
-    public int getAnzAnswers();
+  public int getAnzAnswers();
 
-    public List<String> getAnswerList();
+  public List<String> getAnswerList();
 
-    public int getTime();
+  public int getTime();
 
 }

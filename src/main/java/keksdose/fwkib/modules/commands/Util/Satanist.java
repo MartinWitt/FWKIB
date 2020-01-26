@@ -1,4 +1,4 @@
-package keksdose.fwkib.modules.commands.Util;
+package keksdose.fwkib.modules.commands.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +16,11 @@ public class Satanist implements Command {
         }
     };
 
+
     @Override
-    public String apply(String message) {
+    public String
+
+            apply(String message) {
         return ("sat" + "\uFEFF" + "anist fragt ") + words.stream()
                 .filter(v -> v.toLowerCase().contains(message.toLowerCase()))
                 .findAny()
@@ -25,8 +28,12 @@ public class Satanist implements Command {
 
     }
 
+
+
     @Override
-    public String help(String message) {
+    public String
+
+            help(String message) {
         return "Fragen welche dir helfen können dein Problem zu lösen (präsentiert von sat"
                 + "\uFEFF" + "anist)";
     }

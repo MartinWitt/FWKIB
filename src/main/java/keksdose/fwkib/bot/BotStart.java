@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
-import keksdose.fwkib.modules.commands.Util.Version;
+import keksdose.fwkib.modules.commands.util.Version;
 import keksdose.keksirc.IRCStart;
 import keksdose.keksirc.message.Message;
 

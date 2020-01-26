@@ -1,5 +1,6 @@
 package keksdose.fwkib.modules.listener;
 
+import keksdose.fwkib.modules.eventbus.ListenerManager;
 import keksdose.fwkib.mongo.MongoDB;
 import keksdose.keksirc.message.Message;
 
@@ -8,13 +9,14 @@ import keksdose.keksirc.message.Message;
  */
 public class InsertKeksdoseQuoteListener extends AbstractListener {
 
-  @Override
-  public void handle(final Message message) {
+
+  public boolean handle(final Message message) {
     if (message.getHostName().equals("195.201.137.123")) {
       if (!(message.getContent().startsWith(">") || message.getContent().startsWith("\""))) {
         MongoDB.MongoDB.insertKeksdose(message.getContent());
       }
     }
+    return false;
   }
 
 

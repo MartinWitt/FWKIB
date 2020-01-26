@@ -1,6 +1,7 @@
 package keksdose.fwkib.modules.listener;
 
 import keksdose.fwkib.modules.ReminderKeksdose;
+import keksdose.fwkib.modules.eventbus.ListenerManager;
 import keksdose.keksirc.message.Message;
 
 /**
@@ -8,12 +9,15 @@ import keksdose.keksirc.message.Message;
  */
 public class KeksbotReminderListener extends AbstractListener {
 
+
+
   @Override
-  public void handle(final Message message) {
+  public boolean handle(final Message message) {
     if (message.getContent().toLowerCase().startsWith("keksbot,")
         || message.getContent().toLowerCase().startsWith("keksbot:")) {
       message.answer(new ReminderKeksdose().apply(message.getContent()));
     }
+    return false;
   }
 }
 

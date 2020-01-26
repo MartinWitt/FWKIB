@@ -1,6 +1,7 @@
 package keksdose.fwkib.modules.listener;
 
-import keksdose.fwkib.modules.commands.Database.BratiSongInsert;
+import keksdose.fwkib.modules.commands.database.BratiSongInsert;
+import keksdose.fwkib.modules.eventbus.ListenerManager;
 import keksdose.keksirc.message.Message;
 
 /**
@@ -9,12 +10,13 @@ import keksdose.keksirc.message.Message;
 public class BratiSongListener extends AbstractListener {
 
   @Override
-  public void handle(final Message message) {
+  public boolean handle(final Message message) {
     if (message.getContent().trim().startsWith("~") && message.getNick().contains("brati")
         && message.getContent().trim().endsWith("~")) {
       new BratiSongInsert().apply(message.getContent().replaceAll("~", ""), message.getNick());
-      return;
+      return true;
     }
+    return false;
   }
 }
 

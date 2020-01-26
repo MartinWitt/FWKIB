@@ -17,6 +17,7 @@ public enum ConfigReader {
   CONFIG("config.properties");
 
   private ConfigReader(String configName) {
+    this.prop = new Properties();
     this.configName = configName;
     loadConfig();
   }
@@ -29,7 +30,7 @@ public enum ConfigReader {
     }
   }
 
-  private final Properties prop = new Properties();
+  private final Properties prop;
   private final String configName;
 
   public static Collection<String> getAdmins() {
