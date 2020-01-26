@@ -71,6 +71,10 @@ dependencies {
     implementation group: 'edu.stanford.nlp', name: 'stanford-corenlp', version: '+'
     implementation 'edu.stanford.nlp:stanford-corenlp:+:models'
     implementation "org.nibor.autolink:autolink:+"
+    implementation 'org.jsoup:jsoup:1.11.3'
+
+
+
 }
 //https://stackoverflow.com/questions/27337268/how-to-use-heideltime-temporal-tagger-inside-a-java-project einbauen
 

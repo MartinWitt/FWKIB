@@ -29,12 +29,7 @@ public class BotStart implements Runnable {
     start.setUseCapHandler(true);
     Arrays.stream(channels).forEach(start::addChannel);
     IRCStart.setNickname("fwkib");
-    // start.addChannel("#kitinfo-botnet");
-    // start.addChannel("#kitinfo-test");
-    // start.addChannel("#kitinfo");
-    // start.addChannel("#Kitmathe");
-    // start.addChannel("##fwkib");
-    Executors.newSingleThreadExecutor().submit(() -> new FWKIB(container));
+    Executors.newSingleThreadExecutor().execute(() -> new FWKIB(container));
 
     try {
       start.start();

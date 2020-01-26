@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import org.bson.Document;
 import keksdose.fwkib.bot.model.Question;
 import keksdose.fwkib.bot.model.QuestionWithAnswer;
 import keksdose.fwkib.modules.CommandController;
@@ -19,7 +19,6 @@ import keksdose.fwkib.modules.eventbus.Event;
 import keksdose.fwkib.modules.eventbus.ListenerManager;
 import keksdose.fwkib.mongo.MongoDB;
 import keksdose.keksirc.message.Message;
-import org.bson.Document;
 
 public class FWKIB {
   public FWKIB(ArrayBlockingQueue<Message> queue) {
@@ -90,39 +89,37 @@ public class FWKIB {
 
       answerList = question.getAnswerList();
       optionList = question.getOptions();
-      Executors.newSingleThreadExecutor().submit(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            bool.set(true);
-
-            TimeUnit.SECONDS.sleep(question.getTime());
-            String answersString = "";
-            for (String var : question.getAnswerList()) {
-              answersString += var + " ";
-            }
-            event.answer("richtig ist: " + answersString);
-            List<String> correctPersons = new ArrayList<>();
-            question.getAnswerList()
-                .forEach((element) -> correctPersons.addAll(answers.get(element.toLowerCase())));
-            correctPersons.forEach(v -> System.out.println(v));
-            MongoDB.MongoDB.updateStats(correctPersons);
-            event.answer(correctPersons.size() + " were correct of " + answers.size());
-            answers.clear();
-            bool.set(false);
-
-          } catch (InterruptedException e) {
-            bool.set(false);
-            answers.clear();
-            e.printStackTrace();
+      Executors.newSingleThreadExecutor().execute(() -> {
+        try {
+          bool.set(true);
+          TimeUnit.SECONDS.sleep(question.getTime());
+          String answersString = "";
+          for (String var : question.getAnswerList()) {
+            answersString += var + " ";
           }
+          event.answer("richtig ist: " + answersString);
+          List<String> correctPersons = new ArrayList<>();
+          question.getAnswerList()
+              .forEach((element) -> correctPersons.addAll(answers.get(element.toLowerCase())));
+          correctPersons.forEach(v -> System.out.println(v));
+          MongoDB.MongoDB.updateStats(correctPersons);
+          event.answer(correctPersons.size() + " were correct of " + answers.size());
+          answers.clear();
+          bool.set(false);
+        } catch (InterruptedException e) {
+          bool.set(false);
+          answers.clear();
+          e.printStackTrace();
         }
+
       });
       return;
 
     }
 
-    listenerManager.handle(new Event(event));
+    if (listenerManager.handle(new Event(event))) {
+      return;
+    }
     if (event.getContent().startsWith("#") && !event.getContent().startsWith("#!")) {
       event.answer(controller.executeInput(event.getContent()));
       return;

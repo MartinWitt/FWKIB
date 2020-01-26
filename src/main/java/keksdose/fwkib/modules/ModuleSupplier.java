@@ -32,6 +32,7 @@ import keksdose.fwkib.modules.commands.KI.WeebFilter;
 import keksdose.fwkib.modules.commands.Misc.Help;
 import keksdose.fwkib.modules.commands.Misc.Home;
 import keksdose.fwkib.modules.commands.Misc.JvmStats;
+import keksdose.fwkib.modules.commands.Misc.Mensa;
 import keksdose.fwkib.modules.commands.Misc.Qualitaet;
 import keksdose.fwkib.modules.commands.Misc.QuizStats;
 import keksdose.fwkib.modules.commands.Misc.Reverse;
@@ -91,7 +92,7 @@ public class ModuleSupplier {
     commands.put("#dummdose", Sleepdose::new);
     commands.put("#dummbrati", SmartBrati::new);
     commands.put("#quote", Quote::new);
-    commands.put("#mensa", SmartMensa::new);
+    commands.put("#mensa", Mensa::new);
     commands.put("#reverse", Reverse::new);
     commands.put("#shuffle", Shuffle::new);
     commands.put("#qualität", Qualitaet::new);
@@ -120,7 +121,6 @@ public class ModuleSupplier {
         Objects.isNull(COMMAND_SUPPLIER.get(replaced))
             ? (COMMAND_SUPPLIER.get(COMMAND_SUPPLIER.keySet()
                 .stream()
-                .parallel()
                 .min((o1, o2) -> Double.compare((supplier.similarity(state, replaced, o1)),
                     (supplier.similarity(state, replaced, o2))))
                 .get()).get())
