@@ -1,12 +1,14 @@
 package keksdose.fwkib.modules.listener;
 
 import keksdose.fwkib.modules.commands.database.BratiSongInsert;
-import keksdose.fwkib.modules.eventbus.ListenerManager;
+import keksdose.fwkib.modules.eventbus.Registerable;
 import keksdose.keksirc.message.Message;
 
 /**
  * Reads all incoming messages and inserts quotes if needed.
  */
+@Registerable()
+
 public class BratiSongListener extends AbstractListener {
 
   @Override

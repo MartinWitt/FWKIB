@@ -21,7 +21,7 @@ public class Help implements Command {
     if (message.isEmpty()) {
       return "Vorhandene Befehlsgruppen: " + Arrays.stream(Package.getPackages())
           .filter(v -> v.getName().startsWith(path))
-          .map(v -> StringUtils.substringAfterLast(v.getName(), "."))
+          .map(v -> StringUtils.capitalize(StringUtils.substringAfterLast(v.getName(), ".")))
           .collect(Collectors.joining(", "));
     } else {
       try {

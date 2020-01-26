@@ -1,13 +1,14 @@
 package keksdose.fwkib.modules.listener;
 
 import keksdose.fwkib.bot.ConfigReader;
-import keksdose.fwkib.modules.eventbus.ListenerManager;
+import keksdose.fwkib.modules.eventbus.Registerable;
 import keksdose.fwkib.mongo.MongoDB;
 import keksdose.keksirc.message.Message;
 
 /**
  * Reads all incoming messages and handles #addBrati messages.
  */
+@Registerable()
 public class AddBratiQuoteListener extends AbstractListener {
 
 
