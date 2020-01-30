@@ -1,10 +1,13 @@
 package keksdose.fwkib.modules.commands.misc;
 
 import java.io.IOException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.MonthDay;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -12,10 +15,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.joda.time.LocalDate;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import keksdose.fwkib.modules.Command;
+
 
 /**
  * Mensa
@@ -41,11 +44,15 @@ public class Mensa implements Command {
     }
     try {
       Document doc = Jsoup.connect(link).validateTLSCertificates(false).get();
-      mensaByDate.put(link, doc);
+      cacheLink(link, doc);
       return parseDoc(doc);
     } catch (IOException e) {
       return "Da ging wohl was schief :(. Fehler: " + e.getLocalizedMessage();
     }
+  }
+
+  private void cacheLink(String link, Document doc) {
+    mensaByDate.put(link, doc);
   }
 
   private String parseDoc(Document doc) {
@@ -59,9 +66,9 @@ public class Mensa implements Command {
 
   private String formatDate(String message) {
     if (message.isBlank()) {
-      return String.format(LINK_MENSA, KnownDates.TODAY.getDate());
+      return String.format(LINK_MENSA, KnownDate.TODAY.getDate());
     }
-    Optional<KnownDates> date = getKnownDateWithName(message);
+    Optional<KnownDate> date = KnownDate.getKnownDateWithName(message);
     if (date.isPresent()) {
       return String.format(LINK_MENSA, date.get().getDate());
     } else {
@@ -79,27 +86,45 @@ public class Mensa implements Command {
     }
   }
 
-  enum KnownDates {
-    TODAY("heute"), TOMORROW("morgen"), MONTAG("Montag");
+  enum KnownDate {
+    TODAY("heute") {
+      @Override
+      public String getDate() {
+        return formatDate(LocalDate.now());
+      }
+    },
+    TOMORROW("morgen") {
+      @Override
+      public String getDate() {
+        return formatDate(LocalDate.now().plusDays(1));
+      }
+    },
+    MONTAG("Montag") {
+      @Override
+      public String getDate() {
+        return formatDate(LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.FRIDAY)));
+
+      }
+    };
 
     private final String date;
 
-    KnownDates(String date) {
+    KnownDate(String date) {
       this.date = date;
     }
 
-    /**
-     * @return the date
-     */
-    public String getDate() {
-      return date;
-    }
-  }
+    public abstract String getDate();
 
-  public static Optional<KnownDates> getKnownDateWithName(String name) {
-    return Arrays.stream(KnownDates.values())
-        .filter(v -> v.getDate().equalsIgnoreCase(name))
-        .findFirst();
+    private static String formatDate(LocalDate date) {
+      return String.format("%02d", date.getDayOfMonth()) + "."
+          + String.format("%02d", date.getMonthValue()) + "." + date.getYear();
+    }
+
+    public static Optional<KnownDate> getKnownDateWithName(String name) {
+      return Arrays.stream(KnownDate.values())
+          .filter(v -> v.date.equalsIgnoreCase(name))
+          .findFirst();
+    }
   }
 }
 
