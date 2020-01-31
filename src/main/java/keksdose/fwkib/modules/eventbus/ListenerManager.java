@@ -9,17 +9,9 @@ import java.util.Objects;
 import java.util.logging.Logger;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
+import keksdose.fwkib.modules.CommandLoader;
 import keksdose.fwkib.modules.listener.AbstractListener;
-import keksdose.fwkib.modules.listener.AddBratiQuoteListener;
-import keksdose.fwkib.modules.listener.AddQuoteListener;
-import keksdose.fwkib.modules.listener.BratiSongListener;
-import keksdose.fwkib.modules.listener.BrotiQuizListener;
-import keksdose.fwkib.modules.listener.InsertKeksdoseQuoteListener;
-import keksdose.fwkib.modules.listener.KeksbotReminderListener;
 import keksdose.fwkib.modules.listener.Listener;
-import keksdose.fwkib.modules.listener.RestartListener;
-import keksdose.fwkib.modules.listener.UrlListener;
-import keksdose.fwkib.modules.listener.YoutubeListener;
 
 public class ListenerManager {
   private static Collection<Listener> listener = new HashSet<>();
@@ -38,7 +30,7 @@ public class ListenerManager {
       InstantiationException, IllegalAccessException, InvocationTargetException {
     for (ClassInfo clazz : ClassPath.from(ClassLoader.getSystemClassLoader())
         .getTopLevelClassesRecursive("keksdose.fwkib")) {
-      if (Class.forName(clazz.getName()).getDeclaredAnnotation(Registerable.class) != null) {
+      if (Class.forName(clazz.getName()).getDeclaredAnnotation(MessageConsumer.class) != null) {
         Constructor<?> constructor = Class.forName(clazz.getName()).getDeclaredConstructor();
         AbstractListener createListener = (AbstractListener) constructor.newInstance();
         listener.add(createListener);

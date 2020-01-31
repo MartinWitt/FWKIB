@@ -3,13 +3,13 @@ package keksdose.fwkib.modules.listener;
 import java.io.IOException;
 import java.util.logging.Logger;
 import keksdose.fwkib.bot.ConfigReader;
-import keksdose.fwkib.modules.eventbus.Registerable;
+import keksdose.fwkib.modules.eventbus.MessageConsumer;
 import keksdose.keksirc.message.Message;
 
 /**
  * Reads all incoming messages and checks if a restart is needed.
  */
-@Registerable()
+@MessageConsumer()
 
 public class RestartListener extends AbstractListener {
 

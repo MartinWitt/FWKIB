@@ -110,7 +110,7 @@ public class ModuleSupplier {
   }
 
   public Command supplyCommand(String commandString) {
-    if (checkForChangeOfAlgo(commandString)) {
+    if (supplier.setAlgorithm(commandString)) {
       return new EmptyCommand();
     }
     if (commandString.equalsIgnoreCase("#help")) {
@@ -121,45 +121,13 @@ public class ModuleSupplier {
         Objects.isNull(COMMAND_SUPPLIER.get(replaced))
             ? (COMMAND_SUPPLIER.get(COMMAND_SUPPLIER.keySet()
                 .stream()
-                .min((o1, o2) -> Double.compare((supplier.similarity(state, replaced, o1)),
-                    (supplier.similarity(state, replaced, o2))))
+                .min((o1, o2) -> Double.compare((supplier.similarity(replaced, o1)),
+                    (supplier.similarity(replaced, o2))))
                 .get()).get())
             : COMMAND_SUPPLIER.get(replaced).get();
     if (c == null) {
       return new EmptyCommand();
     }
     return c;
-  }
-
-  private boolean checkForChangeOfAlgo(String commandString) {
-    if (commandString.equals("#fuzzy")) {
-      state = "fuzzy";
-      System.out.println("Habe den Zustand zu : " + state + " gewechselt");
-      return true;
-
-    }
-    if (commandString.equals("#leven")) {
-      state = "leven";
-      System.out.println("Habe den Zustand zu : " + state + " gewechselt");
-      return true;
-
-    }
-    if (commandString.equals("#cosine")) {
-      state = "cosine";
-      System.out.println("Habe den Zustand zu : " + state + " gewechselt");
-      return true;
-
-    }
-    if (commandString.equals("#jaro")) {
-      state = "jaro";
-      System.out.println("Habe den Zustand zu : " + state + " gewechselt");
-      return true;
-    }
-    if (commandString.equals("#scrabble")) {
-      state = "scrabble";
-      System.out.println("Habe den Zustand zu : " + state + " gewechselt");
-      return true;
-    }
-    return false;
   }
 }

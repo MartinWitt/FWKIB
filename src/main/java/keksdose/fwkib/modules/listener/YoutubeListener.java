@@ -3,13 +3,13 @@ package keksdose.fwkib.modules.listener;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import keksdose.fwkib.modules.commands.misc.Youtube;
-import keksdose.fwkib.modules.eventbus.Registerable;
+import keksdose.fwkib.modules.eventbus.MessageConsumer;
 import keksdose.keksirc.message.Message;
 
 /**
  * Reads all incoming messages and checks if a restart is needed.
  */
-@Registerable()
+@MessageConsumer()
 
 public class YoutubeListener extends AbstractListener {
   private static final Pattern compiledPattern =

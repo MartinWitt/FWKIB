@@ -6,13 +6,13 @@ import org.nibor.autolink.LinkExtractor;
 import org.nibor.autolink.LinkSpan;
 import org.nibor.autolink.LinkType;
 import keksdose.fwkib.modules.commands.ki.OCR;
-import keksdose.fwkib.modules.eventbus.Registerable;
+import keksdose.fwkib.modules.eventbus.MessageConsumer;
 import keksdose.keksirc.message.Message;
 
 /**
  * Reads all incoming messages and tracks last url.
  */
-@Registerable()
+@MessageConsumer()
 
 public class UrlListener extends AbstractListener {
 
