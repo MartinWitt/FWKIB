@@ -135,7 +135,8 @@ public class FWKIB {
   }
 
   private void checkForBrati(String hostname, String username) {
-    if (hostname.contains("static.48.166.76.144.clients.your-server.de")) {
+    if (hostname.contains("static.48.166.76.144.clients.your-server.de")
+        || hostname.endsWith(".adsl.highway.telekom.at")) {
       FindBrati.nick = username;
       System.out.println("set username: " + username);
     }
